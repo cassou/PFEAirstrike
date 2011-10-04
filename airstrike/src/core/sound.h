@@ -2,8 +2,8 @@
 #define SOUND_H
 
 #ifdef USE_SOUND
-#include <SDL.h>
-#include <SDL_mixer.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_mixer.h>
 #else
 typedef void Mix_Chunk;
 #endif

@@ -1,7 +1,7 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-#include <SDL.h>
+#include <SDL/SDL.h>
 #include "image.h"
 
 #define FRAMERATE 33

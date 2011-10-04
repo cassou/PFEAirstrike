@@ -1,7 +1,7 @@
 #ifndef IMAGE_H
 #define IMAGE_H
 
-#include <SDL.h>
+#include <SDL/SDL.h>
 #include "bitmask.h"
 
 /* the masks are B/W where black indicates void... */

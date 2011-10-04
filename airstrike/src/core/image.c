@@ -1,5 +1,5 @@
 #include <assert.h>
-#include <SDL_image.h>
+#include <SDL/SDL_image.h>
 #include "xalloc.h"
 #include "image.h"
 
