@@ -1,0 +1,461 @@
+/*************************************************************************
+            GALAXY OBJECTS FILE FOR PERSISTENCE OF VISION 3.x
+**************************************************************************
+
+Created by Chris Colefax, 1 February 1998
+Updated 9 August 1998: updated for POV-Ray 3.1
+
+See "Galaxy.htm" for more information.
+
+*************************************************************************/
+
+// CHECK VARIABLES AND ASSIGN DEFAULTS
+// ***********************************
+   #declare _GX_objtempver = version; #version 3.0;
+   #ifndef (galaxy_seed) #declare galaxy_seed = 0; #end
+   #ifndef (galaxy_declare_only) #declare galaxy_declare_only = false; #end
+   #ifndef (galaxy_distance) #declare galaxy_distance = 1e4; #end
+   #ifndef (galaxy_pattern_scale) #declare galaxy_pattern_scale = 1; #end
+   #ifndef (galaxy_pattern_origin) #declare galaxy_pattern_origin = <0, 0, 0>; #end
+   #ifndef (galaxy_turb_origin) #declare galaxy_turb_origin = <0, 0, 0>; #end
+   #ifndef (galaxy_intensity) #declare galaxy_intensity = 1; #end
+
+   #ifndef (galaxy_object_name) #declare galaxy_object_name = "Nebula" #end
+   #ifndef (galaxy_object_scale) #declare galaxy_object_scale = 1; #end
+   #ifndef (galaxy_object_flatten) #declare galaxy_object_flatten = .2; #end
+   #ifndef (galaxy_object_rotate) #declare galaxy_object_rotate = 0; #end
+   #ifndef (galaxy_object_position) #declare galaxy_object_position = <0, 0, 0>; #end
+
+   #ifndef (galaxy_cluster_name) #declare galaxy_cluster_name = "Star" #end
+   #ifndef (galaxy_cluster_objects) #declare galaxy_cluster_objects = 6; #end
+   #ifndef (galaxy_cluster_scale) #declare galaxy_cluster_scale = galaxy_object_scale * .5; #end
+   #ifndef (galaxy_cluster_rotate) #declare galaxy_cluster_rotate = galaxy_object_rotate; #end
+   #ifndef (galaxy_scale_turb) #declare galaxy_scale_turb = .5; #end
+   #ifndef (galaxy_rotate_turb) #declare galaxy_rotate_turb = 0; #end
+   #ifndef (galaxy_cluster_spread) #declare _GX_spread = <15, 15, 0> * galaxy_object_scale; #else #declare _GX_spread = galaxy_cluster_spread * <1, 1, 0>; #end
+
+   #ifdef (galaxy_colour1) #declare _GX_colour1 = galaxy_colour1 * <1, 1, 1>;
+      #else #ifdef (galaxy_color1) #declare _GX_colour1 = galaxy_color1 * <1, 1, 1>;
+      #else #declare _GX_colour1 = <1, 1, 1>; #end #end
+   #ifdef (galaxy_colour2) #declare _GX_colour2 = galaxy_colour2 * <1, 1, 1>;
+      #else #ifdef (galaxy_color2) #declare _GX_colour2 = galaxy_color2 * <1, 1, 1>;
+      #else #declare _GX_colour2 = _GX_colour1 - .3; #end #end
+   #ifdef (galaxy_colour3) #declare _GX_colour3 = galaxy_colour3 * <1, 1, 1>;
+      #else #ifdef (galaxy_color3) #declare _GX_colour3 = galaxy_color3 * <1, 1, 1>;
+      #else #declare _GX_colour3 = (_GX_colour1 + _GX_colour2) / 2; #end #end
+   #ifdef (galaxy_star_colouration) #declare _GX_starcolouration = galaxy_star_colouration;
+      #else #ifdef (galaxy_star_coloration) #declare _GX_starcolouration = galaxy_star_coloration;
+      #else #declare _GX_starcolouration = .2; #end #end
+   #ifdef (galaxy_colour_turb) #declare _GX_colourturb = galaxy_colour_turb * <1, 1, 1>;
+      #else #ifdef (galaxy_color_turb) #declare _GX_colourturb = galaxy_color_turb * <1, 1, 1>;
+      #else #declare _GX_colourturb = <.2, .2, .2>; #end #end
+
+   #declare _GX_finaltranslate = galaxy_turb_origin - galaxy_pattern_origin;
+   #ifndef (_GX_tracelevel) #declare _GX_tracelevel = 5; #end
+   #if (galaxy_object_flatten > 0) #declare _GX_flatten = <1, 1.01 - mod(galaxy_object_flatten, 1), 1>;
+      #else #declare _GX_flatten = <mod(galaxy_object_flatten, 1) + 1.01, 1, 1>; #end
+
+// CALCULATE STAR COLOURS
+// **********************
+   #if (_GX_starcolouration = 1)
+      #declare _GX_starcolour1 = _GX_colour1;
+      #declare _GX_starcolour2 = _GX_colour2;
+      #declare _GX_starcolour3 = _GX_colour3;
+   #else
+      #declare _GX_tempfloat1 = max(_GX_colour1.x, _GX_colour1.y); #declare _GX_tempfloat1 = max(_GX_tempfloat1, _GX_colour1.z);
+      #declare _GX_tempfloat2 = min(_GX_colour1.x, _GX_colour1.y); #declare _GX_tempfloat2 = min(_GX_tempfloat2, _GX_colour1.z);
+      #declare _GX_tempfloat1 = (_GX_tempfloat1 + _GX_tempfloat2) / 2; #declare _GX_starcolour1 = _GX_tempfloat1 + (_GX_colour1 - _GX_tempfloat1) * _GX_starcolouration;
+
+      #declare _GX_tempfloat1 = max(_GX_colour2.x, _GX_colour2.y); #declare _GX_tempfloat1 = max(_GX_tempfloat1, _GX_colour2.z);
+      #declare _GX_tempfloat2 = min(_GX_colour2.x, _GX_colour2.y); #declare _GX_tempfloat2 = min(_GX_tempfloat2, _GX_colour2.z);
+      #declare _GX_tempfloat1 = (_GX_tempfloat1 + _GX_tempfloat2) / 2; #declare _GX_starcolour2 = _GX_tempfloat1 + (_GX_colour2 - _GX_tempfloat1) * _GX_starcolouration;
+
+      #declare _GX_tempfloat1 = max(_GX_colour3.x, _GX_colour3.y); #declare _GX_tempfloat1 = max(_GX_tempfloat1, _GX_colour3.z);
+      #declare _GX_tempfloat2 = min(_GX_colour3.x, _GX_colour3.y); #declare _GX_tempfloat2 = min(_GX_tempfloat2, _GX_colour3.z);
+      #declare _GX_tempfloat1 = (_GX_tempfloat1 + _GX_tempfloat2) / 2; #declare _GX_starcolour3 = _GX_tempfloat1 + (_GX_colour3 - _GX_tempfloat1) * _GX_starcolouration;
+   #end
+
+// START LOOP TO CREATE SINGLE AND CLUSTER OBJECTS
+// ***********************************************
+   #declare _GX_name = strupr(galaxy_object_name)
+   #declare _GX_objscale = galaxy_object_scale * <1, 1, 1>;
+   #declare _GX_objloop = 0; #while (_GX_objloop < 2)
+      #declare _GX_objcreated = false;
+      #if (strcmp(_GX_name, "-") != 0 & strlen(_GX_name) != 0)
+
+// SELECT STAR OBJECTS
+// *******************
+   #if (strcmp(substr(_GX_name, 1, 1), "S") = 0)
+   #if (strcmp(_GX_name, "STAR") = 0 | strcmp(_GX_name, "STAR1") = 0 | strcmp(_GX_name, "S1") = 0)
+      #declare _GX_object = disc {0, z, .999 pigment {average pigment_map {
+         [1 onion color_map {
+            [.1 rgb _GX_starcolour1 * 8 transmit pow(.05, galaxy_intensity)] [.3 rgb _GX_starcolour3 * 2 transmit pow(.2, galaxy_intensity)]
+            [.35 rgb _GX_starcolour1 * 3 transmit pow(.1, galaxy_intensity)] [.4 rgb _GX_starcolour3 * 1.5 transmit pow(.2, galaxy_intensity)]
+            [.7 rgb _GX_starcolour2 transmit pow(.5, galaxy_intensity)] [.71 rgb _GX_starcolour3 * 1.5 transmit pow(.4, galaxy_intensity)]
+            [.72 rgb _GX_starcolour2 transmit pow(.5, galaxy_intensity)] [1 rgb _GX_starcolour2 transmit 1]}
+            scallop_wave scale 2]
+         [1 onion color_map {
+            [0 rgb _GX_starcolour1 * 2 transmit pow(.05, galaxy_intensity)] [.02 rgb _GX_starcolour2 transmit 1]}
+            scale <45, 1, 1>]
+         [1 onion color_map {
+            [0 rgb _GX_starcolour1 * 2 transmit pow(.05, galaxy_intensity)] [.02 rgb _GX_starcolour2 transmit 1]}
+            scale <1, 50, 1>]}}}
+      #declare _GX_objscale = <.2, .2, 1> * _GX_objscale; #declare _GX_objcreated = true; #end
+
+   #if (strcmp(_GX_name, "STAR2") = 0 | strcmp(_GX_name, "S2") = 0)
+      #declare _GX_object = disc {0, z, .999 pigment {average pigment_map {
+         [1 onion color_map {
+            [.05 rgb _GX_starcolour1 * 8 transmit pow(.05, galaxy_intensity)] [.2 rgb _GX_starcolour3 * 3 transmit pow(.3, galaxy_intensity)]
+            [1 rgb _GX_starcolour2 transmit 1]} scallop_wave scale 2]
+         [1 onion color_map {[0 rgb _GX_starcolour1 * 4 transmit pow(.05, galaxy_intensity)] [.02 rgb _GX_starcolour2 transmit 1]}
+            scale <45, 1, 1>]
+         [1 onion color_map {[0 rgb _GX_starcolour1 * 4 transmit pow(.05, galaxy_intensity)] [.02 rgb _GX_starcolour2 transmit 1]}
+            scale <1, 50, 1>]}}}
+      #declare _GX_objscale = <.2, .2, 1> * _GX_objscale; #declare _GX_objcreated = true; #end
+
+   #if (strcmp(_GX_name, "STAR3") = 0 | strcmp(_GX_name, "S3") = 0)
+      #declare _GX_object = disc {0, z, .999 pigment {average pigment_map {
+         [1 onion color_map {
+            [.15 rgb _GX_starcolour1 * 8 transmit pow(.05, galaxy_intensity)] [.4 rgb _GX_starcolour3 * 3 transmit pow(.1, galaxy_intensity)]
+            [.49 rgb _GX_starcolour3 * 1.5 transmit pow(.3, galaxy_intensity)] [.5 rgb _GX_starcolour1 * 2 transmit pow(.1, galaxy_intensity)]
+            [.51 rgb _GX_starcolour3 transmit pow(.3, galaxy_intensity)] [1 rgb _GX_starcolour2 transmit 1]}
+            scallop_wave scale 2]
+         [1 onion color_map {[0 rgb _GX_starcolour1 * 2 transmit pow(.05, galaxy_intensity)] [.01 rgb _GX_starcolour2 transmit 1]}
+            scale <90, 1, 1>]
+         [1 onion color_map {[0 rgb _GX_starcolour1 * 2 transmit pow(.05, galaxy_intensity)] [.01 rgb _GX_starcolour2 transmit 1]}
+            scale <1, 100, 1>]}}}
+      #declare _GX_objscale = <.2, .2, 1> * _GX_objscale; #declare _GX_objcreated = true; #end
+
+   #if (strcmp(_GX_name, "STAR4") = 0 | strcmp(_GX_name, "S4") = 0)
+      #declare _GX_object = disc {0, z, .999 pigment {average pigment_map {
+         [1 onion color_map {
+            [.05 rgb _GX_starcolour1 * 10 transmit pow(.05, galaxy_intensity)] [.2 rgb _GX_starcolour3 * 3 transmit pow(.3, galaxy_intensity)]
+            [1 rgb _GX_starcolour2 transmit 1]} scallop_wave scale 2]
+         [1 onion color_map {[0 rgb _GX_starcolour1 transmit pow(.8, galaxy_intensity)] [.06 rgb _GX_starcolour2 transmit 1]}
+            scale <16, 1, 1>]
+         [1 onion color_map {[0 rgb _GX_starcolour1 transmit pow(.8, galaxy_intensity)] [.06 rgb _GX_starcolour2 transmit 1]}
+            scale <16, 1, 1> rotate z * 120]
+         [1 onion color_map {[0 rgb _GX_starcolour1 transmit pow(.8, galaxy_intensity)] [.06 rgb _GX_starcolour2 transmit 1]}
+            scale <16, 1, 1> rotate z * 240]}}}
+      #declare _GX_objscale = <.2, .2, 1> * _GX_objscale; #declare _GX_objcreated = true; #end
+      #end
+
+// SELECT GALAXY OBJECTS
+// *********************
+   #if (strcmp(substr(_GX_name, 1, 1), "G") = 0)
+   #if (strcmp(_GX_name, "GALAXY") = 0 | strcmp(_GX_name, "GALAXY1") = 0 | strcmp(_GX_name, "G1") = 0)
+      #declare _GX_object = disc {0, z, .999 pigment {onion pigment_map {
+         [0 rgb _GX_colour1 transmit pow(.1, galaxy_intensity)]
+         [.2 wrinkles color_map {[0 rgb _GX_colour1 transmit pow(.1, galaxy_intensity)] [1 rgb _GX_colour3 transmit pow(.4, galaxy_intensity)]}
+            scale .06 * galaxy_pattern_scale translate -galaxy_pattern_origin]
+         [.4 spiral1 2 pigment_map {
+               [.3 wrinkles color_map {[0 rgb _GX_colour1 transmit pow(.1, galaxy_intensity)] [1 rgb _GX_colour3 transmit pow(.6, galaxy_intensity)]}
+                  scale .2 * galaxy_pattern_scale translate -galaxy_pattern_origin]
+               [1 rgb _GX_colour3 transmit pow(.6, galaxy_intensity)]}
+            scale .15 translate -galaxy_turb_origin warp {turbulence .06 octaves 4 lambda 3} translate galaxy_turb_origin]
+         [.8 spiral1 6 pigment_map {
+               [.1 wrinkles color_map {[0 rgb _GX_colour3 transmit pow(.2, galaxy_intensity)] [1 rgb _GX_colour2 transmit pow(.8, galaxy_intensity)]}
+                  scale .2 * galaxy_pattern_scale translate -galaxy_pattern_origin]
+               [.8 rgb _GX_colour2 transmit pow(.8, galaxy_intensity)]}
+            scale .13 translate -galaxy_turb_origin warp {turbulence .06 octaves 4 lambda 3} translate galaxy_turb_origin]
+         [.9 spiral1 12 pigment_map {
+               [0 wrinkles color_map {[0 rgb _GX_colour3 transmit pow(.3, galaxy_intensity)] [.8 rgb _GX_colour2 transmit pow(.9, galaxy_intensity)]}
+                  scale .2 * galaxy_pattern_scale translate -galaxy_pattern_origin]
+               [.6 rgb _GX_colour2 transmit pow(.9, galaxy_intensity)]}
+            scale .09 translate -galaxy_turb_origin warp {turbulence .06 octaves 4 lambda 3} translate galaxy_turb_origin]
+         [1 rgb _GX_colour2 transmit 1]}
+         scallop_wave scale 2}}
+      #declare _GX_objscale = <.25, .25, 1> * _GX_objscale * _GX_flatten; #declare _GX_objcreated = true; #end
+
+   #if (strcmp(_GX_name, "GALAXY2") = 0 | strcmp(_GX_name, "G2") = 0)
+      #declare _GX_object = disc {0, z, .999 pigment {onion pigment_map {
+         [0 rgb _GX_colour1 transmit pow(.05, galaxy_intensity)]
+         [.4 wrinkles color_map {[0 rgb _GX_colour1 transmit pow(.1, galaxy_intensity)] [1 rgb _GX_colour3 transmit pow(.7, galaxy_intensity)]}
+            scale .08 * galaxy_pattern_scale translate -galaxy_turb_origin warp {turbulence .08 octaves 4 lambda 4} translate _GX_finaltranslate]
+         [.65 spiral1 2 pigment_map {
+            [0 wrinkles color_map {[0 rgb _GX_colour1 transmit pow(.2, galaxy_intensity)] [1 rgb _GX_colour3 transmit pow(.7, galaxy_intensity)]}
+               scale .25 * galaxy_pattern_scale translate -galaxy_pattern_origin]
+            [1 wrinkles color_map {[0 rgb _GX_colour3 transmit pow(.5, galaxy_intensity)] [.6 rgb _GX_colour3 transmit pow(.9, galaxy_intensity)]}
+               scale .15 * galaxy_pattern_scale translate -galaxy_pattern_origin]}
+            sine_wave scale .2 translate -galaxy_turb_origin warp {turbulence -.08 octaves 4 lambda 4} translate galaxy_turb_origin]
+         [.85 spiral1 2 pigment_map {
+            [0 wrinkles color_map {[0 rgb _GX_colour3 transmit pow(.4, galaxy_intensity)] [.8 rgb _GX_colour2 transmit pow(.8, galaxy_intensity)]}
+               scale .2 * galaxy_pattern_scale translate -galaxy_pattern_origin]
+            [.8 rgb _GX_colour2 transmit pow(.9, galaxy_intensity)]}
+            sine_wave scale .15 translate -galaxy_turb_origin warp {turbulence .05 octaves 4 lambda 4} translate galaxy_turb_origin]
+         [1 rgb _GX_colour2 transmit 1]}
+         scallop_wave scale 2}}
+      #declare _GX_objscale = <.25, .25, 1> * _GX_objscale * _GX_flatten; #declare _GX_objcreated = true; #end
+
+   #if (strcmp(_GX_name, "GALAXY3") = 0 | strcmp(_GX_name, "G3") = 0)
+      #declare _GX_object = disc {0, z, .999 pigment {onion pigment_map {
+         [.03 rgb _GX_colour1 transmit pow(.1, galaxy_intensity)]
+         [.25 spiral1 -2 pigment_map {
+            [0 wrinkles color_map {[0 rgb _GX_colour3 transmit pow(.9, galaxy_intensity)] [.6 rgb _GX_colour1 transmit pow(.4, galaxy_intensity)]} scale .1 * galaxy_pattern_scale translate -galaxy_pattern_origin]
+            [.1 wrinkles color_map {[0 rgb _GX_colour1 transmit pow(.3, galaxy_intensity)] [1 rgb _GX_colour3 transmit pow(.5, galaxy_intensity)]} scale .3 * galaxy_pattern_scale translate -galaxy_pattern_origin]
+            [.9 wrinkles color_map {[0 rgb _GX_colour3 transmit pow(.5, galaxy_intensity)] [1 rgb _GX_colour1 transmit pow(.8, galaxy_intensity)]} scale .2 * galaxy_pattern_scale translate -galaxy_pattern_origin]}
+            scale .4 translate -galaxy_turb_origin warp {turbulence .04 octaves 4 lambda 3 omega .5} translate galaxy_turb_origin]
+         [.5 spiral1 -2 pigment_map {
+            [0 wrinkles color_map {[0 rgb _GX_colour3 transmit pow(.1, galaxy_intensity)] [.5 rgb _GX_colour2 transmit pow(.5, galaxy_intensity)]} scale .1 * galaxy_pattern_scale translate -galaxy_pattern_origin]
+            [.3 wrinkles color_map {[0 rgb _GX_colour2 transmit pow(.3, galaxy_intensity)] [1 rgb _GX_colour2 transmit pow(.4, galaxy_intensity)]} scale .3 * galaxy_pattern_scale translate -galaxy_pattern_origin]
+            [1 wrinkles color_map {[0 rgb _GX_colour2 transmit pow(.7, galaxy_intensity)] [1 rgb _GX_colour2 transmit 1]} scale .2 * galaxy_pattern_scale translate -galaxy_pattern_origin]}
+            scale .8 translate -galaxy_turb_origin warp {turbulence .1 octaves 4 lambda 3 omega .4} translate galaxy_turb_origin]
+         [1 rgb _GX_colour2 transmit 1]}}}
+      #declare _GX_objscale = <.25, .25, 1> * _GX_objscale * _GX_flatten; #declare _GX_objcreated = true; #end
+
+   #if (strcmp(_GX_name, "GALAXY4") = 0 | strcmp(_GX_name, "G4") = 0)
+      #declare _GX_object = disc {0, z, .999 pigment {onion pigment_map {
+         [0 rgb _GX_colour1 transmit pow(.1, galaxy_intensity)]
+         [.4 spiral1 -2 pigment_map {
+            [0 wrinkles color_map {[.2 rgb _GX_colour3 transmit pow(.7, galaxy_intensity)] [1 rgb _GX_colour1 transmit pow(.2, galaxy_intensity)]} scale .2 * galaxy_pattern_scale translate -galaxy_pattern_origin]
+            [.4 wrinkles color_map {[.4 rgb _GX_colour3 transmit pow(.8, galaxy_intensity)] [1 rgb _GX_colour3 transmit pow(.4, galaxy_intensity)]} scale .1 * galaxy_pattern_scale translate -galaxy_pattern_origin]
+            [.9 wrinkles color_map {[0 rgb _GX_colour2 transmit pow(.9, galaxy_intensity)] [1 rgb _GX_colour3 transmit pow(.8, galaxy_intensity)]} scale .3 * galaxy_pattern_scale translate -galaxy_pattern_origin]}
+            scale 1.2 translate -galaxy_turb_origin warp {turbulence .04 octaves 4 lambda 3} translate galaxy_turb_origin]
+         [.6 spiral1 -2 pigment_map {
+            [0 wrinkles color_map {[.3 rgb _GX_colour3 transmit pow(.8, galaxy_intensity)] [1 rgb _GX_colour1 transmit pow(.3, galaxy_intensity)]} scale .2 * galaxy_pattern_scale translate -galaxy_pattern_origin]
+            [.3 wrinkles color_map {[.5 rgb _GX_colour2 transmit pow(.9, galaxy_intensity)] [1 rgb _GX_colour3 transmit pow(.5, galaxy_intensity)]} scale .1 * galaxy_pattern_scale translate -galaxy_pattern_origin]
+            [.8 wrinkles color_map {[0 rgb _GX_colour2 transmit 1] [1 rgb _GX_colour2 transmit pow(.8, galaxy_intensity)]} scale .3 * galaxy_pattern_scale translate -galaxy_pattern_origin]}
+            scale .8 translate -galaxy_turb_origin warp {turbulence .03 octaves 4 lambda 3} translate galaxy_turb_origin]
+         [1 rgb _GX_colour2 transmit 1]}}}
+      #declare _GX_objscale = <.25, .25, 1> * _GX_objscale * _GX_flatten; #declare _GX_objcreated = true; #end
+
+   #if (strcmp(_GX_name, "GALAXY5") = 0 | strcmp(_GX_name, "G5") = 0)
+      #declare _GX_object = disc {0, z, .999 pigment {onion pigment_map {
+         [0 rgb _GX_colour1 transmit pow(.1, galaxy_intensity)]
+         [.35 granite color_map {
+            [0 rgb _GX_colour3 transmit pow(.4, galaxy_intensity)] [.8 rgb _GX_colour1 transmit pow(.1, galaxy_intensity)]}
+            scale .06 * galaxy_pattern_scale translate _GX_finaltranslate]
+         [.6 granite color_map {
+            [.3 rgb _GX_colour2 transmit pow(.7, galaxy_intensity)] [1 rgb _GX_colour3 transmit pow(.2, galaxy_intensity)]}
+            scale .05 * galaxy_pattern_scale translate _GX_finaltranslate]
+         [.75 granite color_map {
+            [.5 rgb _GX_colour2 transmit pow(.9, galaxy_intensity)] [1 rgb _GX_colour2 transmit pow(.3, galaxy_intensity)]}
+            scale .04 * galaxy_pattern_scale translate _GX_finaltranslate]
+         [1 rgb _GX_colour2 transmit 1]}
+         scallop_wave scale 2}}
+      #declare _GX_objscale = <.25, .25, 1> * _GX_objscale * _GX_flatten; #declare _GX_objcreated = true; #end
+   #end
+
+// SELECT NEBULA OBJECTS
+// *********************
+   #if (strcmp(substr(_GX_name, 1, 1), "N") = 0)
+   #if (strcmp(_GX_name, "NEBULA") = 0 | strcmp(_GX_name, "NEBULA1") = 0 | strcmp(_GX_name, "N1") = 0)
+      #declare _GX_object = disc {0, z, .999 pigment {onion pigment_map {
+         [.2 granite color_map {[0 rgb _GX_colour1 transmit pow(.1, galaxy_intensity)] [1 rgb _GX_colour3 transmit pow(.6, galaxy_intensity)]} scale 2 * galaxy_pattern_scale translate -galaxy_pattern_origin]
+         [.8 granite color_map {[0 rgb _GX_colour3 transmit pow(.6, galaxy_intensity)] [.5 rgb _GX_colour2 transmit pow(.95, galaxy_intensity)]} scale galaxy_pattern_scale translate -galaxy_pattern_origin]
+         [.9 rgb _GX_colour2 transmit 1]}
+         scallop_wave scale 2.2
+         translate -galaxy_turb_origin warp {turbulence .35 octaves 4 omega .4 lambda 3} translate galaxy_turb_origin}}
+      #declare _GX_objscale = <.3, .3, 1> * _GX_objscale; #declare _GX_objcreated = true; #end
+
+   #if (strcmp(_GX_name, "NEBULA2") = 0 | strcmp(_GX_name, "N2") = 0)
+      #declare _GX_object = disc {0, z, .999 pigment {onion pigment_map {
+         [0 wrinkles color_map {[0 rgb _GX_colour1 transmit pow(.1, galaxy_intensity)] [1 rgb _GX_colour3 transmit pow(.6, galaxy_intensity)]}
+            warp {turbulence .5 octaves 2} scale .2 * galaxy_pattern_scale translate -galaxy_pattern_origin]
+         [.8 wrinkles color_map {[0 rgb _GX_colour3 transmit pow(.5, galaxy_intensity)] [.5 rgb _GX_colour2 transmit pow(.9, galaxy_intensity)]}
+            warp {turbulence .5 octaves 2} scale .18 * galaxy_pattern_scale translate -galaxy_pattern_origin]
+         [.9 rgbt _GX_colour2 transmit 1]}
+         scallop_wave scale 2.2
+         translate -galaxy_turb_origin warp {turbulence .2 octaves 2 lambda 3 omega .6} translate galaxy_turb_origin}}
+      #declare _GX_objscale = <.3, .3, 1> * _GX_objscale; #declare _GX_objcreated = true; #end
+
+   #if (strcmp(_GX_name, "NEBULA3") = 0 | strcmp(_GX_name, "N3") = 0)
+      #declare _GX_object = disc {0, z, .999 pigment {onion pigment_map {
+         [0 granite color_map {[.05 rgb _GX_colour3 transmit 1] [.3 rgb _GX_colour1 transmit pow(.1, galaxy_intensity)]}
+            scale .7 * galaxy_pattern_scale translate -galaxy_pattern_origin]
+         [.8 wrinkles color_map {[0 rgb _GX_colour2 transmit 1] [1 rgb _GX_colour3 transmit pow(.6, galaxy_intensity)]}
+            scale .1 * galaxy_pattern_scale translate -galaxy_pattern_origin]
+         [.9 rgbt _GX_colour2 transmit 1]}
+         scallop_wave scale 2.2
+         translate -galaxy_turb_origin warp {turbulence .25 octaves 4 lambda 3 omega .4} translate galaxy_turb_origin}}
+      #declare _GX_objscale = <.3, .3, 1> * _GX_objscale; #declare _GX_objcreated = true; #end
+
+   #if (strcmp(_GX_name, "NEBULA4") = 0 | strcmp(_GX_name, "N4") = 0)
+      #declare _GX_object = disc {0, z, .999 pigment {onion pigment_map {
+         [.2 wrinkles color_map {[0 rgb _GX_colour1 transmit pow(.1, galaxy_intensity)] [1 rgb _GX_colour3 transmit pow(.9, galaxy_intensity)]} scale .1 * galaxy_pattern_scale translate -galaxy_pattern_origin]
+         [.5 granite color_map {[0 rgb _GX_colour1 transmit pow(.3, galaxy_intensity)] [.6 rgb _GX_colour3 transmit pow(.95, galaxy_intensity)]} scale .4 * galaxy_pattern_scale translate -galaxy_pattern_origin]
+         [.8 granite color_map {[0 rgb _GX_colour3 transmit pow(.6, galaxy_intensity)] [.3 rgb _GX_colour2 transmit 1]} scale .3 * galaxy_pattern_scale translate -galaxy_pattern_origin]
+         [.9 rgb _GX_colour2 transmit 1]}
+         scallop_wave scale 2.2
+         translate -galaxy_turb_origin warp {turbulence .25 octaves 4 omega .4 lambda 3} translate galaxy_turb_origin}}
+      #declare _GX_objscale = <.3, .3, 1> * _GX_objscale; #declare _GX_objcreated = true; #end
+
+   #if (strcmp(_GX_name, "NEBULA5") = 0 | strcmp(_GX_name, "N5") = 0)
+      #declare _GX_object = disc {0, z, .999 pigment {onion pigment_map {
+         [.5 wrinkles color_map {[.1 rgb _GX_colour2 transmit 1] [.4 rgb _GX_colour3 transmit pow(.5, galaxy_intensity)] [.8 rgb _GX_colour1 transmit pow(.1, galaxy_intensity)]} scale .1 * galaxy_pattern_scale translate -galaxy_pattern_origin]
+         [.8 wrinkles color_map {[.5 rgb _GX_colour2 transmit 1] [1 rgb _GX_colour3 transmit pow(.4, galaxy_intensity)]} scale .1 * galaxy_pattern_scale translate -galaxy_pattern_origin]
+         [.9 rgb _GX_colour2 transmit 1]}
+         scallop_wave scale 2.3
+         translate -galaxy_turb_origin warp {turbulence .3 octaves 4 omega .3 lambda 5} translate galaxy_turb_origin}}
+      #declare _GX_objscale = <.2, .2, 1> * _GX_objscale; #declare _GX_objcreated = true; #end
+
+   #if (strcmp(_GX_name, "NEBULA6") = 0 | strcmp(_GX_name, "N6") = 0)
+      #declare _GX_object = disc {0, z, .999 pigment {onion pigment_map {
+         [.4 wrinkles color_map {[0 rgb _GX_colour2 transmit pow(.7, galaxy_intensity)] [1 rgb _GX_colour2 transmit pow(.9, galaxy_intensity)]} scale .2 * galaxy_pattern_scale translate -galaxy_pattern_origin]
+         [.5 wrinkles pigment_map {
+            [0 wrinkles color_map {[0 rgb _GX_colour3 transmit pow(.4, galaxy_intensity)] [1 rgb _GX_colour2 transmit pow(.8, galaxy_intensity)]} scale .5]
+            [1 wrinkles color_map {[0 rgb _GX_colour3 transmit pow(.8, galaxy_intensity)] [1 rgb _GX_colour2 transmit pow(.95, galaxy_intensity)]} scale .5]}
+            scale .2 * galaxy_pattern_scale translate -galaxy_pattern_origin]
+         [.7 wrinkles pigment_map {
+            [0 granite color_map {[0 rgb _GX_colour1 transmit pow(.2, galaxy_intensity)] [1 rgb _GX_colour1 transmit pow(.6, galaxy_intensity)]}]
+            [1 granite color_map {[0 rgb _GX_colour3 transmit pow(.8, galaxy_intensity)] [1 rgb _GX_colour3 transmit pow(.95, galaxy_intensity)]}]}
+            scale .2 * galaxy_pattern_scale translate -galaxy_pattern_origin]
+         [.85 granite color_map {[0 rgb _GX_colour3 transmit pow(.8, galaxy_intensity)] [.4 rgb _GX_colour3 transmit 1]} scale .4 * galaxy_pattern_scale translate -galaxy_pattern_origin]
+         [.9 rgb _GX_colour1 transmit 1]}
+         scallop_wave scale 2.5
+         translate -galaxy_turb_origin warp {turbulence .04 octaves 4 omega .8 lambda 3} translate galaxy_turb_origin}}
+      #declare _GX_objscale = <.15, .15, 1> * _GX_objscale; #declare _GX_objcreated = true; #end
+   #end
+
+// SELECT COMET OBJECTS
+// ********************
+   #if (strcmp(substr(_GX_name, 1, 1), "C") = 0)
+   #if (strcmp(_GX_name, "COMET") = 0 | strcmp(_GX_name, "COMET1") = 0 | strcmp(_GX_name, "C1") = 0)
+      #declare _GX_object = disc {<.5, 0, 0>, z, .499 pigment {onion pigment_map {
+         [.03 onion color_map {[.03 rgb _GX_colour1 transmit pow(.05, galaxy_intensity)] [.05 rgb _GX_colour3 transmit 1]} translate <.05, 0, 0>]
+         [.06 radial color_map {[.1 rgb _GX_colour1 transmit pow(.05, galaxy_intensity)] [.25 rgb _GX_colour2 transmit 1]} triangle_wave]
+         [.4 radial pigment_map {
+            [.05 wrinkles color_map {[0 rgb _GX_colour2 transmit 1] [1 rgb _GX_colour3 transmit pow(.1, galaxy_intensity)]}
+               scale galaxy_pattern_scale translate -galaxy_turb_origin warp {turbulence 2 octaves 3 lambda 2} translate _GX_finaltranslate]
+            [.25 rgb _GX_colour2 transmit 1]} triangle_wave]
+         [.8 rgb _GX_colour2 transmit 1]} rotate x * 90}
+      scale <1.05, .35, 1> translate <-.05, 0, 0>}
+      #declare _GX_objscale = <.5, .5, 1> * _GX_objscale * _GX_flatten; #declare _GX_objcreated = true; #end
+
+   #if (strcmp(_GX_name, "COMET2") = 0 | strcmp(_GX_name, "C2") = 0)
+      #declare _GX_object = disc {<.5, 0, 0>, z, .499 pigment {onion pigment_map {
+         [.03 onion color_map {[.03 rgb _GX_colour1 transmit pow(.05, galaxy_intensity)] [.05 rgb _GX_colour3 transmit 1]} translate <.05, 0, 0>]
+         [.06 radial color_map {[.1 rgb _GX_colour1 transmit pow(.05, galaxy_intensity)] [.25 rgb _GX_colour2 transmit 1]} triangle_wave]
+         [.2 radial pigment_map {
+            [.1 granite color_map {[0 rgb _GX_colour3 transmit pow(.2, galaxy_intensity)] [1 rgb _GX_colour2 transmit 1]} scale galaxy_pattern_scale translate _GX_finaltranslate]
+            [.2 rgb _GX_colour2 transmit 1]} translate -galaxy_turb_origin warp {turbulence .03 lambda 3 octaves 3 omega .9} translate galaxy_turb_origin
+            triangle_wave]
+         [.6 radial pigment_map {
+            [.1 granite color_map {[0 rgb _GX_colour3 transmit pow(.8, galaxy_intensity)] [.6 rgb _GX_colour2 transmit 1]} scale .4 * galaxy_pattern_scale translate _GX_finaltranslate]
+            [.2 rgb _GX_colour2 transmit 1]} translate -galaxy_turb_origin warp {turbulence .1 lambda 3 octaves 3 omega .9} translate galaxy_turb_origin
+            triangle_wave]
+         [.8 rgb _GX_colour2 transmit 1]} rotate x * 90}
+      scale <1.05, .4, 1> translate <-.05, 0, 0>}
+      #declare _GX_objscale = <.5, .5, 1> * _GX_objscale * _GX_flatten; #declare _GX_objcreated = true; #end
+
+   #if (strcmp(_GX_name, "COMET3") = 0 | strcmp(_GX_name, "C3") = 0)
+      #declare _GX_object = disc {<.5, 0, 0>, z, .499 pigment {average pigment_map {
+         [1 onion color_map {[.006 rgb _GX_colour1 * 3 transmit pow(.05, galaxy_intensity)] [.02 rgb _GX_colour3 transmit 1]}
+            scale <1.5, 1, 1> rotate z * 30 translate <.05, 0, 0>]
+         [1 onion pigment_map {
+            [.05 rgb _GX_colour3 transmit 1]
+            [.1 spiral1 1 color_map {[.03 rgb _GX_colour1 * 3 transmit pow(.05, galaxy_intensity)] [.07 rgb _GX_colour3 transmit 1]} scale 4]
+            [.3 spiral1 1 color_map {[.03 rgb _GX_colour3 * 2 transmit pow(.1, galaxy_intensity)] [.07 rgb _GX_colour2 transmit 1]} scale 4]
+            [.6 spiral1 1 pigment_map {
+               [0 granite color_map {[0 rgb _GX_colour3 * 2 transmit pow(.1, galaxy_intensity)] [1 rgb _GX_colour2 transmit pow(.4, galaxy_intensity)]}
+                  scale <.2, .03, .03> * galaxy_pattern_scale rotate z * 50 translate _GX_finaltranslate]
+               [.08 rgb _GX_colour2 transmit 1]} scale 4]
+            [.85 spiral1 1 pigment_map {
+               [0 granite color_map {[0 rgb _GX_colour2 transmit pow(.4, galaxy_intensity)] [1 rgb _GX_colour2 transmit pow(.7, galaxy_intensity)]}
+                  scale <.2, .03, .03> * galaxy_pattern_scale rotate z * 35 translate _GX_finaltranslate]
+               [.1 rgb _GX_colour2 transmit 1]} scale 4]
+            [.98 rgb _GX_colour2 transmit 1]}
+            scallop_wave scale 2 rotate z * 125 translate <.02, -.02, 0>]}
+         scale <1, 2, 1>}
+      scale <1.05, .6, 1> translate <-.05, 0, 0>}
+      #declare _GX_objscale = <.5, .5, 1> * _GX_objscale * _GX_flatten; #declare _GX_objcreated = true; #end
+   #end
+
+// SELECT METEOR OBJECTS
+// *********************
+   #if (strcmp(substr(_GX_name, 1, 1), "M") = 0)
+   #if (strcmp(_GX_name, "METEOR") = 0 | strcmp(_GX_name, "METEOR1") = 0 | strcmp(_GX_name, "M1") = 0)
+      #declare _GX_object = disc {<.5, 0, 0>, z, .499 pigment {gradient x pigment_map {
+         [.1 onion color_map {[.03 rgb _GX_colour1 transmit pow(.1, galaxy_intensity)] [.05 rgb _GX_colour3 transmit 1]} translate <.1, 0, 0>]
+         [.12 onion color_map {[.02 rgb _GX_colour1 transmit pow(.2, galaxy_intensity)] [.05 rgb _GX_colour3 transmit 1]}
+            scale <18, 1, 1> translate <.1, 0, 0>]
+         [.5 onion pigment_map {
+            [0 granite color_map {[0 rgb _GX_colour3 transmit pow(.3, galaxy_intensity)] [1 rgb _GX_colour2 transmit 1]} scale .2 * galaxy_pattern_scale translate _GX_finaltranslate]
+            [.05 rgb _GX_colour2 transmit 1]}
+            scale <18, 1, 1> translate <.1, 0, 0> translate -galaxy_turb_origin warp {turbulence .02 octaves 3 lambda 4} translate galaxy_turb_origin]}
+         scale <1, 5, 1>}
+      scale <1.1, .1, 1> translate <-.1, 0, 0>}
+      #declare _GX_objscale = <.5, .5, 1> * _GX_objscale * _GX_flatten; #declare _GX_objcreated = true; #end
+
+   #if (strcmp(_GX_name, "METEOR2") = 0 | strcmp(_GX_name, "M2") = 0)
+      #declare _GX_object = disc {<.5, 0, 0>, z, .499 pigment {gradient x pigment_map {
+         [.1 onion pigment_map {
+            [.03 granite color_map {[0 rgb _GX_colour1 transmit pow(.05, galaxy_intensity)] [1 rgb _GX_colour3 transmit pow(.4, galaxy_intensity)]} scale <.3, .15, .1> * galaxy_pattern_scale translate _GX_finaltranslate]
+            [.05 rgb _GX_colour2 transmit 1]}
+            translate <.1, 0, 0>]
+         [.12 onion pigment_map {
+            [.02 granite color_map {[0 rgb _GX_colour1 transmit pow(.1, galaxy_intensity)] [1 rgb _GX_colour3 transmit pow(.4, galaxy_intensity)]} scale <.02, .15, .1> * galaxy_pattern_scale translate _GX_finaltranslate]
+            [.04 granite color_map {[0 rgb _GX_colour3 transmit pow(.2, galaxy_intensity)] [.7 rgb _GX_colour2 transmit 1]} scale <.015, .1, .1> * galaxy_pattern_scale translate _GX_finaltranslate]
+            [.05 rgb _GX_colour2 transmit 1]}
+            scale <18, 1, 1> translate <.1, 0, 0>
+            translate -galaxy_turb_origin warp {turbulence .02 octaves 4 omega .6 lambda 4} translate galaxy_turb_origin]
+         [.5 onion pigment_map {
+            [0 granite color_map {[0 rgb _GX_colour3 transmit pow(.4, galaxy_intensity)] [.7 rgb _GX_colour2 transmit pow(.9, galaxy_intensity)]} scale <.015, .1, .1> * galaxy_pattern_scale translate _GX_finaltranslate]
+            [.05 rgb _GX_colour2 transmit 1]}
+            scale <18, 1, 1> translate <.1, 0, 0> translate -galaxy_turb_origin warp {turbulence .04 octaves 4 omega .4 lambda 4} translate galaxy_turb_origin]}
+         scale <1, 5, 1>}
+      scale <1.1, .2, 1> translate <-.1, 0, 0>}
+      #declare _GX_objscale = <.5, .5, 1> * _GX_objscale * _GX_flatten; #declare _GX_objcreated = true; #end
+   #end
+
+// POSITION SINGLE OBJECT
+// **********************
+   #switch (_GX_objloop)
+   #case (0) #if (_GX_objcreated = false)
+         #warning "You specified an incorrect galaxy_object_name!\r\n"
+      #else
+         #declare galaxy_object = object {_GX_object
+            finish {ambient 1 diffuse 0 reflection 0 phong 0 specular 0 crand 0}
+            scale _GX_objscale rotate z * galaxy_object_rotate
+            no_shadow hollow}
+
+         #if (galaxy_declare_only = false) object {galaxy_object
+            translate z rotate <-1, 1, 0> * galaxy_object_position
+            scale galaxy_distance
+            #ifdef (galaxy_rotate) rotate galaxy_rotate #end
+            #ifdef (galaxy_origin) translate -galaxy_origin #end }
+         #declare galaxy_distance = galaxy_distance * (sqrt(1 + pow(max(_GX_objscale.x, _GX_objscale.y), 2)) + .001);
+         #declare _GX_tracelevel = _GX_tracelevel + 1;
+         global_settings {max_trace_level min(_GX_tracelevel, 30)}
+         #end
+      #end #break
+
+// POSITION CLUSTER OBJECTS
+// ************************
+   #case (1) #if (_GX_objcreated = false)
+         #warning "You specified an incorrect galaxy_cluster_name!\r\n"
+      #else
+         #declare galaxy_cluster_object = object {_GX_object
+            finish {ambient 1 diffuse 0 reflection 0 phong 0 specular 0 crand 0}
+            scale _GX_objscale rotate z * galaxy_cluster_rotate
+            no_shadow hollow}
+
+         #if (galaxy_declare_only = false & galaxy_cluster_objects >= 1)
+            #declare _GX_objrand = seed(galaxy_seed);
+            union { #declare _GX_objcount = 0; #while (_GX_objcount < galaxy_cluster_objects)
+               object {galaxy_cluster_object
+                  finish {ambient 1 + ((<rand(_GX_objrand), rand(_GX_objrand), rand(_GX_objrand)> - .5) * _GX_colourturb)}
+                  #declare _GX_clusterscale = 1 + ((rand(_GX_objrand) - .5) * galaxy_scale_turb * 2);
+                  scale _GX_clusterscale
+                  rotate z * (rand(_GX_objrand) - .5) * galaxy_rotate_turb
+                  translate z
+                  rotate (<rand(_GX_objrand), rand(_GX_objrand), .5> - .5) * _GX_spread + <-1, 1, 0> * galaxy_object_position
+                  scale galaxy_distance}
+               #declare _GX_objscale2 = _GX_clusterscale * _GX_objscale;
+               #declare galaxy_distance = galaxy_distance * (sqrt(1 + pow(max(_GX_objscale2.x, _GX_objscale2.y), 2)) + .001);
+               #declare _GX_tracelevel = _GX_tracelevel + 1;
+            #declare _GX_objcount = _GX_objcount + 1; #end
+            #ifdef (galaxy_rotate) rotate galaxy_rotate #end
+            #ifdef (galaxy_origin) translate -galaxy_origin #end }
+         global_settings {max_trace_level min(_GX_tracelevel, 30)}
+         #end
+      #end
+   #end
+
+// LOOP THROUGH FILE TO SELECT CLUSTER OBJECT
+// ******************************************
+   #end
+   #declare _GX_name = strupr(galaxy_cluster_name)
+   #declare _GX_objscale = galaxy_cluster_scale * <1, 1, 1>;
+   #declare _GX_objloop = _GX_objloop + 1; #end
+   #version _GX_objtempver;
