@@ -81,20 +81,21 @@ void engine_setup(const char *defaults_path)
   maths_setup();
 
   sprite_setup();
-   
+
+
   sprite_types_setup();
 
   joystick_setup();
-   
+
   ai_setup();
 
   player_setup();
-   
+
   bonuses_setup();
-   
+
   generators_setup();
   triggers_setup();
-   
+
   shell_defun("gcstats",gcstats_shell_fun);
   shell_defun("display",display_shell_fun);
   shell_defun("groups",groups_shell_fun);
@@ -116,6 +117,7 @@ void engine_setup(const char *defaults_path)
      SDL display functions */
 
   ui_setup();
+
   sound_setup();
   level_setup();
 

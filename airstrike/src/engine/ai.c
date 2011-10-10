@@ -189,8 +189,10 @@ static ai_t *player_ai(int player_nr)
   struct player_ai *ai = obj_alloc(sizeof(*ai),&ai_type);
   conf_t *key_conf; 
   ai->ai.intercept_msg = player_message;
-  if (player_nr == 1)
+	printf("??????????????? %d \n",player_nr);
+  if (player_nr == 1 || player_nr >2 )
     {
+
       ai->ai.name = "player1";
       key_conf = conf_section(rc_user_conf(),"player1_control");
       ai->key_accelerate = conf_number(key_conf,"accelerate",SDLK_UP);
@@ -205,13 +207,21 @@ static ai_t *player_ai(int player_nr)
     {
       ai->ai.name = "player2";
       key_conf = conf_section(rc_user_conf(),"player2_control");
+      ai->key_accelerate = conf_number(key_conf,"accelerate",SDLK_z);
+      ai->key_break = conf_number(key_conf,"break",SDLK_s);
+      ai->key_left = conf_number(key_conf,"left",SDLK_q);
+      ai->key_right = conf_number(key_conf,"right",SDLK_d);
+      ai->key_fire = conf_number(key_conf,"fire",SDLK_LSHIFT);
+      ai->key_drop = conf_number(key_conf,"drop",SDLK_LCTRL);
+      ai->key_suicide = conf_number(key_conf,"suicide",SDLK_BACKSPACE);
+     /*
       ai->key_accelerate = conf_number(key_conf,"accelerate",SDLK_q);
       ai->key_break = conf_number(key_conf,"break",SDLK_w);
       ai->key_left = conf_number(key_conf,"left",SDLK_x);
       ai->key_right = conf_number(key_conf,"right",SDLK_c);
       ai->key_fire = conf_number(key_conf,"fire",SDLK_LALT);
       ai->key_drop = conf_number(key_conf,"drop",SDLK_TAB);
-      ai->key_suicide = conf_number(key_conf,"suicide",SDLK_s);
+      ai->key_suicide = conf_number(key_conf,"suicide",SDLK_s);*/
     }
   else
     {
@@ -235,7 +245,13 @@ static ai_t *player_ai(int player_nr)
   return (ai_t *)ai;
 }
 
-static ai_t *player1_ai(void)
+static ai_t *playerX_ai(int playnum)
+{
+	printf("playerX %d \n",playnum);
+  return player_ai(playnum);
+}
+
+/*static ai_t *player1_ai(void)
 {
   return player_ai(1);
 }
@@ -243,7 +259,7 @@ static ai_t *player1_ai(void)
 static ai_t *player2_ai(void)
 {
   return player_ai(2);
-}
+}*/
 
 /* ========= "ai" name mapping ========= */
 
@@ -254,10 +270,10 @@ typedef struct {
 } ai_map_t;
 
 static ai_map_t ai_map[] = {
-  { "koala", koala_ai },
-  { "player1", player1_ai },
-  { "player2", player2_ai },
-  { "seeker", seeker_ai },
+  { "player1", playerX_ai },
+  { "player2", playerX_ai },
+  { "playerX", playerX_ai },
+  { "koala", playerX_ai },
   { NULL, NULL }
 };
 
@@ -282,7 +298,7 @@ ai_create_func_t *ai_get_func(const char *ai_type_name)
   return NULL;
 }
 
-
+static int overHack=1;
 obj_id_t ai_set_sprite_ai(sprite_t *s, const char *ai_type_name)
 {
   ai_create_func_t *ai_create;
@@ -297,6 +313,7 @@ obj_id_t ai_set_sprite_ai(sprite_t *s, const char *ai_type_name)
       return 0;
     }
 
+	printf("00000000000000000000 %s \n",ai_type_name);
   ai_create = ai_get_func(ai_type_name);
   if (!ai_create)
     {
@@ -304,7 +321,7 @@ obj_id_t ai_set_sprite_ai(sprite_t *s, const char *ai_type_name)
       return 0;
     }
 
-  ai = obj_ref(ai_create(),&ai_type);
+  ai = obj_ref(ai_create(overHack++),&ai_type);
   sprite_msg(s,msg_set_ai(ai));
   obj_deref(ai);
 

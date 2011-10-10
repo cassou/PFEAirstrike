@@ -99,8 +99,10 @@ typedef struct player_generator {
 static generator_t *player_generator_create(sprite_type_t *stype)
 {
 	generator_t *g;
+	int haha = player_set_current_alive();
 	g = obj_alloc(sizeof(player_generator_t), &player_generator_type);
-	((player_generator_t*)g)->player = player_set_current_alive();
+	((player_generator_t*)g)->player = haha;////////////TDO
+printf("haha = %d\n",haha);
 	g->sprite_type = stype;
 
 	objlist_insert(generator_group, g);
@@ -142,6 +144,7 @@ static enum msgret player_generator_message(void *obj, msg_t msg)
 				break;
 			}
 			g->obj_id = player_set_sprite_ai(p->player, s);
+			printf("!!!!!!!!!!!!!!%d\n",p->player);
 			g->count--;
 		}
 		break;
@@ -420,7 +423,7 @@ static int generator_shell_fun(int argc, const char *argv[])
 		int i;
 		
 		if (getarg_str(argv, "ai", &ai) && strcmp(argv[0], "player") == 0) {
-			return shell_error("'player' generator AIs cannot be overridden (with %s).\n", ai);
+			//return shell_error("'player' generator AIs cannot be overridden (with %s).\n", ai);
 		}
 		if (getarg_str(argv, "objtag", &objtag) && strcmp(argv[0], "multi") == 0) {
 			return shell_error("'multi' generator object cannot be tagged (with %s).\n", objtag);

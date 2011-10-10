@@ -42,7 +42,7 @@ int display_open(int w, int h)
 	  else
 	    {
 	      fprintf(stderr,"No hardware acceleration found, using software rendering.\n");
-	      display.hw_accel = 0;
+	      display.hw_accel = 1;
 	    }      
 	}
       else

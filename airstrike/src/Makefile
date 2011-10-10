@@ -11,7 +11,7 @@ JOY_DEBUG ?= 0
 # many warnings that gcc supports
 WARN := -Wmissing-prototypes -Wstrict-prototypes -Wsign-compare \
   -Wbad-function-cast -Wcast-qual -Wcast-align -Wunused -Wshadow \
-  -Wpointer-arith -Wwrite-strings -Wall -Werror
+  -Wpointer-arith -Wwrite-strings -Wall 
 # Problems with -Werror: -std=c99 -pedantic -Wunreachable-code -Wconversion
 
 # initial compilation flags

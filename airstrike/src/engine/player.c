@@ -84,6 +84,7 @@ obj_id_t player_set_sprite_ai(int idx, sprite_t *s)
 	printf("set_player_sprite_ai(): Assigned '%s' AI to player %d ('%s')\n",
 	       player[idx].ai_type, idx, player[idx].name);
 #endif
+	printf("player %d obtient %s\n",idx,player[idx].ai_type);
 	return ai_set_sprite_ai(s, player[idx].ai_type);
 }
 

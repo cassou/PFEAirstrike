@@ -6,7 +6,7 @@
 #include "object.h"
 
 #define AI_DEFAULT_USER "player1"
-#define AI_DEFAULT_DUMMY "koala"
+#define AI_DEFAULT_DUMMY "playerX"
 
 /* An AI is are owned by the sprite it controls, and
    is created by calling the apropriate function. The sprite
@@ -32,7 +32,7 @@ void ai_setup(void);
  */
 obj_id_t ai_set_sprite_ai(sprite_t *s, const char *ai_type_name); 
 
-typedef ai_t *ai_create_func_t(void);
+typedef ai_t *ai_create_func_t(int playnum);
 /* return function that creates ai with given AI type name
  * can also be used to validate the AI type name
  */
