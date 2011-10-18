@@ -1,4 +1,4 @@
-level_name "Tutorial level"
+level_name "1680-1050 2 player"
 gravity 0.1
 bounce 0.2
 ground_friction 0.05
@@ -8,12 +8,3 @@ ground_friction 0.05
 # infinite number of players: sprite x y lives [keywords]
 generator player biplane 100 500 0 objtag=p1plane
 generator player biplane 700 500 0 objtag=p2plane 
-generator player biplane 400 400 0 objtag=p3plane
-
-
-
-# fuel at 4 sec intervals, 6 barrels max (teaches people to take them)
-
-
-# what to do
-level_description "Destroy the balloon"

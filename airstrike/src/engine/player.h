@@ -1,7 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#define MAX_PLAYERS	4
+#define MAX_PLAYERS	4000
 
 /* called only when game is initialized */
 void player_setup(void);

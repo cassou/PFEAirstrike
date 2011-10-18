@@ -1,5 +1,1 @@
-This is a level for testing new Airstrike sprites and features.
-
-In the CVS the background image for this level is empty but you can of
-course replace it while testing with what you'll be using on e.g. your
-new level...
+Merry go round in a grassy doughnut
