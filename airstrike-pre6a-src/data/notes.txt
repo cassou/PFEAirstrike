@@ -1,0 +1,8 @@
+     This is a development snapshot
+       Not intended as playable!
+
+ We are aware of most bugs, but if the game
+   crashes please send a bug report to
+           ulfek@ifm.liu.se. 
+        
+               Thank you

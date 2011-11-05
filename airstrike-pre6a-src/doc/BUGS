@@ -1,0 +1,25 @@
+
+Collision detection does not work very
+well when an object is completely inside another.
+The collision is detected, but there is no transfer
+of momentum etc. This is due to the lack of a suitable
+normal.
+
+The collision routines makes object resting on the
+ground a bit shaky.
+
+The planes reappear directly when killed..
+
+There seem to be an off-by-one error in the dirty
+rect handling, as seen when the score counter leaves
+a vertical line of pixels behind.
+
+Sound and pause mode interact badly.
+
+bug in console where one char gets lost if the line wraps.
+
+
+----------(fixed)-------------------
+
+The console mode is kind of buggy. For example the game time passes
+very slowly, even though the game is paused. 

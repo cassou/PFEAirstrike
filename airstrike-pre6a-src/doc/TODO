@@ -1,0 +1,45 @@
+o means open, + means done and - means dropped
+
+sprites:
+	o crate (or whatever; where you get new weapons) [worked on]
+	o birds
+	o large explosion
+	o trees
+	+ cannon
+	+ building
+	+ parachute man
+	+ bullets
+	+ small explosion
+	+ large cloud
+	+ white puff
+	+ grey puff
+	+ black puff
+	+ player 2 biplane
+	+ dust
+
+code-wise:
+ 
+ future
+	o OpenGL graphics back-end. (Maybe through SDL?)
+	o network play
+	o Level parser (or rather level infrastrucure)
+	o functions to find nearby enemies (partly done).
+----------------------------------------------------
+ 1.0 release
+
+Time	
+ .      o fine-tuning for playability
+/|\     o bonuses
+ |	o graphics hardware support (only with no alpha)
+ |      o All config options should be in the menus (and be saved).
+	o Keybindings should be in the config file
+	o Check if channels are permanent in SDL_Mixer.
+----------------------------------------------------
+ we are here
+	+ better aerodynamics
+	+ ai infrastructure (mostly done)
+	+ sound infrastructure
+	+ On demand sprite loading
+	+ Damage system.
+	+ sprite_group/point intersection
+	+ Fix dirty rect to handle surfaces not a multiple of 64 in size.

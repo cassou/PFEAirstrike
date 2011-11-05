@@ -1,0 +1,85 @@
+# This is a general configuration file for Airstrike
+# Entries are of the form 'NAME VALUE'.
+# Strings containing spaces should be enclosed in double quotes.
+
+
+# The path where the program looks for its data files
+datapath "data"
+
+#window size or fullscreen resolution
+screen.width 800
+screen.height 600
+
+# Set fullscreen to 1 for fullscreen mode
+# Can also be changed in-game
+fullscreen 0
+
+# alpha 0 No transparent sprites (fastest)
+# alpha 1 Only some transparent sprites (per surface alpha)
+# alpha 2 Full alpha channel (slowest, but best looking)
+alpha 2
+
+# Set nr_players to 0, 1 or 2. There is always two planes;
+# this variable determines the default number of human players.
+# Can now be changed in-game
+nr_players 1
+
+
+#set sound to 1 to enable sound, 0 to disable.
+sound 0
+
+#Level parameters
+level.gravity 0.2
+level.soft_impact_level 30
+level.soft_impact_damage 2
+level.hard_impact_level 200
+level.hard_impact_damage 10
+
+# level wind zone parameters
+level.horizontal_winds 6
+level.vertical_winds 6
+level.max_wind_change 0.1
+level.max_wind 0.1
+
+#plane parameters
+redplane.engine_strength 0.3
+redplane.bomb_delay 300
+redplane.nr_bombs 5
+redplane.bullet_delay 140
+redplane.hitpoints 15
+redplane.mass 1
+# How effective the up/down turns are
+redplane.turn_amount 0.06
+# air_turnrate determines how fast the
+# object will align itself to the direction
+# of the velocity.
+redplane.air_turnrate 0.005
+# air_isotropic is the isotropic air resistance
+redplane.air_isotropic 0.01
+# air_normal determines how much the
+# object is affected in a situation like this:
+#     
+# object velocity -> //
+#                   //   <-- air
+#                  //   
+#	                \
+#                       _\| Deflected air 
+# In practice it determines how much speed is
+# conserved in a turn. Think of a falling leaf.
+redplane.air_normal 0.1
+
+blueplane.engine_strength 0.3
+blueplane.bomb_delay 300
+blueplane.nr_bombs 5
+blueplane.bullet_delay 140
+blueplane.hitpoints 15
+blueplane.mass 1
+blueplane.turn_amount 0.06
+blueplane.air_turnrate 0.005
+blueplane.air_isotropic 0.01
+blueplane.air_normal 0.1
+
+# Standard bullet parameters
+#time-to-live in milliseconds
+bullet.ttl 1400
+bullet.damage 1

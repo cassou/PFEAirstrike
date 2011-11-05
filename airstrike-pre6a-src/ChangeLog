@@ -1,0 +1,160 @@
+---pre6-----------
+                Removed the last idiv from bitmask.c. It should
+		now be marginally faster.
+	
+		Cleanups and fixes everywhere.
+		
+		Added a font_t struct, which enables us to use
+		several bitmap fonts in the game. Created small
+		font.
+	
+		Modified smoke.pov a little to start slight larger than
+		a small dot. This looks better with the cannon etc.
+		
+		Fixed refcounting bug so that the refcount can be
+		incremented inside sprite_type.create_sprite
+		without problems. calloc() _must_ be used when
+		allocating memory for each sprite!
+
+	        Merged with Eero Tamminen. Bonus and wind stuff are among
+		the new features. The bird type is also a creation
+	        of Eero. Nice! Initial particle engine support also
+		by Eero Tamminen.
+	
+		Changed prototypes from f() to f(void).
+		
+		Animations now know of their first frame, which
+		simplifies coding in some instances. Looping
+		is now the default behaviour at the end of an
+		animation.
+	
+		(Partial) Support for larger levels added.
+	
+		Dirty rectangle handling is separated into its
+		own source file.
+	
+		Added CRITICAL(..) macro. It works like assert(),
+		except that the argument is always evaluated,
+		even in a 'release' version. Previously assert()
+		was used incorrectly for this purpose. Use like
+		CRITICAL(important_func() == 0);
+		
+		Rotation is now handled in collisions, for sprites
+		that have a full set of frames. This needs some
+		more tuning.
+	
+		Replaced all fixed point variables and
+		calculations in the sprite engine with floats.
+		This makes everything easier, but changes the
+		scale of velocities etc, so things need tuning
+		again.
+	
+		Cleaned up the povray makefile and created
+		a script utils/blur.sh which averages frames.
+		This makes it possible to use a lower fps,
+		and thus save some space. The cannon uses this
+		in the turns.
+	
+		Implemented the cannon model, but there is no	
+		good ball. (Easy to fix)
+		
+		New aerodynamic model, hopefully good enough.
+		Tried to do freely rotating bodies, but not stable
+		enough yet.
+
+		Added in game frame timing statistics. The standard
+		deviation over 32 frames is displayed to judge the
+		quality. This should be as small as possible. Target
+		frame time is 30 ms.
+
+		Reworked main Makefile to be more compact and general.
+		There is now only a single Makefile for all C source,
+		and dependencies are handled automatically.
+	
+---pre5-----------		
+		It is now possible to toggle fullscreen mode in the game.
+	
+		Added a utility to view animations without using the
+		main Airstrike code. This is useful when developing 
+		animations in Povray, for checking with different
+		backgrounds and at different fps values.
+
+		New, more complicated, aerodynamic model. It is still
+		not perfect, but allows for more flexibility.
+
+		Reworked config file system to look for a system wide
+		file, and then load settings from $HOME/.airstrikerc.
+		Added a lot of physical parameters to config file.
+
+		Started working on a 'probe' system so that the
+		ai can know if there are other objects nearby its
+		plane.
+
+		Better physics. Objects can now have their own mass
+		and 'gravity' variable, so we can do floating object
+		that still have mass when they collide. 
+
+		Console background. Right now it's just a transparent
+		rectangle, but it could be any image. We need a smaller
+		font for the console.
+
+		Started implementing the parachute, but it is a bit
+		difficult, since it should behave very different from the
+		more 'solid' objects.		
+
+---pre4-----------
+
+2002-10-13	Cleaned up and reworked the setup code. Introduced
+		a text console for settings. Added in-game setup
+		of keybindings and human/AI for the players. Made
+		the game stop after a player reaches 5 points, and
+		announce the winner. Fixed the broken ai in pre3. 
+		Added sound, but it is turned off by default due to
+		no good sounds present.
+
+---pre3-----------
+
+2002-10-06:     Added a menu system. It is ugly inside, and subject
+		to change!
+		Made it possible to choose the number of players to
+		be 0,1 or 2 (in the config file, but this should be
+		moved to the in-game menu).
+		The ai is now worse than before, due to changes in
+		the aerodynamics code. It also doesn't stop shooting
+		when you die. This must be fixed for 1.0
+		Reworked the font system to be simpler and faster.
+		Fixed a bug in the alarm code.
+		Cleaned up the Makefiles with help from Eero Tamminen.
+	
+2002-10-05:     Removed the reliance on __attribute__((constructor)).
+		There is now a script to scoop up all the sprite type
+		names and register them. This is good both for the
+		windows port and for the code itself, since the
+		type names are needed at compile-time anyway.
+		Changed ai and keyboard controllers to use the signal
+		based system. They are now more general.
+		Modified the biplane code to the new style state/signal
+		system. It can be used as an example of how sprite types
+		can be coded. Documented the animation system in
+		doc/animation.txt. Introduced timers that can be used
+		to limit the number of events per second (when firing
+		bullets for example). Bombs are limited to 1/s.
+
+2002-10-04:	Introduced an alarm system that sets off a signal
+		after a certain time. Improved the reference counting.
+		Changed controllers to use signals to communicate with
+		its sprite. This should make ai's easier to write. 
+
+2002-10-01..03:	On screen text and symbol support by glyph.c.
+		Various improvements.
+
+2002-10-01: 	Alpha channel support in sprites.
+		Set the variable sprite_global.opt_alpha
+		to 2 to have per pixel alpha, to 1 to
+		have per surface alpha, and to 0 to
+		have no alpha. This means that all sprite
+		images should have an alpha channel!
+		The days of bmp images are over.
+		It is still possible to use colorkeyed
+		images, but then only per surface alpha
+		will be effective, so this is not recommended.

@@ -1,0 +1,14 @@
+Things that could be done faster (in order of importance):
+
+* Use some partitioning scheme to make collision detection be
+  less than O(N^2).
+
+* Implement cropping of individual sprite frames to save memory. RLE
+  accel already takes care of this to a degree.
+
+* Sprites that are just for display (ie effects) does not need
+  masks or all of the features of regular sprites. Make them a
+  separate type of object.
+
+* Change alarms from O(nr waiting) to O(nr active) (ie to a sorted queue).
+

@@ -1,0 +1,165 @@
+# Makefile for creating Airstrike game graphics data
+# from the PovRay v3.5 3D models. Requires _GNU_ make.
+#
+# You can use either of:
+#   make WD=xx HT=yy name.png
+#   make NAME=name WD=xx HT=yy FRAMES=kk anim
+#
+# When you have a new model for which you haven't
+# written an explicit rule yet.
+#
+# (w) 2002 by Eero Tamminen
+
+# ---------------- default values -------------------------
+
+ifndef WD
+WD := 48
+endif
+
+ifndef HT
+HT := 48
+endif
+
+# rendering flags
+POVFLAGS= +FN +DTC +A0.3 -J +KC +UA -P
+#POVFLAGS= +FN +UA +FT +W160 +H160 +A0.3 -J +DTC -P +KFF32 +KC
+#POVFLAGS= +FN +UA +FT +W69 +H67 +A0.3 -J +DTC +P +KC# +KFF32
+
+# ------------------------------------------------------------
+
+ifdef NAME
+
+# I'm using submake to create animations because with
+# shell-script you'd need to separately handle errors
+# and Make does it automatically.
+
+anim:
+	$(RM) $(NAME).png
+	povray $(POVFLAGS) +I$(NAME).pov +W$(WD) +H$(HT) +KFF$(FRAMES)
+	convert +append $(NAME)[0-9]*.png $(NAME).png
+	$(RM) $(NAME)[0-9]*.png
+
+else
+
+# ------------------------------------------------------------
+
+# all models
+POV = $(wildcard *.pov)
+PNG = $(patsubst %.pov, %.png, $(POV))
+
+all: $(PNG)
+
+# default rule
+%.png: %.pov
+	povray $(POVFLAGS) +I$< +W$(WD) +H$(HT) +P
+
+# explicit rules are separated into animations that use submake
+# and single frames which just use povray.  They are sorted
+# alphabetically so that the rules are easier to find and
+# in the same order as Make will execute them with 'all' rule.
+
+# -------------------- animations -----------------------------
+
+airballoon.png: airballoon.pov
+	make NAME=airballoon WD=64 HT=64 FRAMES=8 anim
+
+bomb.png: bomb.pov 
+	make NAME=bomb WD=16 HT=16 FRAMES=64 anim
+
+bombexplosion.png: bombexplosion.pov
+	make NAME=bombexplosion WD=48 HT=48 FRAMES=24 anim
+
+bouncer.png: bouncer.pov
+	make NAME=bouncer WD=48 HT=48 FRAMES=32 anim
+
+bullet.png: bullet.pov
+	make NAME=bullet WD=24 HT=24 FRAMES=64 anim
+
+cannon-left.png: cannon-left.pov cannon.inc
+	make NAME=cannon-left WD=48 HT=48 FRAMES=16 anim
+
+cannon-right.png: cannon-right.pov cannon.inc
+	make NAME=cannon-right WD=48 HT=48 FRAMES=16 anim
+
+cannon-turn.png: cannon-turn.pov cannon.inc
+	make NAME=cannon-turn WD=72 HT=48 FRAMES='8 -KC' anim
+
+# a little anim target kludge
+direxpl.png: direxpl.pov
+	make NAME=direxpl WD=24 HT=24 FRAMES='256 +KF32' anim
+
+dust.png: dust.pov
+	make NAME=dust WD=16 HT=16 FRAMES=16 anim
+
+# a little anim target kludge
+energymeter.png: energymeter.pov
+	make NAME=energymeter WD=12 HT=64 FRAMES='16 -KC' anim
+
+fire.png: fire.pov
+	make NAME=fire WD=24 HT=24 FRAMES=16 anim
+
+firebomb.png: firebomb.pov
+	make NAME=firebomb WD=48 HT=48 FRAMES=32 anim
+
+hangar.png: hangar.pov
+	make NAME=hangar WD=100 HT=64 FRAMES=8 anim
+
+laser.png: laser.pov
+	make NAME=laser WD=48 HT=16 FRAMES=16 anim
+
+mark.png: mark.pov
+	make NAME=mark WD=24 HT=24 FRAMES=16 anim
+
+missile.png: missile.pov
+	make NAME=missile WD=24 HT=24 FRAMES=64 anim
+
+plane.png: plane.pov
+	make NAME=plane WD=48 HT=48 FRAMES=64 anim
+
+ray.png: ray.pov
+	make NAME=ray WD=48 HT=48 FRAMES=128 anim
+
+smoke.png: smoke.pov
+	make NAME=smoke WD=16 HT=16 FRAMES=16 anim
+
+solring.png: solring.pov 
+	make NAME=solring WD=32 HT=32 FRAMES=8 anim
+
+ufo.png: ufo.pov
+	make NAME=ufo WD=48 HT=48 FRAMES=64 anim
+
+zeppelin.png: zeppelin.pov
+	make NAME=zeppelin WD=96 HT=64 FRAMES=16 anim
+
+zeppelin-wreck.png: zeppelin-wreck.pov
+	make NAME=zeppelin-wreck WD=96 HT=64 FRAMES=6 anim
+
+# --------------------- stilleben ----------------------------
+
+balloon.png: balloon.pov
+	povray +I$< $(POVFLAGS) +W48 +H48 +P 
+
+cloud.png: cloud.pov
+	povray +I$< $(POVFLAGS) +W240 +H120 +P 
+
+hills.png: hills.pov
+	povray +I$< $(POVFLAGS) +W800 +H600 +P
+
+logo.png: logo.pov
+	povray +I$< $(POVFLAGS) +W800 +H600 -UA
+
+man.png: man.pov parachute.inc
+	povray +I$< $(POVFLAGS) +W800 +H600 -UA
+
+tie.png: tie.pov
+	povray +I$< $(POVFLAGS) +W48 +H48 +P 
+
+# ------------------------------------------------------------
+
+endif
+
+clean:
+	$(RM) *~
+
+distclean: clean
+	$(RM) *.png

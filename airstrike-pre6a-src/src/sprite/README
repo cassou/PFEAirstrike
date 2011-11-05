@@ -1,0 +1,16 @@
+
+	A small sprite library which performs the 
+	following tasks:
+	
+	1) Load animations from files
+	2) Draw animations to screen
+	3) Keeps dirty rectangles list
+	4) Draws background
+	5) Finds collisions
+	6) moves sprites and updates animations
+	7) Keeps a constant framerate
+
+	The idea is that this library performs
+	all pixel-related operations.
+	
+

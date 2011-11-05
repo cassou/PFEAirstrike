@@ -1,0 +1,92 @@
+Version 1.0
+===========
+
+Release date: end of january 2003
+
+Focus: stabilize *main* gameplay and game engine
+
+Features:
+- two player multiplay
+- fairly good computer player for single player gaming
+- game engine:
+  - sprite engine (floating point API, internally fixed point)
+    - freely rotating rigid body code
+    - pixel perfect collisions
+    - signaling
+ - realistic plane aerodynamics
+    - wind according to object position + size
+  - ai can find enemies (long range + short range scanning)
+  - particle engine
+  - antialiasing
+- preliminary (positional) sound support
+- console mode for setting game options
+- damages and score keeping
+- bonuses
+- objects:
+  - planes + firing + bombs
+  - bonus machine + bonus balloons
+  - cannon + cannon balls
+  - zeppelin + wreck
+  - hot-air balloon
+  - parachute man
+  - hangar
+  - birds
+- all graphics are raytraced
+- build system:
+  - automatic graphics generation from POV-models
+- documentation:
+  - textual code descriptions
+  - architecture diagram
+  - man page
+- windows version and rpm + deb packages
+
+
+Version 1.2
+===========
+
+Release date: ----
+
+Focus: polishing v1
+
+Planned features:
+- improvements:
+  - intro movie
+  - better sounds
+  - background music
+  - more objects and bonuses
+  - better sprites (images + finetuned behaviour)
+  - everything is configurable in config file and menus
+    - keybindings
+  - plane speed-vector is taken into account when applying wind
+  - sparks, fireworks etc particle effects?
+  - code cleanup & optimization
+    - sprite group division
+    - player struct
+  - joystick support
+- teamplay and changable ai strategy:
+  - ai can change controller (hide-and-seek, angry) during game
+  - each object has attribute identifying which team/player it belongs
+    so that ai knows whom it should get angry at
+  - nature team and bonus that turns nature (e.g. balloons) against
+    you or the opponent
+- new objects:
+  - spiked ball on a chain
+  - homing missile
+  - air mines
+  - trees
+- code documentation with Doxygen?
+
+
+Version 2
+=========
+
+Focus: game engine can be used to do many different games
+
+Planned features:
+- Larger than screen levels
+- Multiple levels + level parser + level editor
+- More engine/library generalization
+- Goal oriented ai strategies
+- Networked play
+- OpenGL backend for zooming into action
+- Engine ported to PyGame

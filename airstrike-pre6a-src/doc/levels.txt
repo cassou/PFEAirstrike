@@ -1,0 +1,30 @@
+
+Preleminary level file spec. This is not yet coded!
+
+level name
+
+help text
+
+For each possible player:
+    sprite type
+    start location
+    ...
+
+end condition
+    certain time
+    certain number of deaths
+    ...
+
+background image and mask
+
+other sprites and sprite generators
+
+gravity, elasticity, air resistance, wind etc
+
+events
+	at time t do that etc
+
+wrap-type
+	wrap left-right
+	wrap up-down
+ 

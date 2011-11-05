@@ -1,0 +1,10 @@
+             Airstrike 1.0 pre 6
+                      By
+    Ulf Ekstrom, programming and graphics
+      Eero Tamminen, sound and graphics
+         Peter Eismann, windows port
+         Alessandro Giusti, graphics
+	        and others.
+
+This game is free software. For more info see
+             icculus.org/airstrike
