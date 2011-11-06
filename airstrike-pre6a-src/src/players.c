@@ -85,5 +85,6 @@ void player_sethuman(int player)
 	sprite_aquire(player_sprite[player],&(player_controller[player]->target));
 
 	player_ishuman[player] = 1;
+
 }
 

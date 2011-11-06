@@ -46,7 +46,7 @@ static int general_setup(void)
 
 	screen_w = cfgnum("screen.width",800);
 	screen_h = cfgnum("screen.height",600);
-
+	//printf("%d %d \n",screen_w,screen_h);
 	if (cfgnum("fullscreen",0) == 1)
 		displayflags |= SDL_FULLSCREEN;
 
@@ -58,8 +58,9 @@ static int general_setup(void)
 	atexit(atexit_cleanup);
 
 	SDL_WM_SetCaption(VERSIONSTRING,0);
-	sprite_global.display =
-			SDL_SetVideoMode(screen_w, screen_h, 0, displayflags);
+
+	sprite_global.display = SDL_SetVideoMode(screen_w, screen_h, 0, displayflags);
+	//sprite_global.display = SDL_SetVideoMode(1280, 1024, 0, displayflags);
 	assert(sprite_global.display);
 	SDL_ShowCursor(SDL_DISABLE);
 
@@ -604,12 +605,12 @@ void game_frame()
 	sprite_group_bg_coll(bullet_group,0);
 
 
-	DEBUGPOINT(102);
+
 	for (i=0;i<playerCount;i++)
 	{
 		player_controller[i]->update(player_controller[i]);
 	}
-	DEBUGPOINT(103);
+
 	sprite_group_update(mech_group);
 	sprite_group_update(bullet_group);
 	sprite_group_update(effects_group);
@@ -640,7 +641,7 @@ void game_frame()
 		//printf("lag");
 		//fflush(stdout);
 	}
-	DEBUGPOINT(104);
+
 	scorekeeper();
 }
 
