@@ -4,7 +4,7 @@
 #include "sprite.h"
 #include "control.h"
 
-#define MAXPLAYERS 2
+#define MAXPLAYERS 100
   
 extern int player_ishuman[MAXPLAYERS];
 extern int player_points[MAXPLAYERS];
