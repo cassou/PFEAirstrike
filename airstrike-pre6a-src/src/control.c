@@ -32,7 +32,7 @@ static void keyboard_update(controller_t *c)
 {
 	char *keys;
 	int i = 0;
-	int player;
+	player_t * player;
 	struct keyboard_controller *kc;
 
 
@@ -45,18 +45,18 @@ static void keyboard_update(controller_t *c)
 			return;
 		}
 		kc = (struct keyboard_controller *)c;
-		player = kc->player;
+		player_t * player= &(players[kc->player]);
 		keys = SDL_GetKeyState(0);
-		for (i=0;player_keymap[player][i][0] != 0;i++)
+		for (i=0;player->keymap[i][0] != 0;i++)
 		{
-			if (keys[player_keymap[player][i][0]])
+			if (keys[player->keymap[i][0]])
 			{
-				sprite_signal(c->target,player_keymap[player][i][1],0);
+				sprite_signal(c->target,player->keymap[i][1],0);
 				kc->key_waspressed[i] = 1;
 			}
 			else if (kc->key_waspressed[i]) /* Send the 'unpress' signal */
 					{
-				sprite_signal(c->target,-player_keymap[player][i][1],0);
+				sprite_signal(c->target,-player->keymap[i][1],0);
 				kc->key_waspressed[i] = 0;
 					}
 		}

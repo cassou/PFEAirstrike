@@ -3,7 +3,10 @@
 #include "players.h"
 #include "prototype.h"
 
-int player_ishuman[MAXPLAYERS];// = {1,0};
+player_t players[MAXPLAYERS];
+
+
+/*int player_ishuman[MAXPLAYERS];// = {1,0};
 int player_points[MAXPLAYERS];// = {0,0};
 sprite_t *player_sprite[MAXPLAYERS];// = {0,0};
 char *player_name[MAXPLAYERS];// = {"Blue Baron","Red Baron"};
@@ -12,7 +15,7 @@ controller_t *player_controller[MAXPLAYERS];// = {0,0};
 sprite_type_t *player_sprite_type[MAXPLAYERS];// = {0,0};
 int player_startpos[MAXPLAYERS][2];
 int player_keymap[MAXPLAYERS][MAX_CONTROLLER_KEYS][2];
-
+*/
 
 
 int player_keymap_model[MAX_CONTROLLER_KEYS][2] =
@@ -24,8 +27,8 @@ int player_keymap_model[MAX_CONTROLLER_KEYS][2] =
 		{SDLK_SPACE,SIGNAL_NUM0}
 };
 
-int player_keymap[MAXPLAYERS][MAX_CONTROLLER_KEYS][2];/* =
-  {
+/*int player_keymap[MAXPLAYERS][MAX_CONTROLLER_KEYS][2] =
+ {
     {{SDLK_PERIOD,SIGNAL_FIRE},
      {SDLK_LEFT,SIGNAL_UP},
      {SDLK_RIGHT,SIGNAL_DOWN},
@@ -43,48 +46,49 @@ void player_init(){
 	int i;
 	for (i=0;i<playerCount;i++)
 	{
-		player_ishuman[i]=1;
-		player_points[i]=0;
-		player_sprite[i]=0;
-		if((player_name[i]=malloc(256*sizeof(char)))==NULL)
-			ERROR("Error Malloc");
-		strcpy(player_name[i],"Le nom");
-		player_controller[i]=0;
-		player_sprite_type[i]=0;
+		strcpy(players[i].name,"Joueur x");
+		players[i].ishuman=1;
+		players[i].points=0;
+		players[i].sprite=0;
+		players[i].controller=0;
+		players[i].sprite_type=0;
 
-		/** tous les joueurs on le même clavier **/
 		int j;
 		for (j=0;j<MAX_CONTROLLER_KEYS;j++){
-			player_keymap[i][j][1]=player_keymap_model[j][1];
-			player_keymap[i][j][2]=player_keymap_model[j][2];
+			players[i].keymap[j][0]=player_keymap_model[j][0];
+			players[i].keymap[j][1]=player_keymap_model[j][1];
 		}
 	}
 }
 
-void player_setai(int player)
+void player_setai(int playerId)
 {
-	assert((player >= 0) && (player < MAXPLAYERS));
+	assert((playerId >= 0) && (playerId < MAXPLAYERS));
 
-	if (player_controller[player])
-		player_controller[player]->destroy(player_controller[player]);
+	player_t * player= &players[playerId];
 
-	player_controller[player] = ai_controller_create();
-	sprite_aquire(player_sprite[player],&(player_controller[player]->target));
+	if (player->controller)
+		player->controller->destroy(player->controller);
 
-	player_ishuman[player] = 0;
+	player->controller = ai_controller_create();
+	sprite_aquire(player->sprite,&(player->controller->target));
+
+	player->ishuman = 0;
 }
 
-void player_sethuman(int player)
+void player_sethuman(int playerId)
 {
-	assert((player >= 0) && (player < MAXPLAYERS));
+	assert((playerId >= 0) && (playerId < MAXPLAYERS));
 
-	if (player_controller[player])
-		player_controller[player]->destroy(player_controller[player]);
+	player_t * player= &players[playerId];
 
-	player_controller[player] = keyboard_controller_create(player);
-	sprite_aquire(player_sprite[player],&(player_controller[player]->target));
+	if (player->controller)
+		player->controller->destroy(player->controller);
 
-	player_ishuman[player] = 1;
+	player->controller = keyboard_controller_create(playerId);
+	sprite_aquire(player->sprite,&(player->controller->target));
+
+	player->ishuman = 1;
 
 }
 

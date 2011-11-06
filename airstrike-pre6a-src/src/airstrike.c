@@ -23,7 +23,7 @@ sprite_group_t *ui_group;
 static int paused = 0;
 static int max_points = 6; /* actually one more than the end score */
 static Uint32 displayflags = 0;
-static int show_debug = 0; /* If true print dbg info on screen */
+static int show_debug = 1; /* If true print dbg info on screen */
 static Uint32 frame_times[32];
 static int frame_time_i = 0;
 static int screen_w;
@@ -94,10 +94,10 @@ void players_setup(void)
 	assert((playerCount >= 0) && (playerCount <= MAXPLAYERS));
 	int i;
 	for(i=0;i< playerCount;i++){
-		player_sprite_type[i] = &blueplane;
-		player_startpos[i][0] = 100*i;
-		player_startpos[i][1] = 300;
-		player_points[i] = max_points;
+		players[i].sprite_type = &blueplane;
+		players[i].startpos[0] = 100*i;
+		players[i].startpos[1] = 300;
+		players[i].points = max_points;
 		player_sethuman(i);
 	}
 
@@ -246,10 +246,10 @@ void draw_ui(void)
 	text_render(sprite_global.display,0,big_font,
 			54,sprite_global.display->h - 27,
 			ALIGN_LEFT,ALIGN_BOTTOM,
-			player_name[1]);
-	if (sprite_isvalid(&player_sprite[1]))
+			players[1].name);
+	if (sprite_isvalid(&(players[1].sprite)))
 	{
-		sprite_signal(player_sprite[1],SIGNAL_STATSTRING,cbuf);
+		sprite_signal(players[1].sprite,SIGNAL_STATSTRING,cbuf);
 		text_render(sprite_global.display,0,small_font,
 				54,sprite_global.display->h - 17,
 				ALIGN_LEFT,ALIGN_BOTTOM,cbuf);
@@ -258,18 +258,18 @@ void draw_ui(void)
 	text_render(sprite_global.display,0,big_font,
 			sprite_global.display->w - 54,
 			sprite_global.display->h - 27,
-			ALIGN_RIGHT,ALIGN_BOTTOM,player_name[0]);
-	if (sprite_isvalid(&player_sprite[0]))
+			ALIGN_RIGHT,ALIGN_BOTTOM,players[0].name);
+	if (sprite_isvalid(&(players[0].sprite)))
 	{
-		sprite_signal(player_sprite[0],SIGNAL_STATSTRING,cbuf);
+		sprite_signal(players[0].sprite,SIGNAL_STATSTRING,cbuf);
 		text_render(sprite_global.display,0,small_font,
 				sprite_global.display->w - 54,
 				sprite_global.display->h - 17,
 				ALIGN_RIGHT,ALIGN_BOTTOM,cbuf);
 	}
 	/* score */
-	sprintf(cbuf,"%2.2i-%2.2i\nSCORE",max_points - 1 - player_points[0],
-			max_points - 1 - player_points[1]);
+	sprintf(cbuf,"%2.2i-%2.2i\nSCORE",max_points - 1 - players[0].points,
+			max_points - 1 - players[1].points);
 	text_render(sprite_global.display,0,big_font,
 			sprite_global.display->w/2,
 			sprite_global.display->h - 5,
@@ -368,14 +368,14 @@ void player_keys_mode(int p)
 	{
 		console_write(control_key_names[i].name);
 		console_write(" [");
-		console_write(SDL_GetKeyName(player_keymap[p][i][0]));
+		console_write(SDL_GetKeyName(players[p].keymap[i][0]));
 		console_write("] ");
 		console_frame();
 		key = wait_for_key();
 		console_write(SDL_GetKeyName(key));
 		console_write("\n");
-		player_keymap[p][i][0] = key;
-		player_keymap[p][i][1] = control_key_names[i].signal;
+		players[p].keymap[i][0] = key;
+		players[p].keymap[i][1] = control_key_names[i].signal;
 		i++;
 	}
 	console_write("Done. Press any key to continue.\n");
@@ -389,11 +389,11 @@ void player_setup_mode(void)
 			"Right player keys","Go back",0};
 	while (1)
 	{
-		if (player_ishuman[1])
+		if (players[1].ishuman)
 			items[0] = "Left Player: Keyboard";
 		else
 			items[0] = "Left Player: AI";
-		if (player_ishuman[0])
+		if (players[0].ishuman)
 			items[1] = "Right Player: Keyboard";
 		else
 			items[1] = "Right Player: AI";
@@ -401,15 +401,15 @@ void player_setup_mode(void)
 		switch (select_mode("Player setup",items))
 		{
 		case 0:
-			player_ishuman[1] = 1 - player_ishuman[1];
-			if (player_ishuman[1])
+			players[1].ishuman = 1 - players[1].ishuman;
+			if (players[1].ishuman)
 				player_sethuman(1);
 			else
 				player_setai(1);
 			break;
 		case 1:
-			player_ishuman[0] = 1 - player_ishuman[0];
-			if (player_ishuman[0])
+			players[0].ishuman = 1 - players[0].ishuman;
+			if (players[0].ishuman)
 				player_sethuman(0);
 			else
 				player_setai(0);
@@ -522,10 +522,10 @@ void scorekeeper()
 	/* This loop relies on MAXPLAYERS = 2 (great programming..)*/
 	for (i=0;i<playerCount;i++)
 	{
-		if (!sprite_isvalid(&player_controller[i]->target))
+		if (!sprite_isvalid(&(players[i].controller->target)))
 		{
-			player_points[i]--;
-			if (player_points[i] <= 0)
+			players[i].points--;
+			if (players[i].points <= 0)
 			{
 				/*if (i == 0)
 					sprintf(cbuf,"And the winner is %s, by %i point(s)",
@@ -536,8 +536,8 @@ void scorekeeper()
 				message_mode(cbuf);
 				int j;
 				for (j=0;j<playerCount;j++){
-					sprite_kill(player_sprite[j]);
-					player_points[j] = max_points;
+					sprite_kill(players[j].sprite);
+					players[j].points = max_points;
 				}
 				/*sprite_kill(player_sprite[0]);
 				sprite_kill(player_sprite[1]);
@@ -547,14 +547,14 @@ void scorekeeper()
 			}
 			else
 			{
-				sprite_release(&player_sprite[i]);
-				s = sprite_create(player_sprite_type[i]);
-				sprite_aquire(s,&player_sprite[i]);
-				sprite_aquire(player_sprite[i], &player_controller[i]->target);
-				assert(sprite_isvalid(&player_controller[i]->target));
-				s = player_sprite[i];
+				sprite_release(&(players[i].sprite));
+				s = sprite_create(players[i].sprite_type);
+				sprite_aquire(s,&(players[i].sprite));
+				sprite_aquire(players[i].sprite, &(players[i].controller->target));
+				assert(sprite_isvalid(&(players[i].controller->target)));
+				s = players[i].sprite;
 				sprite_group_insert(mech_group,s);
-				sprite_set_pos(s,player_startpos[i][0],player_startpos[i][1]);
+				sprite_set_pos(s,players[i].startpos[0],players[i].startpos[1]);
 				/*if (!player_ishuman[i])
 					ai_controller_set_enemy(player_controller[i],player_sprite[1 - i]);
 				if (!player_ishuman[1-i])
@@ -565,7 +565,7 @@ void scorekeeper()
 				sprite_set_pos(s,
 						(sprite_global.display->w - 60)*(1 - i) + 30,
 						sprite_global.display->h - 30);
-				sprite_signal(s,SIGNAL_SPRITETARGET,player_sprite[i]);
+				sprite_signal(s,SIGNAL_SPRITETARGET,players[i].sprite);
 				sprite_group_insert(ui_group,s);
 			}
 		}
@@ -608,7 +608,7 @@ void game_frame()
 
 	for (i=0;i<playerCount;i++)
 	{
-		player_controller[i]->update(player_controller[i]);
+		players[i].controller->update(players[i].controller);
 	}
 
 	sprite_group_update(mech_group);
@@ -684,6 +684,7 @@ int main(int argc, char *argv[])
 	engine_setup();
 	message_mode("      Airstrike 1.0 pre 6\n\nIn the game press ESC for a menu\n  Winner is first to 5 points\n     Press any key to start");
 	objects_setup();
+	DEBUGPOINT(1);
 	players_setup();
 	fprintf(stderr,"Entering main loop.\n");
 	while(process_events())
