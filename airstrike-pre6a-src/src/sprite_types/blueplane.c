@@ -43,8 +43,9 @@ static void frame_trigger(sprite_t *s)
 {
   if (s->state & BIPLANE_ACCELERATING)
     {
-      if (((mech_sprite_t *)s)->damage < 10)
-	create_effect(&puff,s->x,s->y);
+      if (((mech_sprite_t *)s)->damage < 10){}
+      /*FUME*/
+	//create_effect(&puff,s->x,s->y);
       else
 	create_effect(&blacksmoke,s->x,s->y);
     }

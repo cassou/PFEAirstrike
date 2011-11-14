@@ -19,10 +19,6 @@
 
 #define ERROR(s)  printf(s)
 
-
 extern int playerCount;
-
-void testing123();
-void prototype_setup();
 
 #endif /* PROTOTYPE_H_ */

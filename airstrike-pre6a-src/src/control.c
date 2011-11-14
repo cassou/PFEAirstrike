@@ -133,8 +133,8 @@ static void ai_update(controller_t *c)
 	}
 	else /* enemy is dead, so we fly to the top of the screen */
 	{
-		delta[0] = c->target->x - 400;
-		delta[1] = c->target->y - 100;
+		delta[0] = c->target->x - 800;
+		delta[1] = c->target->y - 600;
 		sprite_signal(c->target,SIGNAL_ACCELERATE,0);
 		if (vcross(delta,
 				mech_heading((mech_sprite_t *)(c->target))) < 0)

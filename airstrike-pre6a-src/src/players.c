@@ -5,22 +5,9 @@
 
 player_t players[MAXPLAYERS];
 
-
-/*int player_ishuman[MAXPLAYERS];// = {1,0};
-int player_points[MAXPLAYERS];// = {0,0};
-sprite_t *player_sprite[MAXPLAYERS];// = {0,0};
-char *player_name[MAXPLAYERS];// = {"Blue Baron","Red Baron"};
-controller_t *player_controller[MAXPLAYERS];// = {0,0};
-
-sprite_type_t *player_sprite_type[MAXPLAYERS];// = {0,0};
-int player_startpos[MAXPLAYERS][2];
-int player_keymap[MAXPLAYERS][MAX_CONTROLLER_KEYS][2];
-*/
-
-
 int player_keymap_model[MAX_CONTROLLER_KEYS][2] =
 {
-		{SDLK_PERIOD,SIGNAL_FIRE},
+		{SDLK_l,SIGNAL_FIRE},
 		{SDLK_LEFT,SIGNAL_UP},
 		{SDLK_RIGHT,SIGNAL_DOWN},
 		{SDLK_COMMA,SIGNAL_ACCELERATE},

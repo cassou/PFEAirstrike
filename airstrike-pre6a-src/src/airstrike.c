@@ -86,19 +86,29 @@ static int general_setup(void)
 
 void players_setup(void)
 {
-	player_init();
+
 	//int nr_humans;
 	sprite_t *sp;
-	/*nr_humans = cfgnum("nr_players",1);*/
-
+	/*nr_humans = */
+	playerCount =cfgnum("nr_players",2);
+	player_init();
 	assert((playerCount >= 0) && (playerCount <= MAXPLAYERS));
 	int i;
 	for(i=0;i< playerCount;i++){
 		players[i].sprite_type = &blueplane;
+		//if (i%2==0){
+		players[i].sprite_type = &blueplane;
+		//}else{
+		//	players[i].sprite_type = &biplane;
+		//}
 		players[i].startpos[0] = 100*i;
-		players[i].startpos[1] = 300;
+		players[i].startpos[1] = 300+20*(i%10);
 		players[i].points = max_points;
-		player_sethuman(i);
+		//if (i%2==0){
+		//player_sethuman(i);
+		//}else{
+		player_setai(i);
+		//}
 	}
 
 	/*player_sprite_type[0] = &blueplane;
@@ -293,7 +303,7 @@ void draw_ui(void)
 
 /* This draws things when we are in console (paused) mode */
 void console_frame(void)
-{  
+{
 	sprite_start_frame();
 	sprite_group_draw(mech_group);
 	sprite_group_draw(bullet_group);
@@ -539,10 +549,6 @@ void scorekeeper()
 					sprite_kill(players[j].sprite);
 					players[j].points = max_points;
 				}
-				/*sprite_kill(player_sprite[0]);
-				sprite_kill(player_sprite[1]);
-				player_points[0] = max_points;
-				player_points[1] = max_points;*/
 				return;
 			}
 			else
@@ -555,9 +561,9 @@ void scorekeeper()
 				s = players[i].sprite;
 				sprite_group_insert(mech_group,s);
 				sprite_set_pos(s,players[i].startpos[0],players[i].startpos[1]);
-				/*if (!player_ishuman[i])
-					ai_controller_set_enemy(player_controller[i],player_sprite[1 - i]);
-				if (!player_ishuman[1-i])
+				if (!players[i].ishuman)
+					ai_controller_set_enemy(players[i].controller,players[(i+1)%playerCount].sprite);
+				/*if (!player_ishuman[1-i])
 				{
 					ai_controller_set_enemy(player_controller[1-i],player_sprite[i]);
 				}*/
@@ -675,9 +681,7 @@ int main(int argc, char *argv[])
 		printf("All options are currently given in the config files, located at $HOME/.airstrikerc and $PWD/airstrikerc. Quitting.\n");
 		exit(EXIT_SUCCESS);
 	}
-	testing123();
-	prototype_setup();
-	printf("%d\n",playerCount);
+	//prototype_setup();
 
 	res = general_setup() == 0;
 	assert(res);

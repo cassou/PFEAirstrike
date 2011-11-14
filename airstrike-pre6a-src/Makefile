@@ -2,6 +2,9 @@
 # always regenerate
 .PHONY: airstrike airstrike-sound
 
+all: airstrike airstrike-sound
+
+
 airstrike:
 	$(MAKE) -C src airstrike
 	mv src/airstrike .
