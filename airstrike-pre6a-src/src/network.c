@@ -4,9 +4,12 @@
 #include <error.h>
 #include <enet/enet.h>
 #include "network.h"
+#include "messages.h"
+#include "keys.h"
 
 void *thread_function( void *arg );
 void network_loop();
+void process_packet(ENetEvent * event);
 
 void network_init(){
 	pthread_t thread;
@@ -17,13 +20,6 @@ void network_init(){
 }
 
 void *thread_function( void *arg ){
-
-
-	network_keymap[0][0]=1;
-	network_keymap[0][1]=1;
-	network_keymap[0][2]=1;
-	network_keymap[0][3]=1;
-	network_keymap[0][4]=1;
 	network_loop();
 	pthread_exit(NULL);
 }
@@ -47,7 +43,7 @@ void network_loop(){
 	address.port = 1234;
 
 	server = enet_host_create(&address /* the address to bind the server host to */ ,
-			32 /* allow up to 32 clients and/or outgoing connections */ ,
+			MAXPLAYERS /* allow up to 32 clients and/or outgoing connections */ ,
 			2 /* allow up to 2 channels to be used, 0 and 1 */ ,
 			0 /* assume any amount of incoming bandwidth */ ,
 			0 /* assume any amount of outgoing bandwidth */ );
@@ -56,40 +52,31 @@ void network_loop(){
 		exit(EXIT_FAILURE);
 	}
 
-
 	ENetEvent event;
 
 	while (42) {
 		int serviceResult = 1;
-
 		/* Keep doing host_service until no events are left */
 		while (serviceResult > 0) {
 			/* Wait up to 1000 milliseconds for an event. */
 			serviceResult = enet_host_service(server, &event, 1000);
 
 			if (serviceResult > 0) {
-
 				switch (event.type) {
 				case ENET_EVENT_TYPE_CONNECT:
 					printf("A new client connected from %x:%u.\n", event.peer->address.host, event.peer->address.port);
-
 					/* Store any relevant client information here. */
 					event.peer->data = (void *)"Client information";
 
 					break;
 
 				case ENET_EVENT_TYPE_RECEIVE:
-					printf("A packet of length %u containing '%s' was received from %s on channel %u.\n",
-							event.packet->dataLength, (char*)event.packet->data, (char*)event.peer->data, event.channelID);
-					/* Tell all clients about this message */
-					enet_host_broadcast(server, 0, event.packet);
+					process_packet(&event);
 					break;
 
 				case ENET_EVENT_TYPE_DISCONNECT:
 					printf("%s disconected.\n", (char*)event.peer->data);
-
 					/* Reset the peer's client information. */
-
 					event.peer->data = NULL;
 
 					break;
@@ -100,5 +87,31 @@ void network_loop(){
 			}
 		}
 	}
-
 }
+
+
+void process_packet(ENetEvent * event){
+	AS_message_t * msg = (AS_message_t * )(event->packet->data);
+	int peerID = event->peer->incomingPeerID;
+	printf("Message : ");
+	switch (msg->mess_type) {
+	case MSG_HELLO:
+		//printf("Hello message received from %d\n",peerID);
+		break;
+	case MSG_KEY:
+		//printf("Key %d message received from %d\n",msg->data,peerID);
+		if (msg->data>=0){
+			network_keymap[peerID][msg->data]=1;
+		}else{
+			network_keymap[peerID][-msg->data]=0;
+		}
+		break;
+	default:
+		break;
+	}
+}
+
+
+
+
+

@@ -4,7 +4,8 @@
 #include "sprite.h"
 #include "control.h"
 
-#define MAXPLAYERS 5000
+#define MAXPLAYERS 128
+
 
 typedef struct
 {

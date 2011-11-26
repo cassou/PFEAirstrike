@@ -2,8 +2,9 @@
 #define CONTROL_H
 
 #include "sprite.h"
+#include "signals.h"
+#include "keys.h"
 
-#define MAX_CONTROLLER_KEYS 8
 
 
 typedef struct controller

@@ -10,12 +10,6 @@
 
 #include "players.h"
 
-typedef struct
-{
-	int source_id;
-	int mess_type;
-	int data;
-}message_t;
 
 void network_init();
 

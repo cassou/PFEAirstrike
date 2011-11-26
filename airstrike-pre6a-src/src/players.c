@@ -2,32 +2,9 @@
 #include "sprite_types.h"
 #include "players.h"
 #include "prototype.h"
+#include "control.h"
 
 player_t players[MAXPLAYERS];
-
-int player_keymap_model[MAX_CONTROLLER_KEYS][2] =
-{
-		{SDLK_l,SIGNAL_FIRE},
-		{SDLK_LEFT,SIGNAL_UP},
-		{SDLK_RIGHT,SIGNAL_DOWN},
-		{SDLK_COMMA,SIGNAL_ACCELERATE},
-		{SDLK_SPACE,SIGNAL_NUM0}
-};
-
-/*int player_keymap[MAXPLAYERS][MAX_CONTROLLER_KEYS][2] =
- {
-    {{SDLK_PERIOD,SIGNAL_FIRE},
-     {SDLK_LEFT,SIGNAL_UP},
-     {SDLK_RIGHT,SIGNAL_DOWN},
-     {SDLK_COMMA,SIGNAL_ACCELERATE},
-     {SDLK_SPACE,SIGNAL_NUM0}},
-    {{SDLK_LSHIFT,SIGNAL_FIRE},
-     {SDLK_d,SIGNAL_UP},
-     {SDLK_f,SIGNAL_DOWN},
-     {SDLK_LCTRL,SIGNAL_ACCELERATE},
-     {SDLK_TAB,SIGNAL_NUM0}}
-  };*/
-
 
 void player_init(){
 	int i;
@@ -40,12 +17,6 @@ void player_init(){
 		players[i].controller=0;
 		players[i].sprite_type=0;
 		players[i].id=i;
-
-		int j;
-		for (j=0;j<MAX_CONTROLLER_KEYS;j++){
-			players[i].keymap[j][0]=player_keymap_model[j][0];
-			players[i].keymap[j][1]=player_keymap_model[j][1];
-		}
 	}
 }
 

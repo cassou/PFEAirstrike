@@ -47,7 +47,6 @@ static int general_setup(void)
 
 	screen_w = cfgnum("screen.width",800);
 	screen_h = cfgnum("screen.height",600);
-	//printf("%d %d \n",screen_w,screen_h);
 	if (cfgnum("fullscreen",0) == 1)
 		displayflags |= SDL_FULLSCREEN;
 
@@ -61,7 +60,6 @@ static int general_setup(void)
 	SDL_WM_SetCaption(VERSIONSTRING,0);
 
 	sprite_global.display = SDL_SetVideoMode(screen_w, screen_h, 0, displayflags);
-	//sprite_global.display = SDL_SetVideoMode(1280, 1024, 0, displayflags);
 	assert(sprite_global.display);
 	SDL_ShowCursor(SDL_DISABLE);
 
@@ -87,50 +85,22 @@ static int general_setup(void)
 
 void players_setup(void)
 {
-
-	//int nr_humans;
 	sprite_t *sp;
-	/*nr_humans = */
 	playerCount =cfgnum("nr_players",2);
 	player_init();
 	assert((playerCount >= 0) && (playerCount <= MAXPLAYERS));
 	int i;
 	for(i=0;i< playerCount;i++){
 		players[i].sprite_type = &blueplane;
-		//if (i%2==0){
 		players[i].sprite_type = &blueplane;
-		//}else{
 		//	players[i].sprite_type = &biplane;
-		//}
 		players[i].startpos[0] = 100*i;
 		players[i].startpos[1] = 300+20*(i%10);
 		players[i].points = max_points;
-		//if (i%2==0){
 		player_sethuman(i);
-		//}else{
 		//player_setai(i);
-		//}
 	}
 
-	/*player_sprite_type[0] = &blueplane;
-  player_sprite_type[1] = &biplane;
-  player_startpos[0][0] = 700;
-  player_startpos[0][1] = 500;
-  player_startpos[1][0] = 5;
-  player_startpos[1][1] = 300;
-  player_points[0] = max_points;
-  player_points[1] = max_points;
-	 */
-	/*if (nr_humans > 0)
-    player_sethuman(0);
-  else
-    player_setai(0);
-
-  if (nr_humans == 2)
-    player_sethuman(1);
-  else
-    player_setai(1);
-	 */
 }
 
 void engine_setup(void)
@@ -687,7 +657,7 @@ int main(int argc, char *argv[])
 	res = general_setup() == 0;
 	assert(res);
 	engine_setup();
-	message_mode("      Airstrike 1.0 pre 6\n\nIn the game press ESC for a menu\n  Winner is first to 5 points\n     Press any key to start");
+	//message_mode("      Airstrike 1.0 pre 6\n\nIn the game press ESC for a menu\n  Winner is first to 5 points\n     Press any key to start");
 	objects_setup();
 	DEBUGPOINT(1);
 	players_setup();
