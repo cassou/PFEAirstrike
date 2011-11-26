@@ -6,6 +6,7 @@
 #include "mech.h"
 #include "signals.h"
 #include "players.h"
+#include "network.h"
 
 struct ckn control_key_names[] =
 {
@@ -47,18 +48,28 @@ static void keyboard_update(controller_t *c)
 		kc = (struct keyboard_controller *)c;
 		player_t * player= &(players[kc->player]);
 		keys = SDL_GetKeyState(0);
-		for (i=0;player->keymap[i][0] != 0;i++)
+		for (i=0;player->keymap[i][0] != 0;i++) //je poll toutes les touches
 		{
-			if (keys[player->keymap[i][0]])
+			//printf("Joueur %d touche %d : %d\n",player->id,i,network_keymap[player->id][i]);
+			if (network_keymap[player->id][i]){
+				sprite_signal(c->target,player->keymap[i][1],0);
+				kc->key_waspressed[i] = 1;
+			} else if (kc->key_waspressed[i]) /* Send the 'unpress' signal */
+			{
+				sprite_signal(c->target,-player->keymap[i][1],0);
+				kc->key_waspressed[i] = 0;
+			}
+
+			/*if (keys[player->keymap[i][0]])
 			{
 				sprite_signal(c->target,player->keymap[i][1],0);
 				kc->key_waspressed[i] = 1;
 			}
 			else if (kc->key_waspressed[i]) /* Send the 'unpress' signal */
-					{
+			/*{
 				sprite_signal(c->target,-player->keymap[i][1],0);
 				kc->key_waspressed[i] = 0;
-					}
+			}*/
 		}
 	}
 }

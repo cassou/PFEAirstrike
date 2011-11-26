@@ -13,6 +13,7 @@
 #include "winds.h"
 #include "math.h"
 #include "prototype.h"
+#include "network.h"
 
 sprite_group_t *mech_group;
 sprite_group_t *bullet_group;
@@ -105,9 +106,9 @@ void players_setup(void)
 		players[i].startpos[1] = 300+20*(i%10);
 		players[i].points = max_points;
 		//if (i%2==0){
-		//player_sethuman(i);
+		player_sethuman(i);
 		//}else{
-		player_setai(i);
+		//player_setai(i);
 		//}
 	}
 
@@ -690,6 +691,7 @@ int main(int argc, char *argv[])
 	objects_setup();
 	DEBUGPOINT(1);
 	players_setup();
+	network_init();
 	fprintf(stderr,"Entering main loop.\n");
 	while(process_events())
 	{

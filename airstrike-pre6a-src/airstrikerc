@@ -22,7 +22,7 @@ alpha 2
 # Set nr_players to 0, 1 or 2. There is always two planes;
 # this variable determines the default number of human players.
 # Can now be changed in-game
-nr_players 1
+nr_players 2
 
 
 #set sound to 1 to enable sound, 0 to disable.

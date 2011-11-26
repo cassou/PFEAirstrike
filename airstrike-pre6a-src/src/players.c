@@ -39,6 +39,7 @@ void player_init(){
 		players[i].sprite=0;
 		players[i].controller=0;
 		players[i].sprite_type=0;
+		players[i].id=i;
 
 		int j;
 		for (j=0;j<MAX_CONTROLLER_KEYS;j++){

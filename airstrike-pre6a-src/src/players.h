@@ -8,6 +8,7 @@
 
 typedef struct
 {
+	int id;
 	int ishuman;
 	int points;
 	int keymap[MAX_CONTROLLER_KEYS][2];

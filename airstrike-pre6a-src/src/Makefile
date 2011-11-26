@@ -1,6 +1,6 @@
 CFLAGS:= -g -O2 -Wall -Wno-unused $(OPTIONS)
 #
-CFLAGS += $(shell sdl-config --cflags) -Isprite -I. -Isupport -DINLINE=inline
+CFLAGS += $(shell sdl-config --cflags) -Isprite -I. -Isupport -DINLINE=inline -lenet
 CFILES:= $(shell find . -name '*.c')
 OBJECTS:= $(CFILES:.c=.o)
 

@@ -5,6 +5,7 @@
 
 #define MAX_CONTROLLER_KEYS 8
 
+
 typedef struct controller
 {
   sprite_t *target;
