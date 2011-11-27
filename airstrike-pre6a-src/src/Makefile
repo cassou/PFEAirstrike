@@ -5,7 +5,7 @@ CFILES:= $(shell find . -name '*.c')
 OBJECTS:= $(CFILES:.c=.o)
 
 airstrike: $(OBJECTS)
-	$(CC) -o $@ $(CFLAGS) $(OBJECTS) `sdl-config --libs` -lSDL_image
+	$(CC) -o $@ $(CFLAGS) $(OBJECTS) `sdl-config --libs` -lSDL_image -lSDL_mixer
 
 airstrike-sound: $(OBJECTS)
 	$(CC) -o $@ $(CFLAGS) $(OBJECTS) `sdl-config --libs` -lSDL_image -lSDL_mixer

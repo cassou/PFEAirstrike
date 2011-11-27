@@ -6,7 +6,7 @@ all: airstrike airstrike-sound
 
 
 airstrike:
-	$(MAKE) -C src airstrike
+	$(MAKE) -C src OPTIONS=-DUSE_SOUND airstrike
 	mv src/airstrike .
 
 # note: do 'make clean' between sound changing

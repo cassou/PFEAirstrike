@@ -1,5 +1,4 @@
 #include "sound.h"
-
 #ifdef USE_SOUND
 #include <math.h>
 #include "signals.h"
@@ -52,12 +51,12 @@ int sound_setup()
   Uint16 audio_format = MIX_DEFAULT_FORMAT;
   int audio_channels = 1;
   int i;
-  if (Mix_OpenAudio(audio_rate, audio_format, audio_channels, 4096) < 0) 
+  if (Mix_OpenAudio(audio_rate, audio_format, audio_channels, 4096) < 0)
     {
       fprintf(stderr, "Couldn't open audio: %s\n", SDL_GetError());
       return -1;
-    } 
-  else 
+    }
+  else
     {
       Mix_QuerySpec(&audio_rate, &audio_format, &audio_channels);
       printf("Opened audio at %d Hz %d bit %s\n", audio_rate,

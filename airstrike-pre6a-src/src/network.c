@@ -99,7 +99,7 @@ void process_packet(ENetEvent * event){
 		//printf("Hello message received from %d\n",peerID);
 		break;
 	case MSG_KEY:
-		//printf("Key %d message received from %d\n",msg->data,peerID);
+		printf("Key %d message received from %d\n",msg->data,peerID);
 		if (msg->data>=0){
 			network_keymap[peerID][msg->data]=1;
 		}else{

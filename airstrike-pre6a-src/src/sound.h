@@ -3,7 +3,7 @@
 #include "config.h"
 #ifdef USE_SOUND
 #include <SDL/SDL.h>
-#include <SDL_mixer.h>
+#include <SDL/SDL_mixer.h>
 #include "sprite.h"
 
 typedef struct sound
@@ -11,7 +11,7 @@ typedef struct sound
   char *filename;
   int nr_loops;
   Mix_Chunk *wave;
-  int init_ok; /* 0: not loaded, 1: loaded ok, -1: failed */ 
+  int init_ok; /* 0: not loaded, 1: loaded ok, -1: failed */
 } sound_t;
 
 /* Sound effect names go here. The filenames etc are in sound.c */
@@ -24,7 +24,7 @@ extern sound_t sound_mechbump; /* when two sprites collide softly */
 extern sound_t sound_mechsmash; /* hard collision */
 extern sound_t sound_mechgroundbump; /* soft bg coll */
 extern sound_t sound_mechgroundsmash; /* hard collision */
-extern sound_t sound_bullethit; 
+extern sound_t sound_bullethit;
 extern sound_t sound_bird;
 
 /* end of sound effect names */
@@ -57,7 +57,7 @@ void sound_source_set_pos(sound_source_t *source, int x, int y);
 #else /* if not USE_SOUND */
 
 #define sound_setup() 0
-#define sound_effect(x,y,z) 
+#define sound_effect(x,y,z)
 #define sound_from_sprite(x,y)
 #define sound_get_state() 0
 #define sound_set_state(x)
