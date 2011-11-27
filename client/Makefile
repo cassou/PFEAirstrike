@@ -4,7 +4,7 @@ CC = gcc
 INCLUDES =-I ./includes
 CFILES:= $(shell find ./src/ -name '*.c')
 OBJECTS:= $(CFILES:.c=.o)
-CFLAGS = -g -Wall -lenet $(INCLUDES)
+CFLAGS = -g -Wall -lenet -lSDL_image $(INCLUDES)
 
 
 all:  client
