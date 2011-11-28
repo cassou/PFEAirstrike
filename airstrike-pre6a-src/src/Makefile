@@ -1,7 +1,7 @@
 CFLAGS:= -g -O2 -Wall -Wno-unused $(OPTIONS)
 #
-CFLAGS += $(shell sdl-config --cflags) -Isprite -I. -Isupport -DINLINE=inline -lenet
-CFILES:= $(shell find . -name '*.c')
+CFLAGS += $(shell sdl-config --cflags) -Isprite -I. -Isupport -I../enet/include -DINLINE=inline -lm 
+CFILES:= $(shell find . -name '*.c') ../enet/libenet.a
 OBJECTS:= $(CFILES:.c=.o)
 
 airstrike: $(OBJECTS)
