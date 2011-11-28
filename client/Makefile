@@ -2,15 +2,16 @@
 
 CC = gcc
 INCLUDES =-I ./includes
+LIBS = $(shell find ./libs/ -name '*.a')
 CFILES:= $(shell find ./src/ -name '*.c')
 OBJECTS:= $(CFILES:.c=.o)
-CFLAGS = -g -Wall -lenet -lSDL_image $(INCLUDES)
+CFLAGS = -g -Wall -lSDL_image $(INCLUDES)
 
 
 all:  client
 
 client: $(OBJECTS)
-	$(CC) -o $@ $(CFLAGS) $(OBJECTS) 
+	$(CC) -o $@ $(CFLAGS) $(OBJECTS) $(LIBS)
 	ln -s ./src/client ./client -f
 
 	
