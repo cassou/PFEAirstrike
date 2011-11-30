@@ -30,6 +30,9 @@ static int frame_time_i = 0;
 static int screen_w;
 static int screen_h;
 
+static int nbTeams;
+static int nbPlayers;
+
 
 static void atexit_cleanup(void)
 {
@@ -86,7 +89,7 @@ static int general_setup(void)
 void players_setup(void)
 {
 	sprite_t *sp;
-	playerCount =cfgnum("nr_players",2);
+	playerCount =cfgnum("nr_players",nbPlayers);
 	player_init();
 	assert((playerCount >= 0) && (playerCount <= MAXPLAYERS));
 	int i;
@@ -166,10 +169,21 @@ void objects_setup(void)
 
 static int process_events(void)
 {
+
 	SDL_Event event;
+
 	int ret = 1;
 	while ( SDL_PollEvent(&event) >= 1 )
 	{
+		if( &event == NULL )
+	{
+		printf("Pointer is NULL\n");
+		return 0;
+	}else{
+		printf("Pointer is %d\n",&event);
+	}
+		printf("Event type: %d\n",event.type);
+		printf("debug\n");
 		switch (event.type)
 		{
 		case SDL_QUIT:
@@ -192,6 +206,7 @@ static int process_events(void)
 				break;
 		}
 	}
+	printf("out\n");
 	return ret;
 }
 
@@ -585,7 +600,9 @@ void game_frame()
 
 	for (i=0;i<playerCount;i++)
 	{
+		printf("Update...\n");
 		players[i].controller->update(players[i].controller);
+		printf("Updated\n");
 	}
 
 	sprite_group_update(mech_group);
@@ -647,11 +664,16 @@ void saveanimframe()
 int main(int argc, char *argv[])
 {
 	int res;
-	if (argc > 1)
-	{
-		printf("All options are currently given in the config files, located at $HOME/.airstrikerc and $PWD/airstrikerc. Quitting.\n");
-		exit(EXIT_SUCCESS);
-	}
+	if (argc < 3 || argc > 3)
+		{
+			printf("Airstrike nbOfTeams nbOfPlayers\n");
+			exit(EXIT_SUCCESS);
+		}else if (argc = 2){
+			printf("%d teams\n%d players\n",(int)argv[1],(int)argv[2]);
+			nbTeams = (int)argv[1];
+			nbPlayers = (int)argv[2];
+		}
+
 	//prototype_setup();
 
 	res = general_setup() == 0;
@@ -667,6 +689,7 @@ int main(int argc, char *argv[])
 	{
 		if (!paused)
 		{
+			printf("Main loop !\n");
 			game_frame();
 		}
 		else
