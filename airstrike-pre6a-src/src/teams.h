@@ -20,6 +20,6 @@ typedef struct
 
 } team_t;
 
-extern player_t teams[MAXTEAMS];
+extern struct player_t teams[MAXTEAMS];
 
 #endif /* TEAM_H_ */
