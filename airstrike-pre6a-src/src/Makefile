@@ -1,14 +1,14 @@
 CFLAGS:= -g -O2 -Wall -Wno-unused $(OPTIONS)
 #
 CFLAGS += $(shell sdl-config --cflags) -Isprite -I. -Isupport -I../enet/include -DINLINE=inline -lm 
-CFILES:= $(shell find . -name '*.c') ../enet/libenet.a
+CFILES:= $(shell find . -name '*.c') 
 OBJECTS:= $(CFILES:.c=.o)
 
 airstrike: $(OBJECTS)
-	$(CC) -o $@ $(CFLAGS) $(OBJECTS) `sdl-config --libs` -lSDL_image -lSDL_mixer
+	$(CC) -o $@ $(CFLAGS) $(OBJECTS) `sdl-config --libs` -lSDL_image -lSDL_mixer -lm -lenet
 
 airstrike-sound: $(OBJECTS)
-	$(CC) -o $@ $(CFLAGS) $(OBJECTS) `sdl-config --libs` -lSDL_image -lSDL_mixer
+	$(CC) -o $@ $(CFLAGS) $(OBJECTS) `sdl-config --libs` -lSDL_image -lSDL_mixer -lm -lenet
 
 # Use the rule below when coding new sprite types
 #sprites_autogen.h: sprite_types/*.c
