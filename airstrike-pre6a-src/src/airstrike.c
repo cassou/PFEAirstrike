@@ -14,6 +14,7 @@
 #include "math.h"
 #include "prototype.h"
 #include "network.h"
+#include "teams.h"
 
 sprite_group_t *mech_group;
 sprite_group_t *bullet_group;
@@ -30,8 +31,8 @@ static int frame_time_i = 0;
 static int screen_w;
 static int screen_h;
 
-static int nbTeams;
-static int nbPlayers;
+int nbTeams;
+int nbPlayers;
 
 static void atexit_cleanup(void)
 {
@@ -92,7 +93,7 @@ void players_setup(void)
 	// Number of players is set up at launch as an argument
 	playerCount = nbPlayers;
 	player_init();
-	assert((playerCount >= 0) && (playerCount <= MAXPLAYERS));
+	//assert((playerCount >= 0) && (playerCount <= MAXPLAYERS)); This is now tested at startup
 	int i;
 	for (i = 0; i < playerCount; i++)
 	{
@@ -105,6 +106,13 @@ void players_setup(void)
 		player_sethuman(i);
 		//player_setai(i);
 	}
+}
+
+void teams_setup(void)
+{
+	int i;
+	teamCount = nbTeams;
+	teams_init(nbTeams, nbPlayers);
 }
 
 void engine_setup(void)
@@ -621,17 +629,29 @@ void saveanimframe()
 int main(int argc, char *argv[])
 {
 	int res;
-	if (argc < 3 || argc > 3)
+
+	if (argc == 2)
+	{
+		nbTeams = (int) strtol(argv[1], &argv[1], 10);
+		if (nbTeams > 10 || nbTeams < 2)
+		{
+			printf("Please enter a number of teams between 2 and %d\n", 10);
+			exit(EXIT_SUCCESS);
+		}
+
+		nbPlayers = (int) strtol(argv[2], &argv[2], 10);
+		if (nbPlayers > MAXPLAYERS || nbPlayers < 2)
+		{
+			printf("Please enter a number of players between 2 and %d\n", MAXPLAYERS);
+			exit(EXIT_SUCCESS);
+		}
+
+		printf("%d teams, %d players\n", nbTeams, nbPlayers);
+	}
+	else
 	{
 		printf("Airstrike nbOfTeams nbOfPlayers\n");
 		exit(EXIT_SUCCESS);
-	}
-	else if (argc = 2)
-	{
-		nbTeams = (int) strtol(argv[1], &argv[1], 10);
-		nbPlayers = (int) strtol(argv[2], &argv[2], 10);
-		printf("%d teams\n%d players\n", nbTeams, nbPlayers);
-
 	}
 
 	//prototype_setup();
@@ -642,7 +662,9 @@ int main(int argc, char *argv[])
 	//message_mode("      Airstrike 1.0 pre 6\n\nIn the game press ESC for a menu\n  Winner is first to 5 points\n     Press any key to start");
 	objects_setup();
 	DEBUGPOINT(1);
+	teams_setup();
 	players_setup();
+
 	network_init();
 	fprintf(stderr, "Entering main loop.\n");
 	while (process_events())

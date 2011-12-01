@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 int playerCount;
+int teamCount;
 
 /*void prototype_setup(){
 	playerCount = 600;
