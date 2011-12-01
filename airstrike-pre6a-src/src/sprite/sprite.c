@@ -4,6 +4,7 @@
 #include "refcount.h"
 #include "bitmask.h"
 #include "utils.h"
+#include "players.h"
 
 sprite_t *sprite_create(sprite_type_t *type)
 {
@@ -394,7 +395,7 @@ void sprite_group_coll2(sprite_group_t *group1,
   int i,j,x,y;
   sprite_t *s1,*s2;
   bitmask *b1;
-  if (f)
+  if (f) //TODO : is this part usefull ?
     {
       for (i = 0; i < group1->nr_sprites; i++)
 	{
@@ -431,7 +432,7 @@ void sprite_group_coll2(sprite_group_t *group1,
 				      s1->x + s1->animation->xoff,
 				      s2->y - s2->animation->yoff -
 				      s1->y + s1->animation->yoff,
-				      &x, &y) && s2->owner!=s1->owner) //TODO : add->team
+				      &x, &y) && s2->owner->teamId != s1->owner->teamId)
 		{
 		  x += s1->x - s1->animation->xoff;
 		  y += s1->y - s1->animation->yoff;

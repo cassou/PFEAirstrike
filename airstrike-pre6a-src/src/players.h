@@ -7,7 +7,7 @@
 #define MAXPLAYERS 128
 
 
-typedef struct
+typedef struct player
 {
 	int id;
 	int ishuman;
@@ -18,6 +18,9 @@ typedef struct
 	sprite_type_t *sprite_type;
 	controller_t *controller;
 	int startpos[2];
+
+	//TODO : remove this when possible
+	int teamId;
 
 } player_t;
 

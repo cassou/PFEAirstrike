@@ -63,6 +63,8 @@ typedef struct sprite_type
 		    fails, so no need to handle that case */
 } sprite_type_t;
 
+
+struct player;
 typedef struct sprite
 {
   /* 'public' variables */
@@ -74,7 +76,7 @@ typedef struct sprite
   float pos[2];
   float vel[2];
 
-  struct player_t *owner;
+  struct player *owner;
 
   /* 'private' variables */
   int _t_off;
