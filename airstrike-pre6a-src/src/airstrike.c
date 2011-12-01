@@ -94,6 +94,10 @@ void players_setup(void)
 	playerCount = nbPlayers;
 	player_init();
 	//assert((playerCount >= 0) && (playerCount <= MAXPLAYERS)); This is now tested at startup
+	int remains = nbPlayers % nbTeams;
+	int perTeam = nbPlayers/nbTeams;
+	int nbMembers = 0;
+	int team = 0;
 	int i;
 	for (i = 0; i < playerCount; i++)
 	{
@@ -105,6 +109,15 @@ void players_setup(void)
 		players[i].points = max_points;
 		player_sethuman(i);
 		//player_setai(i);
+		players[i].team = &teams[team];
+		nbMembers++;
+
+		if ((nbMembers == perTeam && team > remains) || nbMembers > perTeam)
+		{
+				team++;
+				nbMembers=0;
+		}
+		//printf("Player %d is in team %d, %d\n", i, team, players[i].team);
 	}
 }
 
@@ -630,7 +643,7 @@ int main(int argc, char *argv[])
 {
 	int res;
 
-	if (argc == 2)
+	if (argc == 3)
 	{
 		nbTeams = (int) strtol(argv[1], &argv[1], 10);
 		if (nbTeams > 10 || nbTeams < 2)
@@ -664,7 +677,7 @@ int main(int argc, char *argv[])
 	DEBUGPOINT(1);
 	teams_setup();
 	players_setup();
-
+	//addPlayers(nbTeams);
 	network_init();
 	fprintf(stderr, "Entering main loop.\n");
 	while (process_events())

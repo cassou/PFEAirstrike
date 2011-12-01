@@ -3,9 +3,9 @@
 
 #include "sprite.h"
 #include "control.h"
+#include "teams.h"
 
 #define MAXPLAYERS 128
-
 
 typedef struct
 {
@@ -18,7 +18,7 @@ typedef struct
 	sprite_type_t *sprite_type;
 	controller_t *controller;
 	int startpos[2];
-
+	struct team_t *team;
 } player_t;
 
 extern player_t players[MAXPLAYERS];

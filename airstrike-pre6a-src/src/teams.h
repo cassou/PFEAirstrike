@@ -10,11 +10,12 @@ typedef struct
 	int id;
 	int points;
 	int nbPlayers;
-	player_t **members;
+	//player_t *members[];
 } team_t;
 
 extern team_t teams[MAXTEAMS];
 
 void teams_init(int nbTeams, int nbPlayers);
+//void addPlayers(int nbTeams);
 
 #endif /* TEAM_H_ */
