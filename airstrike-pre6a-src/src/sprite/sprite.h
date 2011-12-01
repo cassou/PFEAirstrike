@@ -1,4 +1,4 @@
-/* 
+/*
  * Sprite engine Copyright (C) 2002 Ulf Ekstr�m
  * This code is released under the GPL
  */
@@ -12,10 +12,10 @@ extern struct sprite_global
 {
   SDL_Surface *display;
   int xoff, yoff; /* The point shown in the top-left corner */
-  
+
   SDL_Surface *bg_image;
   struct bitmask *bg_mask;
-  
+
   unsigned int dt; /* This controls the game timestep */
   unsigned int display_dt; /* This one sets the target framerate */
   unsigned int frame_start; /* start of the frame in real time */
@@ -40,21 +40,21 @@ typedef struct animation
   struct animation *next_frame;
   struct animation *base_frame;
   /* The trigger is called when this frame is _entered_, if nonzero */
-  void (*trigger)(struct sprite *s); 
+  void (*trigger)(struct sprite *s);
 } animation_t;
 
 struct sprite_world;
 
-typedef struct sprite_type 
+typedef struct sprite_type
 {
   char *name;
   int (*setup)(void);   /* Returns 0 on success */
   struct sprite *(*create_sprite)(void);
   /* Called when refcount reaches zero */
-  void (*free_sprite)(struct sprite *s); 
+  void (*free_sprite)(struct sprite *s);
   /* this_sprite is guaranteed to have this type.
      x and y gives a point of collision in global coordinates. */
-  void (*collide)(struct sprite *this_sprite, 
+  void (*collide)(struct sprite *this_sprite,
 		  struct sprite *other_sprite, int x, int y);
   void (*bg_collide)(struct sprite *this_sprite, int x, int y);
   void (*update)(struct sprite *s);
@@ -74,21 +74,23 @@ typedef struct sprite
   float pos[2];
   float vel[2];
 
+  struct player_t *owner;
+
   /* 'private' variables */
   int _t_off;
   int refcount;
 } sprite_t;
 
-typedef struct sprite_group 
+typedef struct sprite_group
 {
-  sprite_t **sprites; 
+  sprite_t **sprites;
   int max_sprites; /* the size of the sprites array */
   int nr_sprites; /* number of sprites in this group */
 } sprite_group_t;
 
 typedef unsigned int sprite_timer_t;
 
-enum sprite_detector_type 
+enum sprite_detector_type
   {
     SPRITE_DETECTOR_SPHERE8 = 0,
     SPRITE_DETECTOR_SPHERE16,
@@ -109,7 +111,7 @@ enum sprite_detector_type
 
 /* animation functions */
 
-struct animation *animation_load(const char *imagefile, int nr_pframes, 
+struct animation *animation_load(const char *imagefile, int nr_pframes,
 				 int nr_tframes, unsigned int ms_delay);
 struct animation *animation_last_frame(struct animation *anim);
 /* Returns frame nr n, starting from 0 */
@@ -175,7 +177,7 @@ void sprite_group_remove(sprite_group_t *group, sprite_t *s);
 /* Removes all dead sprites from this group */
 void sprite_group_cleanup(sprite_group_t *group);
 
-/* 'foreach'-type functions: */ 
+/* 'foreach'-type functions: */
 void sprite_group_move(sprite_group_t *group, unsigned int ms);
 void sprite_group_pos_update(sprite_group_t *group);
 void sprite_group_animate(sprite_group_t *group, unsigned int ms);
@@ -184,20 +186,20 @@ void sprite_group_update(sprite_group_t *group);
 /* if f == 0 then the types own functions are used to handle
    the collisions */
 void sprite_group_coll(sprite_group_t *group,
-		       void (*f)(struct sprite *this_sprite, 
-				 struct sprite *other_sprite, 
+		       void (*f)(struct sprite *this_sprite,
+				 struct sprite *other_sprite,
 				 int x, int y));
 void sprite_group_coll2(sprite_group_t *group1,
 			sprite_group_t *group2,
-			void (*f)(struct sprite *this_sprite, 
-				  struct sprite *other_sprite, 
+			void (*f)(struct sprite *this_sprite,
+				  struct sprite *other_sprite,
 				  int x, int y));
 void sprite_group_bg_coll(sprite_group_t *group,
 			  void (*f)(struct sprite *sprite,
 				    int x, int y));
 void sprite_group_point_coll(sprite_group_t *group,
 			     int point_x,int point_y,
-			     void (*f)(struct sprite *sprite, 
+			     void (*f)(struct sprite *sprite,
 				       int x, int y));
 
 void sprite_group_draw(sprite_group_t *group);
@@ -208,7 +210,7 @@ void sprite_group_draw(sprite_group_t *group);
    target array. Returns the number of found sprites. Not yet
    needed/implemented. */
 int sprite_group_select(sprite_group_t *group,
-			sprite_t target[], int max_sprites, 
+			sprite_t target[], int max_sprites,
 			int (*pred)(sprite_t *s, void *data), void *data);
 
 /* Call trigger for each sprite intersecting the detector.  Usable to
@@ -234,9 +236,9 @@ unsigned int sprite_end_frame(void); /* Returns the number of ms slept */
    sprite_start_frame() and sprite_end_frame(). Only necessary for
    graphics other than sprites and background.  r _must_ be clipped to
    the screen! */
-void sprite_dirty(SDL_Rect *r); 
+void sprite_dirty(SDL_Rect *r);
 void sprite_dirty_all(void);
-void sprite_bg_dirty(SDL_Rect *r); 
+void sprite_bg_dirty(SDL_Rect *r);
 void sprite_bg_dirty_all(void);
 
 /* resize garbles the background and the mask */
@@ -257,7 +259,7 @@ void sprite_viewport_center_on(sprite_t *s);
  *
  * Converts a section of src to display format, and creates a mask if
  * mask_threshold > 0 and there is either alpha or colorkey
- * information.  
+ * information.
  * If src has an alpha channel and alpha_threshold == 0
  * then the dest will also have an alpha channel. Else if
  * alpha_threshold > 0 the dest will have a colorkey (magic pink),

@@ -509,6 +509,7 @@ void scorekeeper()
 				sprite_aquire(players[i].sprite, &(players[i].controller->target));
 				assert(sprite_isvalid(&(players[i].controller->target)));
 				s = players[i].sprite;
+				s->owner = &players[i];
 				sprite_group_insert(mech_group, s);
 				sprite_set_pos(s, players[i].startpos[0], players[i].startpos[1]);
 				if (!players[i].ishuman)

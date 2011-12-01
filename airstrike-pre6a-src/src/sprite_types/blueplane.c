@@ -79,7 +79,7 @@ static int setup()
   bullet_delay = cfgnum("blueplane.bullet_delay",140);
   hitpoints = cfgnum("blueplane.hitpoints",15);
   mass = cfgnum("blueplane.mass",1);
-  air_isotropic = cfgnum("blueplane.air_isotropic",0.00005);    
+  air_isotropic = cfgnum("blueplane.air_isotropic",0.00005);
   air_turnrate = cfgnum("blueplane.air_turnrate",0.00005);
   air_normal = cfgnum("blueplane.air_normal",0.001);
   nr_bombs = cfgnum("blueplane.nr_bombs",5);
@@ -128,7 +128,7 @@ static void update(sprite_t *s)
 
       if (ms->damage >= hitpoints)
 	{
-	  s->state |= BIPLANE_CRASHING; 
+	  s->state |= BIPLANE_CRASHING;
 	  sprite_set_animation(s,crashing);
 	  create_effect(&fire,s->x,s->y);
 	  sprite_alarm(7000,s,SIGNAL_KILL,0);
@@ -178,6 +178,7 @@ static void sigget(sprite_t *s, int signal, void *data)
 	{
 	  sound_effect(&sound_gunfire,s->x,s->y);
 	  p = sprite_create(((struct biplane*)s)->bullet_type);
+	  p->owner = s->owner;
 	  sprite_group_insert(bullet_group,p);
 	  r[0] = mech_heading((mech_sprite_t *)s)[0];
 	  r[1] = mech_heading((mech_sprite_t *)s)[1];
@@ -192,8 +193,8 @@ static void sigget(sprite_t *s, int signal, void *data)
 	}
       break;
     case SIGNAL_NUM0: /* create bomb */
-      if (sprite_timer_finished(((struct biplane*)s)->bomb_timer) &&	  
-	  (!(s->state & BIPLANE_CRASHING)) && 
+      if (sprite_timer_finished(((struct biplane*)s)->bomb_timer) &&
+	  (!(s->state & BIPLANE_CRASHING)) &&
 	  (((struct biplane*)s)->nr_bombs > 0))
 	{
 	  ((struct biplane*)s)->nr_bombs--;
@@ -214,7 +215,7 @@ static void sigget(sprite_t *s, int signal, void *data)
 	}
       break;
     case SIGNAL_NUM1: /* jump ship */
-      if (sprite_timer_finished(((struct biplane*)s)->bomb_timer) &&	  
+      if (sprite_timer_finished(((struct biplane*)s)->bomb_timer) &&
 	  (!(s->state & BIPLANE_CRASHING)))
 	{
 	  p = sprite_create(&parachute);
@@ -251,8 +252,8 @@ static void freebip(sprite_t *s)
   free(s);
 }
 
-static void collide(struct sprite *this_sprite, 
-		    struct sprite *other_sprite, 
+static void collide(struct sprite *this_sprite,
+		    struct sprite *other_sprite,
 		    int x, int y)
 {
   printf("Colliding with a %s\n",other_sprite->type->name);

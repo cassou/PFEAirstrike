@@ -47,30 +47,30 @@ void sprite_get_vel(sprite_t *s, float v[])
 
 void sprite_get_collision_normal(sprite_t *s1, sprite_t *s2, float n[])
 {
-  n[0] = 
+  n[0] =
     bitmask_overlap_area(s1->animation->masks[s1->anim_p],
 			 s2->animation->masks[s2->anim_p],
-			 s2->x - s2->animation->xoff - s1->x 
-			 + s1->animation->xoff + 1, 
+			 s2->x - s2->animation->xoff - s1->x
+			 + s1->animation->xoff + 1,
 			 s2->y - s2->animation->yoff - s1->y
 			 + s1->animation->yoff) -
     bitmask_overlap_area(s1->animation->masks[s1->anim_p],
 			 s2->animation->masks[s2->anim_p],
-			 s2->x - s2->animation->xoff - s1->x 
-			 + s1->animation->xoff - 1, 
+			 s2->x - s2->animation->xoff - s1->x
+			 + s1->animation->xoff - 1,
 			 s2->y - s2->animation->yoff - s1->y
 			 + s1->animation->yoff);
-  n[1] = 
+  n[1] =
     bitmask_overlap_area(s1->animation->masks[s1->anim_p],
 			 s2->animation->masks[s2->anim_p],
-			 s2->x - s2->animation->xoff - s1->x 
-			 + s1->animation->xoff, 
+			 s2->x - s2->animation->xoff - s1->x
+			 + s1->animation->xoff,
 			 s2->y - s2->animation->yoff - s1->y
 			 + s1->animation->yoff + 1) -
     bitmask_overlap_area(s1->animation->masks[s1->anim_p],
 			 s2->animation->masks[s2->anim_p],
-			 s2->x - s2->animation->xoff - s1->x 
-			 + s1->animation->xoff, 
+			 s2->x - s2->animation->xoff - s1->x
+			 + s1->animation->xoff,
 			 s2->y - s2->animation->yoff - s1->y
 			 + s1->animation->yoff - 1);
 }
@@ -79,9 +79,9 @@ int sprite_get_overlap(sprite_t *s1, sprite_t *s2)
 {
   return bitmask_overlap_area(s1->animation->masks[s1->anim_p],
 			      s2->animation->masks[s2->anim_p],
-			      s2->x - s2->animation->xoff 
-			      - s1->x + s1->animation->xoff, 
-			      s2->y - s2->animation->yoff 
+			      s2->x - s2->animation->xoff
+			      - s1->x + s1->animation->xoff,
+			      s2->y - s2->animation->yoff
 			      - s1->y + s1->animation->yoff);
 }
 
@@ -89,30 +89,30 @@ int sprite_get_bg_overlap(sprite_t *s)
 {
   return bitmask_overlap_area(sprite_global.bg_mask,
 			      s->animation->masks[s->anim_p],
-			      s->x - s->animation->xoff, 
+			      s->x - s->animation->xoff,
 			      s->y - s->animation->yoff);
 }
 
 void sprite_get_bg_collision_normal(sprite_t *s, float n[])
 {
-  n[0] = 
+  n[0] =
     bitmask_overlap_area(sprite_global.bg_mask,
 			 s->animation->masks[s->anim_p],
-			 s->x - s->animation->xoff + 1, 
+			 s->x - s->animation->xoff + 1,
 			 s->y - s->animation->yoff) -
     bitmask_overlap_area(sprite_global.bg_mask,
 			 s->animation->masks[s->anim_p],
-			 s->x - s->animation->xoff - 1, 
+			 s->x - s->animation->xoff - 1,
 			 s->y - s->animation->yoff);
 
-  n[1] = 
+  n[1] =
     bitmask_overlap_area(sprite_global.bg_mask,
 			 s->animation->masks[s->anim_p],
-			 s->x - s->animation->xoff, 
+			 s->x - s->animation->xoff,
 			 s->y - s->animation->yoff + 1) -
     bitmask_overlap_area(sprite_global.bg_mask,
 			 s->animation->masks[s->anim_p],
-			 s->x - s->animation->xoff, 
+			 s->x - s->animation->xoff,
 			 s->y - s->animation->yoff - 1);
 }
 
@@ -122,26 +122,26 @@ int sprite_remove_from_bg(sprite_t *s, float n[])
   float t;
   a = bitmask_overlap_area(sprite_global.bg_mask,
 			   s->animation->masks[s->anim_p],
-			   s->x - s->animation->xoff, 
+			   s->x - s->animation->xoff,
 			   s->y - s->animation->yoff);
   if (a == 0) return 0;
   dx =
     bitmask_overlap_area(sprite_global.bg_mask,
 			 s->animation->masks[s->anim_p],
-			 s->x - s->animation->xoff + 1, 
+			 s->x - s->animation->xoff + 1,
 			 s->y - s->animation->yoff) -
     bitmask_overlap_area(sprite_global.bg_mask,
 			 s->animation->masks[s->anim_p],
-			 s->x - s->animation->xoff - 1, 
+			 s->x - s->animation->xoff - 1,
 			 s->y - s->animation->yoff);
-  dy = 
+  dy =
     bitmask_overlap_area(sprite_global.bg_mask,
 			 s->animation->masks[s->anim_p],
-			 s->x - s->animation->xoff, 
+			 s->x - s->animation->xoff,
 			 s->y - s->animation->yoff + 1) -
     bitmask_overlap_area(sprite_global.bg_mask,
 			 s->animation->masks[s->anim_p],
-			 s->x - s->animation->xoff, 
+			 s->x - s->animation->xoff,
 			 s->y - s->animation->yoff - 1);
   n[0] = dx;
   n[1] = dy;
@@ -216,7 +216,7 @@ void sprite_signal(sprite_t *s, int signal, void *data)
  * Sprite time propagation dt to new frame:
  * 1) Move all sprites according to velocity
  * 2) Advance animation as of dt, execute callbacks as
- *    frames are entered. Do each sprite completely 
+ *    frames are entered. Do each sprite completely
  *    before going to the next.
  * 3) Find collisions, execute callbacks when encountered
  * 4) Execute frame update functions (i.e. react to step 1..3).
@@ -287,7 +287,7 @@ void sprite_group_cleanup(sprite_group_t *group)
 {
   sprite_t **write;
   int i,n;
-  
+
   n = group->nr_sprites;
   for (i=0;(i<n) && (sprite_alive(group->sprites[i]));i++)
     {}
@@ -310,7 +310,7 @@ void sprite_group_cleanup(sprite_group_t *group)
 void sprite_group_remove(sprite_group_t *group, sprite_t *s)
 {
   int i,j,n;
-  
+
   n = group->nr_sprites;
   for (i=0; i<n ;i++)
     {
@@ -326,8 +326,8 @@ void sprite_group_remove(sprite_group_t *group, sprite_t *s)
 }
 
 void sprite_group_coll(sprite_group_t *group,
-		       void (*f)(struct sprite *this_sprite, 
-				 struct sprite *other_sprite, 
+		       void (*f)(struct sprite *this_sprite,
+				 struct sprite *other_sprite,
 				 int x, int y))
 {
   int i,j,x,y;
@@ -344,10 +344,10 @@ void sprite_group_coll(sprite_group_t *group,
 	    {
 	      s2 = group->sprites[j];
 	      if (bitmask_overlap_pos(b1,s2->animation->masks[s2->anim_p],
-				      s2->x - s2->animation->xoff - 
-				      s1->x + s1->animation->xoff, 
-				      s2->y - s2->animation->yoff - 
-				      s1->y + s1->animation->yoff, 
+				      s2->x - s2->animation->xoff -
+				      s1->x + s1->animation->xoff,
+				      s2->y - s2->animation->yoff -
+				      s1->y + s1->animation->yoff,
 				      &x, &y))
 		{
 		  x += s1->x - s1->animation->xoff;
@@ -367,10 +367,10 @@ void sprite_group_coll(sprite_group_t *group,
 	    {
 	      s2 = group->sprites[j];
 	      if (bitmask_overlap_pos(b1,s2->animation->masks[s2->anim_p],
-				      s2->x - s2->animation->xoff - 
-				      s1->x + s1->animation->xoff, 
-				      s2->y - s2->animation->yoff - 
-				      s1->y + s1->animation->yoff, 
+				      s2->x - s2->animation->xoff -
+				      s1->x + s1->animation->xoff,
+				      s2->y - s2->animation->yoff -
+				      s1->y + s1->animation->yoff,
 				      &x, &y))
 		{
 		  x += s1->x - s1->animation->xoff;
@@ -385,10 +385,10 @@ void sprite_group_coll(sprite_group_t *group,
     }
 }
 
-void sprite_group_coll2(sprite_group_t *group1, 
+void sprite_group_coll2(sprite_group_t *group1,
 			sprite_group_t *group2,
-			void (*f)(struct sprite *this_sprite, 
-				  struct sprite *other_sprite, 
+			void (*f)(struct sprite *this_sprite,
+				  struct sprite *other_sprite,
 				  int x, int y))
 {
   int i,j,x,y;
@@ -404,10 +404,10 @@ void sprite_group_coll2(sprite_group_t *group1,
 	    {
 	      s2 = group2->sprites[j];
 	      if (bitmask_overlap_pos(b1,s2->animation->masks[s2->anim_p],
-				      s2->x - s2->animation->xoff - 
-				      s1->x + s1->animation->xoff, 
-				      s2->y - s2->animation->yoff - 
-				      s1->y + s1->animation->yoff, 
+				      s2->x - s2->animation->xoff -
+				      s1->x + s1->animation->xoff,
+				      s2->y - s2->animation->yoff -
+				      s1->y + s1->animation->yoff,
 				      &x, &y))
 		{
 		  x += s1->x - s1->animation->xoff;
@@ -427,11 +427,11 @@ void sprite_group_coll2(sprite_group_t *group1,
 	    {
 	      s2 = group2->sprites[j];
 	      if (bitmask_overlap_pos(b1,s2->animation->masks[s2->anim_p],
-				      s2->x - s2->animation->xoff - 
-				      s1->x + s1->animation->xoff, 
-				      s2->y - s2->animation->yoff - 
-				      s1->y + s1->animation->yoff, 
-				      &x, &y))
+				      s2->x - s2->animation->xoff -
+				      s1->x + s1->animation->xoff,
+				      s2->y - s2->animation->yoff -
+				      s1->y + s1->animation->yoff,
+				      &x, &y) && s2->owner!=s1->owner) //TODO : add->team
 		{
 		  x += s1->x - s1->animation->xoff;
 		  y += s1->y - s1->animation->yoff;
@@ -460,7 +460,7 @@ void sprite_group_bg_coll(sprite_group_t *group,
 	  if (bitmask_overlap_pos(sprite_global.bg_mask,
 				  s1->animation->masks[s1->anim_p],
 				  s1->x - s1->animation->xoff,
-				  s1->y - s1->animation->yoff, 
+				  s1->y - s1->animation->yoff,
 				  &x, &y))
 	    {
 	      f(s1,x,y);
@@ -475,7 +475,7 @@ void sprite_group_bg_coll(sprite_group_t *group,
 	  if (bitmask_overlap_pos(sprite_global.bg_mask,
 				  s1->animation->masks[s1->anim_p],
 				  s1->x - s1->animation->xoff,
-				  s1->y - s1->animation->yoff, 
+				  s1->y - s1->animation->yoff,
 			      &x, &y))
 	    {
 	      if (s1->type->bg_collide)
@@ -487,7 +487,7 @@ void sprite_group_bg_coll(sprite_group_t *group,
 
 void sprite_group_point_coll(sprite_group_t *group,
 			     int point_x,int point_y,
-			     void (*f)(struct sprite *sprite, 
+			     void (*f)(struct sprite *sprite,
 				       int x, int y))
 {
   int i,lx,ly;
