@@ -3,11 +3,16 @@
 
 #include "sprite.h"
 #include "control.h"
+#include "teams.h"
 
 #define MAXPLAYERS 128
 
+<<<<<<< HEAD
 
 typedef struct player
+=======
+typedef struct
+>>>>>>> 91b954ac3b084423fbca5db9ef5ed0eb968909ec
 {
 	int id;
 	int ishuman;
@@ -18,10 +23,14 @@ typedef struct player
 	sprite_type_t *sprite_type;
 	controller_t *controller;
 	int startpos[2];
+<<<<<<< HEAD
 
 	//TODO : remove this when possible
 	int teamId;
 
+=======
+	struct team_t *team;
+>>>>>>> 91b954ac3b084423fbca5db9ef5ed0eb968909ec
 } player_t;
 
 extern player_t players[MAXPLAYERS];

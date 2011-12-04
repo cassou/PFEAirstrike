@@ -1,25 +1,21 @@
-/*
- * team.h
- *
- *  Created on: 30 nov. 2011
- *      Author: Nicolas
- */
-
 #ifndef TEAM_H_
 #define TEAM_H_
 
-#define MAXTEAMS 10
+#include "players.h"
 
+#define MAXTEAMS 10
 
 typedef struct
 {
 	int id;
-	char colour[10]; // Colour of the team
 	int points;
 	int nbPlayers;
-
+	//player_t *members[];
 } team_t;
 
-extern struct player_t teams[MAXTEAMS];
+extern team_t teams[MAXTEAMS];
+
+void teams_init(int nbTeams, int nbPlayers);
+//void addPlayers(int nbTeams);
 
 #endif /* TEAM_H_ */

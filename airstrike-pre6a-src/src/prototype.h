@@ -20,5 +20,6 @@
 #define ERROR(s)  printf(s)
 
 extern int playerCount;
+extern int teamCount;
 
 #endif /* PROTOTYPE_H_ */
