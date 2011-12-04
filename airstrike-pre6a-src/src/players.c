@@ -17,11 +17,7 @@ void player_init(){
 		players[i].controller=0;
 		players[i].sprite_type=0;
 		players[i].id=i;
-<<<<<<< HEAD
-		players[i].teamId = 1;
-=======
 		players[i].team=0;
->>>>>>> 91b954ac3b084423fbca5db9ef5ed0eb968909ec
 	}
 }
 

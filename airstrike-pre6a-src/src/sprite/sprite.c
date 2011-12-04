@@ -432,7 +432,7 @@ void sprite_group_coll2(sprite_group_t *group1,
 				      s1->x + s1->animation->xoff,
 				      s2->y - s2->animation->yoff -
 				      s1->y + s1->animation->yoff,
-				      &x, &y) && s2->owner->teamId != s1->owner->teamId)
+				      &x, &y) && s2->owner->team != s1->owner->team)
 		{
 		  x += s1->x - s1->animation->xoff;
 		  y += s1->y - s1->animation->yoff;
