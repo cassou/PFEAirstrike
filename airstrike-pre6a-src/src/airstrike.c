@@ -441,6 +441,20 @@ void message_mode(char *message)
 	wait_for_key();
 }
 
+void message_time(char *message,int duration)
+{
+	sprite_start_frame();
+	sprite_group_draw(mech_group);
+	sprite_group_draw(bullet_group);
+	sprite_group_draw(effects_group);
+	sprite_group_draw(foreground_group);
+	sprite_group_draw(ui_group);
+	text_render(sprite_global.display, 0, big_font, sprite_global.display->w / 2, sprite_global.display->h / 2, ALIGN_CENTER, ALIGN_CENTER, message);
+	sprite_end_frame();
+	sprite_dirty_all();
+	sleep(duration);
+}
+
 void about_mode(char *filename)
 {
 	FILE *message = fopen(path_to_data(filename), "r");
@@ -513,7 +527,12 @@ void scorekeeper()
 	{
 		if (teams[i].points>=max_points){
 			sprintf(cbuf,"And the winner is Team %d, by %i point(s)", i, teams[i].points);
-			message_mode(cbuf);
+			message_time(cbuf,2);
+			message_time("Starting in 3",1);
+			message_time("Starting in 2",1);
+			message_time("Starting in 1",1);
+			message_time("GO !",1);
+
 			int j;
 			for (j = 0; j< nbTeams; j++){
 				teams[j].points=0;

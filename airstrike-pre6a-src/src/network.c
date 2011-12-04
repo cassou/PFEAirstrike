@@ -24,6 +24,9 @@ void *thread_function( void *arg ){
 	pthread_exit(NULL);
 }
 
+//TODO : separate peerID and playerid (associative array ?)
+
+
 void network_loop(){
 
 	int rc;
@@ -55,11 +58,27 @@ void network_loop(){
 	ENetEvent event;
 
 	while (42) {
+
+		int k;
+		for(k=0;k<server->peerCount;k++){ //TODO : danger if peercount change
+			ENetPeer *p = &server->peers[k];
+			//if (!(p==NULL)){
+				AS_message_t msg;
+				msg.source_id = 0;
+				msg.mess_type=MSG_POINTS;
+				msg.data=players[p->incomingPeerID].points;
+				ENetPacket *packet = enet_packet_create(&msg, sizeof(AS_message_t), ENET_PACKET_FLAG_RELIABLE);
+				enet_peer_send(p, 0, packet);
+			//}
+		}
+
+
+
 		int serviceResult = 1;
 		/* Keep doing host_service until no events are left */
 		while (serviceResult > 0) {
 			/* Wait up to 1000 milliseconds for an event. */
-			serviceResult = enet_host_service(server, &event, 1000);
+			serviceResult = enet_host_service(server, &event, 100);
 
 			if (serviceResult > 0) {
 				switch (event.type) {
@@ -109,6 +128,7 @@ void process_packet(ENetEvent * event){
 	default:
 		break;
 	}
+	enet_packet_destroy(event->packet);
 }
 
 

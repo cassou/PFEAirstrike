@@ -12,6 +12,7 @@
 void set_rand_key(int key);
 void set_key(int key);
 void process_key(int key_status, SDLKey key);
+void process_packet(ENetEvent * event);
 
 char ip_addr[16]="127.0.0.1\0";
 int port = 1234;
@@ -72,10 +73,7 @@ void network_loop(){
 				break;
 
 			case ENET_EVENT_TYPE_RECEIVE:
-				printf("A packet of length %u containing '%s' was received from %s on channel %u.\n",
-						event.packet->dataLength, event.packet->data, (char*)event.peer->data, event.channelID);
-				/* Clean up the packet now that we're done using it. */
-				enet_packet_destroy(event.packet);
+				process_packet(&event);
 				break;
 
 			case ENET_EVENT_TYPE_DISCONNECT:
@@ -91,6 +89,20 @@ void network_loop(){
 			exit(EXIT_FAILURE);
 		}
 	}
+}
+
+void process_packet(ENetEvent * event){
+	AS_message_t * msg = (AS_message_t * )(event->packet->data);
+	int peerID = event->peer->incomingPeerID;
+	printf("Message : ");
+	switch (msg->mess_type) {
+	case MSG_POINTS:
+		printf("My Score is : %d\n",msg->data);
+		break;
+	default:
+		break;
+	}
+	enet_packet_destroy(event->packet);
 }
 
 void sdl_loop(){

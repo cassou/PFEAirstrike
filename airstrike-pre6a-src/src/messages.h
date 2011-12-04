@@ -13,6 +13,7 @@ enum messages_types {
 	MSG_HELLO = 0,
 	MSG_HELLO_RESPONSE = 1,
 	MSG_KEY = 2,
+	MSG_POINTS = 3
 };
 
 typedef struct
