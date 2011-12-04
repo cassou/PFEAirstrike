@@ -54,7 +54,7 @@ static void crashing_trigger(sprite_t *s)
 {
   sprite_t *p;
   float v[2] = {0,-20};
-  p = sprite_create(&blacksmoke);
+  p = sprite_create(&blacksmoke,NULL);
   sprite_set_pos(p,s->x,s->y);
   sprite_set_vel(p,v);
   sprite_group_insert(effects_group,p);
@@ -76,7 +76,7 @@ static int setup()
   bullet_delay = cfgnum("redplane.bullet_delay",140);
   hitpoints = cfgnum("redplane.hitpoints",15);
   mass = cfgnum("redplane.mass",1);
-  air_isotropic = cfgnum("redplane.air_isotropic",0.00005);    
+  air_isotropic = cfgnum("redplane.air_isotropic",0.00005);
   air_turnrate = cfgnum("redplane.air_turnrate",0.00005);
   air_normal = cfgnum("redplane.air_normal",0.001);
   nr_bombs = cfgnum("redplane.nr_bombs",5);
@@ -123,7 +123,7 @@ static void update(sprite_t *s)
 
       if (ms->damage >= hitpoints)
 	{
-	  s->state |= BIPLANE_CRASHING; 
+	  s->state |= BIPLANE_CRASHING;
 	  sprite_set_animation(s,crashing);
 	  create_effect(&fire,s->x,s->y);
 	  sprite_alarm(7000,s,SIGNAL_KILL,0);
@@ -147,7 +147,7 @@ static void sigget(sprite_t *s, int signal, void *data)
     case SIGNAL_DAMAGE:
       ((mech_sprite_t *)s)->damage += *(int *)data;
       if (rand() % 4 == 0) {
-	p = sprite_create(&msg_damage);
+	p = sprite_create(&msg_damage,NULL);
 	sprite_set_pos(p, s->x, s->y - 20);
 	sprite_group_insert(bullet_group, p);
       }
@@ -177,7 +177,7 @@ static void sigget(sprite_t *s, int signal, void *data)
 	  !(s->state & BIPLANE_CRASHING))
 	{
 	  sound_effect(&sound_gunfire,s->x,s->y);
-	  p = sprite_create(((struct biplane*)s)->bullet_type);
+	  p = sprite_create(((struct biplane*)s)->bullet_type,NULL);
 	  sprite_group_insert(bullet_group,p);
 	  r[0] = mech_heading((mech_sprite_t *)s)[0];
 	  r[1] = mech_heading((mech_sprite_t *)s)[1];
@@ -191,17 +191,17 @@ static void sigget(sprite_t *s, int signal, void *data)
 	  sprite_timer_set(&(((struct biplane*)s)->gun_timer),bullet_delay);
 
 	  if (rand() % 4 == 0) {
-	    p = sprite_create(&msg_fire);
+	    p = sprite_create(&msg_fire,NULL);
 	    sprite_set_pos(p, s->x, s->y - 20);
 	    sprite_group_insert(bullet_group, p);
 	  }
 	}
       break;
     case SIGNAL_NUM0: /* create bomb */
-      if (sprite_timer_finished(((struct biplane*)s)->bomb_timer) &&	  
+      if (sprite_timer_finished(((struct biplane*)s)->bomb_timer) &&
 	  (!(s->state & BIPLANE_CRASHING)))
 	{
-	  p = sprite_create(&bomb);
+	  p = sprite_create(&bomb,NULL);
 	  p->anim_p = s->anim_p;
 	  ((mech_sprite_t *)p)->angle = ((mech_sprite_t *)s)->angle;
 	  r[0] = mech_heading((mech_sprite_t *)s)[0];
@@ -218,10 +218,10 @@ static void sigget(sprite_t *s, int signal, void *data)
 	}
       break;
     case SIGNAL_NUM1: /* jump ship */
-      if (sprite_timer_finished(((struct biplane*)s)->bomb_timer) &&	  
+      if (sprite_timer_finished(((struct biplane*)s)->bomb_timer) &&
 	  (!(s->state & BIPLANE_CRASHING)))
 	{
-	  p = sprite_create(&parachute);
+	  p = sprite_create(&parachute,NULL);
 	  r[0] = mech_heading((mech_sprite_t *)s)[0];
 	  r[1] = mech_heading((mech_sprite_t *)s)[1];
 	  vmul(r,14);
@@ -235,7 +235,7 @@ static void sigget(sprite_t *s, int signal, void *data)
 	}
       break;
     case SIGNAL_KILL:
-      p = sprite_create(&msg_kill);
+      p = sprite_create(&msg_kill,NULL);
       sprite_set_pos(p, s->x, s->y - 20);
       sprite_group_insert(bullet_group, p);
 

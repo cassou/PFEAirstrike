@@ -45,7 +45,7 @@ static void collide(struct sprite *this_sprite,
 	sprite_t *s;
 	float n[2];
 	/* Create a smoke effect in the opposite direction*/
-	s = sprite_create(&dsmoke);
+	s = sprite_create(&dsmoke,NULL);
 	sprite_set_pos(s,x,y);
 	sprite_get_vel(this_sprite, n);
 	s->anim_p = ((vangle(n) + 128) & 255)/8 ;
@@ -66,7 +66,7 @@ static void collide_world(struct sprite *this_sprite, int x, int y)
 	sprite_t *s;
 	float n[2];
 	/* Create a smoke effect in the opposite direction*/
-	s = sprite_create(&dsmoke);
+	s = sprite_create(&dsmoke,NULL);
 	sprite_set_pos(s,x,y);
 	sprite_get_vel(this_sprite, n);
 	s->anim_p = ((vangle(n) + 128) & 255)/8 ;

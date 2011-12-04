@@ -535,12 +535,12 @@ void scorekeeper()
 		{
 
 			sprite_release(&(players[i].sprite));
-			s = sprite_create(players[i].sprite_type);
+			s = sprite_create(players[i].sprite_type,&players[i]);
 			sprite_aquire(s, &(players[i].sprite));
 			sprite_aquire(players[i].sprite, &(players[i].controller->target));
 			assert(sprite_isvalid(&(players[i].controller->target)));
 			s = players[i].sprite;
-			s->owner = &players[i]; //TODO : find a way to integrate that in 1 of the previous constructors ?
+			//s->owner = &players[i]; //TODO : find a way to integrate that in 1 of the previous constructors ?
 			sprite_group_insert(mech_group, s);
 			sprite_set_pos(s, players[i].startpos[0], players[i].startpos[1]);
 			/*if (!players[i].ishuman) //TODO : check if ai still works and reintegrate it ?

@@ -19,7 +19,7 @@ static void frame_trigger(sprite_t *s)
 static void killme(sprite_t *s)
 {
   sprite_t *b;
-  b = sprite_create(&bonus);
+  b = sprite_create(&bonus,NULL);
   sprite_set_pos(b,s->x, s->y);
   /* The bonus is not really a bullet, but has the same
      properties collision-wise */
@@ -33,7 +33,7 @@ static int setup()
 			       1,1,33));
   CRITICAL(hit_anim = animation_load(path_to_data("balloon-bounce.png"),
 			       1,32,33));
-  CRITICAL(deflate_anim = 
+  CRITICAL(deflate_anim =
 	   animation_load(path_to_data("balloon-deflate.png"),1,32,30));
   animation_last_frame(hit_anim)->trigger = frame_trigger;
   animation_last_frame(deflate_anim)->trigger = killme;
@@ -51,8 +51,8 @@ static sprite_t *create()
   return s;
 }
 
-static void collide(struct sprite *this_sprite, 
-		    struct sprite *other_sprite, 
+static void collide(struct sprite *this_sprite,
+		    struct sprite *other_sprite,
 		    int x, int y)
 {
   if (this_sprite->state == 0)
@@ -66,7 +66,7 @@ static void update(sprite_t *s)
 {
   mech_boundary((mech_sprite_t *)s);
   mech_update((mech_sprite_t *)s);
-  if ((((mech_sprite_t *)s)->damage > 5) && 
+  if ((((mech_sprite_t *)s)->damage > 5) &&
       (s->state != 3))
     {
       s->state = 3;

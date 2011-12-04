@@ -1,8 +1,8 @@
-/* 
+/*
  * Bonus machine and bonus objects
- * 
+ *
  * (w) 2003 by Eero Tamminen
- * 
+ *
  * TODO:
  * - Implement aiming according to 'bird' example to
  *   cannon, cloud & ufo objects
@@ -32,7 +32,7 @@ static void shoot_bonus(sprite_t *s)
 	float v[2] = {0,20};
 	sprite_t *b;
 
-	b = sprite_create(&bouncer);
+	b = sprite_create(&bouncer,NULL);
 	sprite_set_pos(b, s->x, s->y + 32);
 	sprite_set_vel(b,v);
 	sprite_group_insert(mech_group,b);
@@ -107,7 +107,7 @@ struct global_aim_t global_aim  = {
 
 static INLINE void clear_it(sprite_t **pos, sprite_t *it)
 {
-  if (*pos == it) 
+  if (*pos == it)
     {
       sprite_release(pos);
     }
@@ -135,8 +135,8 @@ static INLINE void toggle_it(sprite_t **pos, sprite_t *it)
   }
 }
 
-static void bonus_collide(struct sprite *this_sprite, 
-			  struct sprite *other_sprite, 
+static void bonus_collide(struct sprite *this_sprite,
+			  struct sprite *other_sprite,
 			  int x, int y)
 {
 	/* TODO:
@@ -144,7 +144,7 @@ static void bonus_collide(struct sprite *this_sprite,
 	 * - make 'it' be the player's opponent
 	 */
 	sprite_t *it = other_sprite;
-	
+
 	/* TODO: implement bonus effects */
 	switch (this_sprite->state) {
 	case BONUS_AIRBALLOON:
@@ -165,7 +165,7 @@ static void bonus_collide(struct sprite *this_sprite,
 	case BONUS_ZEPPELIN:
 		toggle_it(&(global_aim.zeppelin), it);
 		break;
-		
+
 	case BONUS_SCORE:
 		/* TODO: increase players score */
 		break;

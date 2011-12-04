@@ -6,7 +6,7 @@
 
 void mech_defaults(mech_sprite_t *s, unsigned int flags)
 {
-  s->rmass = 1; 
+  s->rmass = 1;
   if (flags & MECH_CANROTATE)
     s->rinmom = 2.0;
   else
@@ -62,7 +62,7 @@ void mech_gravity(sprite_group_t *group)
   sprite_t *s;
   int i;
   for (i=0;i<group->nr_sprites;i++)
-    group->sprites[i]->vel[1] += 
+    group->sprites[i]->vel[1] +=
       level.gravity*(((mech_sprite_t *)(group->sprites[i]))->gravity);
 }
 
@@ -137,7 +137,7 @@ float mech_eff_rmass(mech_sprite_t *s, const float *p, const float *n)
       return s->rmass;
     }
   else
-    { 
+    {
       /* if the object can rotate then the force will
 	 cause both rotation and translation, and we need to
 	 distribute the "push" */
@@ -189,14 +189,14 @@ void mech_sprite_collide_old(sprite_t *s1, sprite_t *s2, int x, int y)
 	     immovable objects (rmass = 0). */
 	  I = dv/(mech_eff_rmass((mech_sprite_t *)s1,p,n)+
 		  mech_eff_rmass((mech_sprite_t *)s2,p,n));
-	  vmul(n,I*1.4); /* elasticity is fixed for now */ 
+	  vmul(n,I*1.4); /* elasticity is fixed for now */
 	  mech_apply_impulse((mech_sprite_t *)s1,p,n);
 	  vmul(n,-1);
 	  mech_apply_impulse((mech_sprite_t *)s2,p,n);
 	  /* Deal with the impact */
 	  if (I > level.hard_impact_level) /* hard impact */
 	    {
-	      sp = sprite_create(&ldust);
+	      sp = sprite_create(&ldust,NULL);
 	      sprite_set_pos(sp,x,y);
 	      n[0] = 0;
 	      n[1] = -15;
@@ -209,7 +209,7 @@ void mech_sprite_collide_old(sprite_t *s1, sprite_t *s2, int x, int y)
 	    }
 	  else if (I > level.soft_impact_level) /* soft impact */
 	    {
-	      sp = sprite_create(&sdust);
+	      sp = sprite_create(&sdust,NULL);
 	      sprite_set_pos(sp,x,y);
 	      n[0] = 0;
 	      n[1] = -15;
@@ -233,7 +233,7 @@ void mech_sprite_collide(sprite_t *s1, sprite_t *s2, int x, int y)
   float n[4], v1[2], v2[2], delta[6];
   float overlap,dot,a,b,c;
   int i;
-  
+
   if (!((((mech_sprite_t *)s1)->mech_flags & MECH_CANROTATE) ||
 	(((mech_sprite_t *)s2)->mech_flags & MECH_CANROTATE)))
     {
@@ -244,7 +244,7 @@ void mech_sprite_collide(sprite_t *s1, sprite_t *s2, int x, int y)
   overlap = sprite_get_overlap(s1,s2);
 
   /* Calculate gradient */
-  
+
   s1->x += 1;
   n[0] = sprite_get_overlap(s1,s2);
   s1->x -= 2;
@@ -277,7 +277,7 @@ void mech_sprite_collide(sprite_t *s1, sprite_t *s2, int x, int y)
       n[3] -= sprite_get_overlap(s1,s2);
       s2->anim_p = (s2->anim_p + 1) & 63;
     }
-  else 
+  else
     {
       n[3] = 0;
     }
@@ -287,7 +287,7 @@ void mech_sprite_collide(sprite_t *s1, sprite_t *s2, int x, int y)
 
   c = ((n[0]*n[0] + n[1]*n[1])*
        (((mech_sprite_t *)s1)->rmass + ((mech_sprite_t *)s2)->rmass))
-    + (n[2]*n[2]*((mech_sprite_t *)s1)->rinmom + 
+    + (n[2]*n[2]*((mech_sprite_t *)s1)->rinmom +
        n[3]*n[3]*((mech_sprite_t *)s1)->rinmom);
 
   if (c < 0.1)
@@ -296,8 +296,8 @@ void mech_sprite_collide(sprite_t *s1, sprite_t *s2, int x, int y)
       return;
     }
   c = -overlap/c;
-  
-  /* Delta determines how easy it is to change a 
+
+  /* Delta determines how easy it is to change a
      certain coordinate */
 
   delta[0] = c*n[0]*((mech_sprite_t *)s1)->rmass;
@@ -312,36 +312,36 @@ void mech_sprite_collide(sprite_t *s1, sprite_t *s2, int x, int y)
 
   vmadd(s1->pos,1.0,delta);
   vmadd(s2->pos,1.0,delta+3);
-  
-  /* The rotation gradient is probably not 
+
+  /* The rotation gradient is probably not
      as good as the linear, so add a maximum
      adjustment here */
   if ((delta[2] < 10) && (delta[2] > -10))
     ((mech_sprite_t *)s1)->angle += delta[2];
-  else 
+  else
     ((mech_sprite_t *)s1)->angle += sgn(delta[2])*10;
- 
+
   if ((delta[5] < 10) && (delta[5] > -10))
     ((mech_sprite_t *)s2)->angle += delta[5];
-  else 
+  else
     ((mech_sprite_t *)s2)->angle += sgn(delta[5])*10;
 
 
   /* Adjust velocities */
 
-  a = 
-    n[0]*(s1->vel[0] - s2->vel[0]) + 
-    n[1]*(s1->vel[1] - s2->vel[1]) + 
+  a =
+    n[0]*(s1->vel[0] - s2->vel[0]) +
+    n[1]*(s1->vel[1] - s2->vel[1]) +
     n[2]*((mech_sprite_t *)s1)->ang_vel +
     n[3]*((mech_sprite_t *)s2)->ang_vel;
 
   if (a > 0)
     {
-      b = n[0]*delta[0] + n[1]*delta[1] + n[2]*delta[2] 
+      b = n[0]*delta[0] + n[1]*delta[1] + n[2]*delta[2]
 	- n[0]*delta[3] - n[1]*delta[4] + n[3]*delta[5];
-      
+
       c = -1.4*a/b;
-      
+
       s1->vel[0] += c*delta[0];
       s1->vel[1] += c*delta[1];
       ((mech_sprite_t *)s1)->ang_vel += c*delta[2];
@@ -377,7 +377,7 @@ void mech_sprite_bg_collide_old(sprite_t *s, int x, int y)
       if (dv < 0)
 	{
 	  dv = dv/mech_eff_rmass((mech_sprite_t *)s, p, n);
-	  vmul(n,dv*1.35); 
+	  vmul(n,dv*1.35);
 	  vadd(((mech_sprite_t *)s)->lin_impulse,n);
 #if 0
 	  if (dv < -level.hard_impact_level) /* hard impact */
@@ -417,7 +417,7 @@ void mech_sprite_bg_collide(sprite_t *s1, int x, int y)
   float n[3], v1[2], delta[3];
   float overlap,dot,a,b,c;
   int i;
-  
+
   if (!(((mech_sprite_t *)s1)->mech_flags & MECH_CANROTATE))
     {
       mech_sprite_bg_collide_old(s1,x,y);
@@ -427,7 +427,7 @@ void mech_sprite_bg_collide(sprite_t *s1, int x, int y)
   overlap = sprite_get_bg_overlap(s1);
 
   /* Calculate gradient */
-  
+
   s1->x += 1;
   n[0] = sprite_get_bg_overlap(s1);
   s1->x -= 2;
@@ -449,42 +449,42 @@ void mech_sprite_bg_collide(sprite_t *s1, int x, int y)
   for (i=0;i<3;i++)
     n[i] *= 0.5;
 
-  c = (n[0]*n[0] + n[1]*n[1])*((mech_sprite_t *)s1)->rmass + 
+  c = (n[0]*n[0] + n[1]*n[1])*((mech_sprite_t *)s1)->rmass +
     n[2]*n[2]*((mech_sprite_t *)s1)->rinmom;
-     
+
   if (c < 0.1)
     {
       /* We could do some friction here */
       return;
     }
   c = -overlap/c;
-  
+
   /* Delta is the 'normal', in the space of the
      six degrees of freedom x1,y1,ang1,x2,y2,ang2.
-     It determines how much the coordinates should be 
+     It determines how much the coordinates should be
      adjusted to remove the overlap */
-  
+
   delta[0] = c*n[0]*((mech_sprite_t *)s1)->rmass;
   delta[1] = c*n[1]*((mech_sprite_t *)s1)->rmass;
   delta[2] = c*n[2]*((mech_sprite_t *)s1)->rinmom;
-  
+
   /* Separate the sprites. The factor is experimental.
      Add a maximum separation for stability. */
 
   vmadd(s1->pos,1.0,delta);
   ((mech_sprite_t *)s1)->angle += delta[2];
-  
+
   /* Adjust velocities */
 
-  a = n[0]*s1->vel[0] + n[1]*s1->vel[1] + 
+  a = n[0]*s1->vel[0] + n[1]*s1->vel[1] +
     n[2]*((mech_sprite_t *)s1)->ang_vel;
 
   if (a > 0)
     {
       b = n[0]*delta[0] + n[1]*delta[1] + n[2]*delta[2];
-      
+
       c = -1.2*a/b;
-      
+
       s1->vel[0] += c*delta[0];
       s1->vel[1] += c*delta[1];
       ((mech_sprite_t *)s1)->ang_vel += c*delta[2];
@@ -500,15 +500,15 @@ void mech_boundary(mech_sprite_t *ms)
   sprite_t *s = (sprite_t *)ms;
   float v[2];
 
-  if (s->x < level.xmin) 
+  if (s->x < level.xmin)
     {
       sprite_set_pos(s,s->x + level.xmax,s->y);
       sprite_signal(s,SIGNAL_LEVELWARP,0);
     }
-  if (s->y < level.ymin) 
+  if (s->y < level.ymin)
     {
       sprite_get_vel(s,v);
-      if (v[1] < 0) 
+      if (v[1] < 0)
 	v[1] = 0;
       sprite_set_vel(s,v);
     }
@@ -520,7 +520,7 @@ void mech_boundary(mech_sprite_t *ms)
   if (s->y > level.ymax)
     {
       sprite_get_vel(s,v);
-      if (v[1] > 0) 
+      if (v[1] > 0)
 	v[1] = 0;
       sprite_set_vel(s,v);
     }

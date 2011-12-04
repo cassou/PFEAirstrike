@@ -2,3 +2,8 @@
 *~
 *.o
 .metadata/*
+/airstrike-pre6a-src/src/players.c.orig
+/client/.cproject
+/client/.project
+/client/src/client
+/RemoteSystemsTempFiles/.project

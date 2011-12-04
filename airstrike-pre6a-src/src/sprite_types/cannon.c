@@ -15,7 +15,7 @@ static void shoot_left(sprite_t *s)
 {
   float v[2];
   sprite_t *b;
-  b = sprite_create(&cannonball);
+  b = sprite_create(&cannonball,NULL);
   sprite_set_pos(b,s->x - 30, s->y - 28);
   v[0] = (frand() + 0.5)*-100;
   v[1] = v[0];
@@ -27,7 +27,7 @@ static void shoot_right(sprite_t *s)
 {
   float v[2];
   sprite_t *b;
-  b = sprite_create(&cannonball);
+  b = sprite_create(&cannonball,NULL);
   sprite_set_pos(b,s->x + 30, s->y - 28);
   v[0] = (frand() + 0.5)*100;
   v[1] = -v[0];
@@ -149,8 +149,8 @@ static void ball_update(sprite_t *s)
   mech_update((mech_sprite_t *)s);
 }
 
-static void collide(struct sprite *this_sprite, 
-		    struct sprite *other_sprite, 
+static void collide(struct sprite *this_sprite,
+		    struct sprite *other_sprite,
 		    int x, int y)
 {
   int damage = 5;

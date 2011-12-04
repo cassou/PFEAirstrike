@@ -39,16 +39,16 @@ static void update(sprite_t *s)
   mech_update((mech_sprite_t *)s);
 }
 
-static void collide(sprite_t *this_sprite, 
-		    sprite_t *other_sprite, 
+static void collide(sprite_t *this_sprite,
+		    sprite_t *other_sprite,
 		    int x, int y)
 {
   sprite_t *s;
   float n[2];
-  
-  if (other_sprite->type == &missile) 
+
+  if (other_sprite->type == &missile)
     return;
-  s = sprite_create(&dsmoke);
+  s = sprite_create(&dsmoke,NULL);
   sprite_set_pos(s,x,y);
   sprite_get_vel(this_sprite, n);
   s->anim_p = ((vangle(n) + 128) & 255)/8 ;
@@ -61,10 +61,10 @@ static void collide(sprite_t *this_sprite,
 static void collide_world(sprite_t *this_sprite, int x, int y)
 {
   sprite_t *s;
-  
-  s = sprite_create(&explosion);
+
+  s = sprite_create(&explosion,NULL);
   sprite_set_pos(s,x,y);
-  sprite_group_insert(effects_group,s);  
+  sprite_group_insert(effects_group,s);
   sprite_kill(this_sprite);
 }
 

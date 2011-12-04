@@ -6,7 +6,7 @@
 #include "utils.h"
 #include "players.h"
 
-sprite_t *sprite_create(sprite_type_t *type)
+sprite_t *sprite_create(sprite_type_t *type, void * owner)
 {
   sprite_t *s;
   if (!type->_setup_ok)
@@ -15,7 +15,7 @@ sprite_t *sprite_create(sprite_type_t *type)
       CRITICAL(type->setup() == 0);
       type->_setup_ok = 1;
     }
-  s = type->create_sprite();
+  s = type->create_sprite(owner);
   s->type = type;
   sprite_set_pos(s,0,0);
   return s;

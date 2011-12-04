@@ -22,7 +22,7 @@ int sprite_types_setup()
 
 sprite_t *create_effect(sprite_type_t *type,int x, int y)
 {
-  sprite_t *s = sprite_create(type);
+  sprite_t *s = sprite_create(type,NULL);
   sprite_set_pos(s,x,y);
   sprite_group_insert(effects_group,s);
   return s;

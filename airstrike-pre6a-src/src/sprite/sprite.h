@@ -48,8 +48,8 @@ struct sprite_world;
 typedef struct sprite_type
 {
   char *name;
-  int (*setup)(void);   /* Returns 0 on success */
-  struct sprite *(*create_sprite)(void);
+  int (*setup)();   /* Returns 0 on success */
+  struct sprite *(*create_sprite)(void * owner);
   /* Called when refcount reaches zero */
   void (*free_sprite)(struct sprite *s);
   /* this_sprite is guaranteed to have this type.
@@ -125,7 +125,7 @@ void animation_draw(struct animation *a, int x, int y, int parameter);
 
 /* sprite functions */
 
-sprite_t *sprite_create(sprite_type_t *type);
+sprite_t *sprite_create(sprite_type_t *type, void * owner);
 
 int sprite_alive(sprite_t *s); /* Do not use outside this library */
 void sprite_kill(sprite_t *s); /* Marks s as dead */
