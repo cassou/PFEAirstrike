@@ -23,7 +23,7 @@ sprite_group_t *foreground_group;
 sprite_group_t *ui_group;
 
 static int paused = 0;
-static int max_points = 6; /* actually one more than the end score */
+static int max_points = 15;
 static Uint32 displayflags = 0;
 static int show_debug = 1; /* If true print dbg info on screen */
 static Uint32 frame_times[32];
@@ -32,7 +32,7 @@ static int screen_w;
 static int screen_h;
 
 int nbTeams;
-int nbPlayers;
+int nbPlayers; //TODO: eliminate nbPlayers or player count, redundant
 
 static void atexit_cleanup(void)
 {
@@ -102,22 +102,22 @@ void players_setup(void)
 	for (i = 0; i < playerCount; i++)
 	{
 		players[i].sprite_type = &blueplane;
-		players[i].sprite_type = &blueplane;
 		//	players[i].sprite_type = &biplane;
 		players[i].startpos[0] = 100 * i;
 		players[i].startpos[1] = 300 + 20 * (i % 10);
-		players[i].points = max_points;
+		players[i].points = 0;
 		player_sethuman(i);
-		//player_setai(i);
 		players[i].team = &teams[team];
 		nbMembers++;
+		printf("Player %d is in team %d, %d\n", i, team, players[i].team);
+
 
 		if ((nbMembers == perTeam && team > remains) || nbMembers > perTeam)
 		{
-				team++;
-				nbMembers=0;
+			team++;
+			nbMembers=0;
 		}
-		//printf("Player %d is in team %d, %d\n", i, team, players[i].team);
+
 	}
 }
 
@@ -215,8 +215,8 @@ static int process_events(void)
 				break;
 			}
 			break;
-		default:
-			break;
+			default:
+				break;
 		}
 	}
 	return ret;
@@ -247,26 +247,34 @@ static int wait_for_key(void)
 
 void draw_ui(void)
 {
+	int i;
 	char cbuf[256];
 	float av_dt, s_dt;
-	int i;
+
+	for(i=0;i<nbTeams;i++){
+		sprintf(cbuf, "Team %d", i);
+		text_render(sprite_global.display, 0, small_font, 20+90*(i), sprite_global.display->h - 27, ALIGN_LEFT, ALIGN_BOTTOM, cbuf);
+		sprintf(cbuf, "%2.2i Points", teams[i].points);
+		text_render(sprite_global.display, 0, small_font, 20+90*(i), sprite_global.display->h - 17, ALIGN_LEFT, ALIGN_BOTTOM, cbuf);
+	}
+
 	/* left player stats */
-	text_render(sprite_global.display, 0, big_font, 54, sprite_global.display->h - 27, ALIGN_LEFT, ALIGN_BOTTOM, players[1].name);
+	/*text_render(sprite_global.display, 0, big_font, 54, sprite_global.display->h - 27, ALIGN_LEFT, ALIGN_BOTTOM, players[1].name);
 	if (sprite_isvalid(&(players[1].sprite)))
 	{
 		sprite_signal(players[1].sprite, SIGNAL_STATSTRING, cbuf);
 		text_render(sprite_global.display, 0, small_font, 54, sprite_global.display->h - 17, ALIGN_LEFT, ALIGN_BOTTOM, cbuf);
-	}
+	}*/
 	/* right player stats */
-	text_render(sprite_global.display, 0, big_font, sprite_global.display->w - 54, sprite_global.display->h - 27, ALIGN_RIGHT, ALIGN_BOTTOM, players[0].name);
+	/*text_render(sprite_global.display, 0, big_font, sprite_global.display->w - 54, sprite_global.display->h - 27, ALIGN_RIGHT, ALIGN_BOTTOM, players[0].name);
 	if (sprite_isvalid(&(players[0].sprite)))
 	{
 		sprite_signal(players[0].sprite, SIGNAL_STATSTRING, cbuf);
 		text_render(sprite_global.display, 0, small_font, sprite_global.display->w - 54, sprite_global.display->h - 17, ALIGN_RIGHT, ALIGN_BOTTOM, cbuf);
-	}
+	}*/
 	/* score */
-	sprintf(cbuf, "%2.2i-%2.2i\nSCORE", max_points - 1 - players[0].points, max_points - 1 - players[1].points);
-	text_render(sprite_global.display, 0, big_font, sprite_global.display->w / 2, sprite_global.display->h - 5, ALIGN_CENTER, ALIGN_BOTTOM, cbuf);
+	/*sprintf(cbuf, "%2.2i-%2.2i\nSCORE", max_points - 1 - players[0].points, max_points - 1 - players[1].points);
+	text_render(sprite_global.display, 0, big_font, sprite_global.display->w / 2, sprite_global.display->h - 5, ALIGN_CENTER, ALIGN_BOTTOM, cbuf);*/
 	if (show_debug)
 	{
 		/* calculate frame time stats */
@@ -499,51 +507,49 @@ void scorekeeper()
 	sprite_t *s;
 	int i;
 
-	/* This loop relies on MAXPLAYERS = 2 (great programming..)*/
+	update_teams_score(nbTeams,nbPlayers);
+
+	for (i = 0; i < nbTeams; i++)
+	{
+		if (teams[i].points>=max_points){
+			sprintf(cbuf,"And the winner is Team %d, by %i point(s)", i, teams[i].points);
+			message_mode(cbuf);
+			int j;
+			for (j = 0; j< nbTeams; j++){
+				teams[j].points=0;
+			}
+			for (j = 0; j < playerCount; j++)
+			{
+				players[j].points=0;
+				sprite_kill(players[j].sprite);
+			}
+			return;
+		}
+
+	}
+
+
 	for (i = 0; i < playerCount; i++)
 	{
 		if (!sprite_isvalid(&(players[i].controller->target)))
 		{
-			players[i].points--;
-			if (players[i].points <= 0)
-			{
-				/*if (i == 0)
-				 sprintf(cbuf,"And the winner is %s, by %i point(s)",
-				 player_name[1],player_points[1]);
-				 else
-				 sprintf(cbuf,"And the winner is %s, by %i point(s)",
-				 player_name[0],player_points[0]);**/
-				message_mode(cbuf);
-				int j;
-				for (j = 0; j < playerCount; j++)
-				{
-					sprite_kill(players[j].sprite);
-					players[j].points = max_points;
-				}
-				return;
-			}
-			else
-			{
-				sprite_release(&(players[i].sprite));
-				s = sprite_create(players[i].sprite_type);
-				sprite_aquire(s, &(players[i].sprite));
-				sprite_aquire(players[i].sprite, &(players[i].controller->target));
-				assert(sprite_isvalid(&(players[i].controller->target)));
-				s = players[i].sprite;
-				s->owner = &players[i];
-				sprite_group_insert(mech_group, s);
-				sprite_set_pos(s, players[i].startpos[0], players[i].startpos[1]);
-				if (!players[i].ishuman)
-					ai_controller_set_enemy(players[i].controller, players[(i + 1) % playerCount].sprite);
-				/*if (!player_ishuman[1-i])
-				 {
-				 ai_controller_set_enemy(player_controller[1-i],player_sprite[i]);
-				 }*/
-				s = sprite_create(&energymeter);
-				sprite_set_pos(s, (sprite_global.display->w - 60) * (1 - i) + 30, sprite_global.display->h - 30);
-				sprite_signal(s, SIGNAL_SPRITETARGET, players[i].sprite);
-				sprite_group_insert(ui_group, s);
-			}
+
+			sprite_release(&(players[i].sprite));
+			s = sprite_create(players[i].sprite_type);
+			sprite_aquire(s, &(players[i].sprite));
+			sprite_aquire(players[i].sprite, &(players[i].controller->target));
+			assert(sprite_isvalid(&(players[i].controller->target)));
+			s = players[i].sprite;
+			s->owner = &players[i]; //TODO : find a way to integrate that in 1 of the previous constructors ?
+			sprite_group_insert(mech_group, s);
+			sprite_set_pos(s, players[i].startpos[0], players[i].startpos[1]);
+			/*if (!players[i].ishuman) //TODO : check if ai still works and reintegrate it ?
+				ai_controller_set_enemy(players[i].controller, players[(i + 1) % playerCount].sprite);*/
+			/*s = sprite_create(&energymeter);
+			sprite_set_pos(s, (sprite_global.display->w - 60) * (1 - i) + 30, sprite_global.display->h - 30);
+			sprite_signal(s, SIGNAL_SPRITETARGET, players[i].sprite);
+			sprite_group_insert(ui_group, s);*/
+
 		}
 	}
 }
@@ -608,6 +614,8 @@ void game_frame()
 	sprite_group_draw(foreground_group);
 	sprite_group_draw(ui_group);
 
+
+
 	draw_ui();
 
 	if (!sprite_end_frame())
@@ -647,9 +655,10 @@ int main(int argc, char *argv[])
 	if (argc == 3)
 	{
 		nbTeams = (int) strtol(argv[1], &argv[1], 10);
+		//TODO : mettre des #define pour equipe min et max
 		if (nbTeams > 10 || nbTeams < 2)
 		{
-			printf("Please enter a number of teams between 2 and %d\n", 10);
+			printf("Please enter a number of teams between 2 and %d\n", 10); //TODO : wtf ? 50% string 50% %d ?
 			exit(EXIT_SUCCESS);
 		}
 

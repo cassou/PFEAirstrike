@@ -64,7 +64,7 @@ typedef struct sprite_type
 } sprite_type_t;
 
 
-struct player;
+//struct player;
 typedef struct sprite
 {
   /* 'public' variables */

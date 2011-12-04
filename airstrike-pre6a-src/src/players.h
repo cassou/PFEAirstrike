@@ -19,7 +19,7 @@ typedef struct player
 	sprite_type_t *sprite_type;
 	controller_t *controller;
 	int startpos[2];
-	struct team_t *team;
+	struct team *team;
 } player_t;
 
 extern player_t players[MAXPLAYERS];

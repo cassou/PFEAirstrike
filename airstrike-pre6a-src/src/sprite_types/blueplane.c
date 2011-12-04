@@ -6,14 +6,8 @@
 #include "maths.h"
 #include "mech.h"
 #include "airstrike.h"
+#include "plane_flags.h"
 
-enum biplane_flags /* Different states the biplane can be in */
-  {
-    BIPLANE_ACCELERATING = 1,
-    BIPLANE_CRASHING = 2,
-    BIPLANE_UP = 4,
-    BIPLANE_DOWN = 8,
-  };
 
 struct biplane
 {
@@ -41,7 +35,7 @@ static animation_t *crashing;
 
 static void frame_trigger(sprite_t *s)
 {
-  if (s->state & BIPLANE_ACCELERATING)
+  if (s->state & PLANE_ACCELERATING)
     {
       if (((mech_sprite_t *)s)->damage < 10){}
       /*FUME*/
@@ -111,24 +105,24 @@ static void update(sprite_t *s)
   mech_sprite_t *ms = (mech_sprite_t *)s;
 
   sprite_get_vel(s,v);
-  if (!(s->state & BIPLANE_CRASHING))
+  if (!(s->state & PLANE_CRASHING))
     {
-      if (s->state & BIPLANE_ACCELERATING)
+      if (s->state & PLANE_ACCELERATING)
 	{
 	  vset(pull,mech_heading(ms));
 	  vrot(pull,-16); /* maybe the angle should depend on up/down */
 	  vmadd(ms->lin_impulse,engine_strength,pull);
 	}
-      if (s->state & BIPLANE_UP)
+      if (s->state & PLANE_UP)
 	ms->air_rotate = -turn_amount;
-      else if (s->state & BIPLANE_DOWN)
+      else if (s->state & PLANE_DOWN)
 	ms->air_rotate = turn_amount;
       else
 	ms->air_rotate = 0;
 
       if (ms->damage >= hitpoints)
 	{
-	  s->state |= BIPLANE_CRASHING;
+	  s->state |= PLANE_CRASHING;
 	  sprite_set_animation(s,crashing);
 	  create_effect(&fire,s->x,s->y);
 	  sprite_alarm(7000,s,SIGNAL_KILL,0);
@@ -147,34 +141,34 @@ static void sigget(sprite_t *s, int signal, void *data)
   switch(signal)
     {
     case SIGNAL_CANCONTROL:
-      *(int *)data = !(s->state & BIPLANE_CRASHING);
+      *(int *)data = !(s->state & PLANE_CRASHING);
       break;
     case SIGNAL_DAMAGE:
       ((mech_sprite_t *)s)->damage += *(int *)data;
       break;
     case SIGNAL_ACCELERATE:
-      s->state |= BIPLANE_ACCELERATING;
+      s->state |= PLANE_ACCELERATING;
       break;
     case -SIGNAL_ACCELERATE:
-      s->state &= ~BIPLANE_ACCELERATING;
+      s->state &= ~PLANE_ACCELERATING;
       break;
     case SIGNAL_UP:
-      s->state |= BIPLANE_UP;
-      s->state &= ~BIPLANE_DOWN;
+      s->state |= PLANE_UP;
+      s->state &= ~PLANE_DOWN;
       break;
     case -SIGNAL_UP:
-      s->state &= ~BIPLANE_UP;
+      s->state &= ~PLANE_UP;
       break;
     case SIGNAL_DOWN:
-      s->state |= BIPLANE_DOWN;
-      s->state &= ~BIPLANE_UP;
+      s->state |= PLANE_DOWN;
+      s->state &= ~PLANE_UP;
       break;
     case -SIGNAL_DOWN:
-      s->state &= ~BIPLANE_DOWN;
+      s->state &= ~PLANE_DOWN;
       break;
     case SIGNAL_FIRE: /* create bullet */
       if (sprite_timer_finished(((struct biplane*)s)->gun_timer) &&
-	  !(s->state & BIPLANE_CRASHING))
+	  !(s->state & PLANE_CRASHING))
 	{
 	  sound_effect(&sound_gunfire,s->x,s->y);
 	  p = sprite_create(((struct biplane*)s)->bullet_type);
@@ -194,7 +188,7 @@ static void sigget(sprite_t *s, int signal, void *data)
       break;
     case SIGNAL_NUM0: /* create bomb */
       if (sprite_timer_finished(((struct biplane*)s)->bomb_timer) &&
-	  (!(s->state & BIPLANE_CRASHING)) &&
+	  (!(s->state & PLANE_CRASHING)) &&
 	  (((struct biplane*)s)->nr_bombs > 0))
 	{
 	  ((struct biplane*)s)->nr_bombs--;
@@ -216,7 +210,7 @@ static void sigget(sprite_t *s, int signal, void *data)
       break;
     case SIGNAL_NUM1: /* jump ship */
       if (sprite_timer_finished(((struct biplane*)s)->bomb_timer) &&
-	  (!(s->state & BIPLANE_CRASHING)))
+	  (!(s->state & PLANE_CRASHING)))
 	{
 	  p = sprite_create(&parachute);
 	  r[0] = mech_heading((mech_sprite_t *)s)[0];
@@ -236,10 +230,10 @@ static void sigget(sprite_t *s, int signal, void *data)
       sprite_kill(s);
       break;
     case SIGNAL_ISHARMLESS:
-      if (s->state & BIPLANE_CRASHING)
+      if (s->state & PLANE_CRASHING)
 	((struct signal_reply *)data)->reply = 1;
       break;
-    case SIGNAL_STATSTRING:
+    case SIGNAL_STATSTRING://TTODO : useless ?
       sprintf(data,"%i bombs",((struct biplane*)s)->nr_bombs);
       break;
     default:

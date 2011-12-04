@@ -1,6 +1,8 @@
 #include "teams.h"
 #include "players.h"
 #include "prototype.h"
+#include "teams.h"
+
 
 team_t teams[MAXTEAMS];
 
@@ -22,6 +24,16 @@ void teams_init(int nbTeams, int nbPlayers)
 		}
 
 		//teams[i].members = (player_t*) malloc(nbPlayers);
+	}
+}
+
+void update_teams_score(int nbTeams, int nbPlayers){
+	int i;
+	for (i=0; i<nbTeams;i++){
+		teams[i].points=0;
+	}
+	for (i=0; i<nbPlayers;i++){
+		players[i].team->points+=players[i].points;
 	}
 }
 /*
