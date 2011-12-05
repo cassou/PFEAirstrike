@@ -112,7 +112,7 @@ void players_setup(void)
 		printf("Player %d is in team %d, %d\n", i, team, players[i].team);
 
 
-		if ((nbMembers == perTeam && team > remains) || nbMembers > perTeam)
+		if ((nbMembers == perTeam && team > (remains-1)) || nbMembers > perTeam)
 		{
 			team++;
 			nbMembers=0;
