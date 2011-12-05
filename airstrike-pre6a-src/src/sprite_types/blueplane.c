@@ -203,7 +203,7 @@ static void sigget(sprite_t *s, int signal, void *data)
 		}
 		break;
 	case SIGNAL_NUM0: /* create bomb */
-		if (sprite_timer_finished(((struct biplane*)s)->bomb_timer) &&
+		/*if (sprite_timer_finished(((struct biplane*)s)->bomb_timer) &&
 				(!(s->state & PLANE_CRASHING)) &&
 				(((struct biplane*)s)->nr_bombs > 0))
 		{
@@ -222,7 +222,7 @@ static void sigget(sprite_t *s, int signal, void *data)
 			sprite_group_insert(mech_group,p);
 			sprite_timer_set(&(((struct biplane*)s)->bomb_timer),
 					bomb_delay);
-		}
+		}*/
 		break;
 	case SIGNAL_NUM1: /* jump ship */
 		if (sprite_timer_finished(((struct biplane*)s)->bomb_timer) &&
