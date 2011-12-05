@@ -221,7 +221,7 @@ static void sigget(sprite_t *s, int signal, void *data)
 			sprite_get_vel(s,v);
 			vmadd(v,5,r);
 			sprite_set_vel(p,v);
-			sprite_group_insert(mech_group,p);
+			sprite_group_insert(bomb_group,p);
 			sprite_timer_set(&(((struct biplane*)s)->bomb_timer),
 					bomb_delay);
 		}

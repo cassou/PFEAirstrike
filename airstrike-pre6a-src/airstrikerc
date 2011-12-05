@@ -70,8 +70,8 @@ redplane.air_normal 0.1
 
 blueplane.engine_strength 0.3
 blueplane.bomb_delay 300
-blueplane.nr_bombs 5
-blueplane.bullet_delay 140
+blueplane.nr_bombs 100
+blueplane.bullet_delay 50
 blueplane.hitpoints 15
 blueplane.mass 1
 blueplane.turn_amount 0.06

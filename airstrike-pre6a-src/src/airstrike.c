@@ -18,6 +18,7 @@
 
 sprite_group_t *mech_group;
 sprite_group_t *bullet_group;
+sprite_group_t *bomb_group;
 sprite_group_t *effects_group;
 sprite_group_t *foreground_group;
 sprite_group_t *ui_group;
@@ -131,6 +132,7 @@ void teams_setup(void)
 void engine_setup(void)
 {
 	mech_group = sprite_group_create();
+	bomb_group = sprite_group_create();
 	bullet_group = sprite_group_create();
 	effects_group = sprite_group_create();
 	foreground_group = sprite_group_create();
@@ -297,6 +299,7 @@ void console_frame(void)
 	sprite_start_frame();
 	sprite_group_draw(mech_group);
 	sprite_group_draw(bullet_group);
+	sprite_group_draw(bomb_group);
 	sprite_group_draw(effects_group);
 	sprite_group_draw(foreground_group);
 	sprite_group_draw(ui_group);
@@ -432,6 +435,7 @@ void message_mode(char *message)
 	sprite_start_frame();
 	sprite_group_draw(mech_group);
 	sprite_group_draw(bullet_group);
+	sprite_group_draw(bomb_group);
 	sprite_group_draw(effects_group);
 	sprite_group_draw(foreground_group);
 	sprite_group_draw(ui_group);
@@ -445,6 +449,7 @@ void message_time(char *message,int duration)
 {
 	sprite_start_frame();
 	sprite_group_draw(mech_group);
+	sprite_group_draw(bomb_group);
 	sprite_group_draw(bullet_group);
 	sprite_group_draw(effects_group);
 	sprite_group_draw(foreground_group);
@@ -590,11 +595,13 @@ void game_frame()
 
 	sprite_group_move(mech_group, sprite_global.dt);
 	sprite_group_move(bullet_group, sprite_global.dt);
+	sprite_group_move(bomb_group, sprite_global.dt);
 	sprite_group_move(effects_group, sprite_global.dt);
 	sprite_group_move(foreground_group, sprite_global.dt);
 
 	sprite_group_animate(mech_group, sprite_global.dt);
 	sprite_group_animate(bullet_group, sprite_global.dt);
+	sprite_group_animate(bomb_group, sprite_global.dt);
 	sprite_group_animate(effects_group, sprite_global.dt);
 	sprite_group_animate(foreground_group, sprite_global.dt);
 
@@ -602,8 +609,13 @@ void game_frame()
 
 	sprite_group_coll(mech_group, mech_sprite_collide);
 	sprite_group_coll2(bullet_group, mech_group, 0);
+	sprite_group_coll2(bomb_group, mech_group, 0);
+	sprite_group_coll2(bomb_group, bullet_group, 0);
+	sprite_group_coll2(bomb_group, bomb_group, 0);
 	sprite_group_bg_coll(mech_group, mech_sprite_bg_collide);
 	sprite_group_bg_coll(bullet_group, 0);
+	sprite_group_bg_coll(bomb_group, 0);
+
 
 	for (i = 0; i < playerCount; i++)
 	{
@@ -612,11 +624,13 @@ void game_frame()
 
 	sprite_group_update(mech_group);
 	sprite_group_update(bullet_group);
+	sprite_group_update(bomb_group);
 	sprite_group_update(effects_group);
 	sprite_group_update(foreground_group);
 	sprite_group_update(ui_group);
 
 	sprite_group_cleanup(bullet_group);
+	sprite_group_cleanup(bomb_group);
 	sprite_group_cleanup(mech_group);
 	sprite_group_cleanup(effects_group);
 	sprite_group_cleanup(foreground_group);
@@ -629,6 +643,7 @@ void game_frame()
 
 	sprite_group_draw(mech_group);
 	sprite_group_draw(bullet_group);
+	sprite_group_draw(bomb_group);
 	sprite_group_draw(effects_group);
 	sprite_group_draw(foreground_group);
 	sprite_group_draw(ui_group);
@@ -724,6 +739,7 @@ int main(int argc, char *argv[])
 	/* We probably never get here right now, because of exit() calls. */
 	fprintf(stderr, "Left main loop.\n");
 	sprite_group_free(mech_group);
+	sprite_group_free(bomb_group);
 	sprite_group_free(bullet_group);
 	sprite_group_free(effects_group);
 	sprite_group_free(foreground_group);

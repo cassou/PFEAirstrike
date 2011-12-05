@@ -5,6 +5,7 @@
 
 extern  sprite_group_t *mech_group;
 extern  sprite_group_t *bullet_group;
+extern  sprite_group_t *bomb_group;
 extern  sprite_group_t *effects_group;
 extern  sprite_group_t *foreground_group;
 extern  sprite_group_t *ui_group;
