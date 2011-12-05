@@ -189,6 +189,7 @@ static void sigget(sprite_t *s, int signal, void *data)
 		{
 			sound_effect(&sound_gunfire,s->x,s->y);
 			p = sprite_create(((struct biplane*)s)->bullet_type,s->owner);
+			p->owner=s->owner;
 			sprite_group_insert(bullet_group,p);
 			r[0] = mech_heading((mech_sprite_t *)s)[0];
 			r[1] = mech_heading((mech_sprite_t *)s)[1];
