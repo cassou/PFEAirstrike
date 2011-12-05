@@ -188,8 +188,7 @@ static void sigget(sprite_t *s, int signal, void *data)
 				!(s->state & PLANE_CRASHING))
 		{
 			sound_effect(&sound_gunfire,s->x,s->y);
-			p = sprite_create(((struct biplane*)s)->bullet_type,NULL);
-			p->owner = s->owner;
+			p = sprite_create(((struct biplane*)s)->bullet_type,s->owner);
 			sprite_group_insert(bullet_group,p);
 			r[0] = mech_heading((mech_sprite_t *)s)[0];
 			r[1] = mech_heading((mech_sprite_t *)s)[1];
@@ -209,7 +208,7 @@ static void sigget(sprite_t *s, int signal, void *data)
 				(((struct biplane*)s)->nr_bombs > 0))
 		{
 			((struct biplane*)s)->nr_bombs--;
-			p = sprite_create(&bomb,NULL);
+			p = sprite_create(&bomb,s->owner);
 			p->anim_p = s->anim_p;
 			((mech_sprite_t *)p)->angle = ((mech_sprite_t *)s)->angle;
 			r[0] = mech_heading((mech_sprite_t *)s)[0];
