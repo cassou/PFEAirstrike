@@ -28,10 +28,12 @@ static int setup()
 	return 0;
 }
 
-static sprite_t *create()
+static sprite_t *create(void * owner)
 {
 	sprite_t *s;
 	s = calloc(1,sizeof*s);
+	player_t *p = (player_t *)owner;
+	s->owner=owner;
 	s->animation = anim;
 	s->state = 0;
 	s->anim_p = 0;

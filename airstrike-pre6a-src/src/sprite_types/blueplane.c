@@ -100,9 +100,10 @@ static sprite_t *create(void * owner)
 	sprite_t *s;
 	player_t *p = (player_t *)owner;
 	CRITICAL(s = calloc(1,sizeof(struct biplane)));
-	s->animation = right_anim[p->team->id];
+	s->owner=owner;
+	s->animation = right_anim[s->owner->team->id];
 	s->anim_p = 32;
-	s->owner=p;
+
 	mech_defaults((mech_sprite_t *)s,MECH_CANROTATE);
 	((struct biplane *)s)->bullet_type = &bullet;
 	((struct biplane *)s)->nr_bombs = nr_bombs;
@@ -189,7 +190,7 @@ static void sigget(sprite_t *s, int signal, void *data)
 		{
 			sound_effect(&sound_gunfire,s->x,s->y);
 			p = sprite_create(((struct biplane*)s)->bullet_type,s->owner);
-			p->owner=s->owner;
+			//p->owner=s->owner;
 			sprite_group_insert(bullet_group,p);
 			r[0] = mech_heading((mech_sprite_t *)s)[0];
 			r[1] = mech_heading((mech_sprite_t *)s)[1];
@@ -204,7 +205,7 @@ static void sigget(sprite_t *s, int signal, void *data)
 		}
 		break;
 	case SIGNAL_NUM0: /* create bomb */
-		/*if (sprite_timer_finished(((struct biplane*)s)->bomb_timer) &&
+		if (sprite_timer_finished(((struct biplane*)s)->bomb_timer) &&
 				(!(s->state & PLANE_CRASHING)) &&
 				(((struct biplane*)s)->nr_bombs > 0))
 		{
@@ -223,7 +224,7 @@ static void sigget(sprite_t *s, int signal, void *data)
 			sprite_group_insert(mech_group,p);
 			sprite_timer_set(&(((struct biplane*)s)->bomb_timer),
 					bomb_delay);
-		}*/
+		}
 		break;
 	case SIGNAL_NUM1: /* jump ship */
 		if (sprite_timer_finished(((struct biplane*)s)->bomb_timer) &&
