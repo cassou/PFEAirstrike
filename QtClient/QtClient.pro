@@ -10,9 +10,16 @@ TARGET = QtClient
 TEMPLATE = app
 
 
-SOURCES += main.cpp\
-        mainwindow.cpp
 
-HEADERS  += mainwindow.h
+SOURCES += main.cpp\
+        mainwindow.cpp \
+    networkmanager.cpp
+
+HEADERS  += mainwindow.h \
+    networkmanager.h \
+    messages.h \
+    keys.h
 
 FORMS    += mainwindow.ui
+
+LIBS += -L./lib -lenet
