@@ -3,8 +3,8 @@
 #include <QThread>
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+        QMainWindow(parent),
+        ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     connect(ui->connectButton,SIGNAL(clicked()),this,SLOT(connect_clicked()));
@@ -36,56 +36,16 @@ void MainWindow::connect_clicked(){
 }
 
 void MainWindow::keyPressEvent(QKeyEvent * event){
-    if (event->key() == Qt::Key_Escape && !event->isAutoRepeat()) {
-        ui->debugTextEdit->appendPlainText("Echap");
-    } else {
-        QWidget::keyPressEvent(event);
-    }
-    if (event->key() == Qt::Key_Right && !event->isAutoRepeat()) {
-        ui->debugTextEdit->appendPlainText("Right");
-    } else {
-        QWidget::keyPressEvent(event);
-    }
-    if (event->key() == Qt::Key_Left && !event->isAutoRepeat()) {
-        ui->debugTextEdit->appendPlainText("Left");
-    } else {
-        QWidget::keyPressEvent(event);
-    }
-    if (event->key() == Qt::Key_Space && !event->isAutoRepeat()) {
-        ui->debugTextEdit->appendPlainText("Space");
-    } else {
-        QWidget::keyPressEvent(event);
-    }
-    if (event->key() == Qt::Key_Control && !event->isAutoRepeat()) {
-        ui->debugTextEdit->appendPlainText("Ctrl");
+    if(!event->isAutoRepeat()){
+        networkManager->process_key(event, 1);
     } else {
         QWidget::keyPressEvent(event);
     }
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent * event){
-    if (event->key() == Qt::Key_Escape && !event->isAutoRepeat()) {
-        ui->debugTextEdit->appendPlainText("Echap release");
-    } else {
-        QWidget::keyPressEvent(event);
-    }
-    if (event->key() == Qt::Key_Right && !event->isAutoRepeat()) {
-        ui->debugTextEdit->appendPlainText("Right release");
-    } else {
-        QWidget::keyPressEvent(event);
-    }
-    if (event->key() == Qt::Key_Left && !event->isAutoRepeat()) {
-        ui->debugTextEdit->appendPlainText("Left release");
-    } else {
-        QWidget::keyPressEvent(event);
-    }
-    if (event->key() == Qt::Key_Space && !event->isAutoRepeat()) {
-        ui->debugTextEdit->appendPlainText("Space release");
-    } else {
-        QWidget::keyPressEvent(event);
-    }
-    if (event->key() == Qt::Key_Control && !event->isAutoRepeat()) {
-        ui->debugTextEdit->appendPlainText("Ctrl release");
+    if(!event->isAutoRepeat()){
+        networkManager->process_key(event, 0);
     } else {
         QWidget::keyPressEvent(event);
     }

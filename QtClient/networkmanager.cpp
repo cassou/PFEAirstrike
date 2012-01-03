@@ -2,6 +2,7 @@
 #include "messages.h"
 #include "keys.h"
 #include <QDebug>
+#include <QKeyEvent>
 
 NetworkManager::NetworkManager()
 {
@@ -63,9 +64,10 @@ void NetworkManager::network_init(){
 
         if (enet_host_service(client, &event, 3000) > 0 && event.type == ENET_EVENT_TYPE_CONNECT) {
             writeText("Connection to " + ip_addr + ":" + QString::number(port) + "succeeded.");
-            qDebug() << "Connection to " << ip_addr << ":" << port << "succeeded.";
+            qDebug() << "Connection to " << ip_addr << ":" << port << " succeeded.";
             connect_succeeded=1;
         } else {
+            qDebug() << "test " ;
             /* Either the 5 seconds are up or a disconnect event was */
             /* received. Reset the peer in the event the 5 seconds   */
             /* had run out without any significant event.            */
@@ -120,13 +122,15 @@ void NetworkManager::set_rand_key(int key){
 }
 
 void NetworkManager::set_key(int key){
-
     AS_message_t msg;
     msg.source_id = 0;
     msg.mess_type=MSG_KEY;
     msg.data=key;
-    ENetPacket *packet = enet_packet_create(&msg, sizeof(AS_message_t), ENET_PACKET_FLAG_RELIABLE);
-    enet_peer_send(peer, 0, packet);
+    //ENetPacket *packet = enet_packet_create(&msg, sizeof(AS_message_t), ENET_PACKET_FLAG_RELIABLE);
+    ENetPacket *packet = enet_packet_create(&msg, sizeof(msg), ENET_PACKET_FLAG_RELIABLE);
+    int rc = enet_peer_send(peer, 0, packet);
+    qDebug() << "Peer send return code: " << rc;
+    writeText("Peer send return code: " + QString::number(rc));
 }
 
 void NetworkManager::network_loop(){
@@ -164,30 +168,17 @@ void NetworkManager::testFunction()
     emit writeText("Test");
 }
 
-/*
-void NetworkManager::process_key(int key_status, SDLKey key){
-    switch (key)
-    {
-    case SDLK_ESCAPE:
-        keep_running = 0;
-        break;
-    case SDLK_RIGHT:
+void NetworkManager::process_key(QKeyEvent * event, int key_status){
+    writeText("Process key");
+    if (event->key() == Qt::Key_Right )
         set_key(key_status*KEY__DOWN);
-        break;
-    case SDLK_LEFT:
+    if (event->key() == Qt::Key_Left)
         set_key(key_status*KEY__UP);
-        break;
-    case SDLK_UP:
+    if (event->key() == Qt::Key_Up)
         set_key(key_status*KEY__ACCELERATE);
-        break;
-    case SDLK_x:
+    if (event->key() == Qt::Key_Space)
         set_key(key_status*KEY_FIRE);
-        break;
-    case SDLK_SPACE:
+    if (event->key() == Qt::Key_Control)
         set_key(key_status*KEY_BOMB);
-        break;
-    default:
-        break;
-    }
 }
-*/
+

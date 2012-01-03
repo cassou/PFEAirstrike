@@ -4,6 +4,7 @@
 #include <enet/enet.h>
 #include <QObject>
 #include <QString>
+#include <QWidget>
 
 class NetworkManager : public QObject
 {
@@ -29,6 +30,7 @@ public:
     void set_rand_key(int key);
     void update_state();
     void testFunction();
+    void process_key(QKeyEvent * event, int key_status);
 
 signals:
     void writeText(QString text);
