@@ -147,6 +147,7 @@ void process_packet(ENetEvent * event){
 				for (i=0;i<playerCount;i++){
 					if (!clientConnected[i]){
 						client_id = i;
+						clientCount++;
 						break;
 					}
 				}
@@ -164,10 +165,12 @@ void process_packet(ENetEvent * event){
 		break;
 	case MSG_KEY:
 		printf("Key %d message received from %d\n",msg->data,peerID);
-		if (msg->data>=0){
-			network_keymap[msg->client_id][msg->data]=1;
-		}else{
-			network_keymap[msg->client_id][-msg->data]=0;
+		if (clientConnected[msg->client_id]){
+			if (msg->data>=0){
+				network_keymap[msg->client_id][msg->data]=1;
+			}else{
+				network_keymap[msg->client_id][-msg->data]=0;
+			}
 		}
 		break;
 	default:
