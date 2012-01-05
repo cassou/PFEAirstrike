@@ -154,6 +154,7 @@ void process_packet(ENetEvent * event){
 			}else{
 				sendMessage(peerID,MSG_NO_SPACE,0,0);
 				printf("MSG_NO_SPACE message sended to %d\n",peerID);
+				break;
 			}
 
 		}else{
