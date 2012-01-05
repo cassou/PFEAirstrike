@@ -19,6 +19,8 @@ void player_init(){
 		players[i].id=i;
 		players[i].team=0;
 		players[i].damage=0;
+		players[i].timeBeforeRespawn=TIMEFIRSTSPAWN;
+		players[i].spawnTimer=NULL;
 	}
 }
 

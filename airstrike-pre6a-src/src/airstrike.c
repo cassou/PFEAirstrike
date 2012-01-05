@@ -519,12 +519,33 @@ void console_mode()
 	}
 }
 
+int startDelay[MAXTEAMS];
+void init_spawn_delays()
+{
+	int a;
+	for (a = 0; a< nbTeams; a++){
+		startDelay[a]=TIMEFIRSTSPAWN;
+	}
+	for (a = 0; a < playerCount; a++)
+	{
+		int tid = players[a].team->id;
+		players[a].timeBeforeRespawn=startDelay[tid];
+		startDelay[tid]+=DELAYSPAWN;
+
+		printf("Player %d will start after %d\n",a,players[a].timeBeforeRespawn);
+	}
+
+}
+
+
 /* Keeps track of dead planes, recreates them and award points */
+
 void scorekeeper()
 {
 	char cbuf[200];
 	sprite_t *s;
 	int i;
+
 
 	update_teams_score(nbTeams,nbPlayers);
 
@@ -537,13 +558,17 @@ void scorekeeper()
 			message_time("Starting in 2",1);
 			message_time("Starting in 1",1);
 			message_time("GO !",1);
+			init_spawn_delays();
+			//printf("rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr\n");
+
+		//TODO : page affichage des scores
 
 			int j;
 			for (j = 0; j< nbTeams; j++){
 				teams[j].points=0;
 			}
-			for (j = 0; j < playerCount; j++)
-			{
+
+			for (j = 0; j < playerCount; j++){
 				players[j].points=0;
 				sprite_kill(players[j].sprite);
 			}
@@ -557,23 +582,31 @@ void scorekeeper()
 	{
 		if (!sprite_isvalid(&(players[i].controller->target)))
 		{
+			if (!players[i].spawnTimer){
+				sprite_release(&(players[i].sprite));
+				sprite_timer_set(&(players[i].spawnTimer),players[i].timeBeforeRespawn);
+				printf("timer set player %d %d\n", i ,players[i].timeBeforeRespawn );
 
-			sprite_release(&(players[i].sprite));
-			s = sprite_create(players[i].sprite_type,&players[i]);
-			sprite_aquire(s, &(players[i].sprite));
-			sprite_aquire(players[i].sprite, &(players[i].controller->target));
-			assert(sprite_isvalid(&(players[i].controller->target)));
-			s = players[i].sprite;
-			//s->owner = &players[i]; //TODO : find a way to integrate that in 1 of the previous constructors ?
-			sprite_group_insert(mech_group, s);
-			sprite_set_pos(s, players[i].startpos[0], players[i].startpos[1]);
-			/*if (!players[i].ishuman) //TODO : check if ai still works and reintegrate it ?
-				ai_controller_set_enemy(players[i].controller, players[(i + 1) % playerCount].sprite);*/
-			/*s = sprite_create(&energymeter);
-			sprite_set_pos(s, (sprite_global.display->w - 60) * (1 - i) + 30, sprite_global.display->h - 30);
-			sprite_signal(s, SIGNAL_SPRITETARGET, players[i].sprite);
-			sprite_group_insert(ui_group, s);*/
+			}else{
+				if (sprite_timer_finished(players[i].spawnTimer)){
+					s = sprite_create(players[i].sprite_type,&players[i]);
+					sprite_aquire(s, &(players[i].sprite));
+					sprite_aquire(players[i].sprite, &(players[i].controller->target));
+					assert(sprite_isvalid(&(players[i].controller->target)));
+					s = players[i].sprite;
+					//s->owner = &players[i]; //TODO : find a way to integrate that in 1 of the previous constructors ?
+					sprite_group_insert(mech_group, s);
+					sprite_set_pos(s, players[i].startpos[0], players[i].startpos[1]);
+					/*if (!players[i].ishuman) //TODO : check if ai still works and reintegrate it ?
+						ai_controller_set_enemy(players[i].controller, players[(i + 1) % playerCount].sprite);*/
+					/*s = sprite_create(&energymeter);
+					sprite_set_pos(s, (sprite_global.display->w - 60) * (1 - i) + 30, sprite_global.display->h - 30);
+					sprite_signal(s, SIGNAL_SPRITETARGET, players[i].sprite);
+					sprite_group_insert(ui_group, s);*/
 
+					players[i].spawnTimer=NULL;
+				}
+			}
 		}
 	}
 }
@@ -723,6 +756,7 @@ int main(int argc, char *argv[])
 	players_setup();
 	//addPlayers(nbTeams);
 	network_init();
+	init_spawn_delays();
 	fprintf(stderr, "Entering main loop.\n");
 	while (process_events())
 	{
