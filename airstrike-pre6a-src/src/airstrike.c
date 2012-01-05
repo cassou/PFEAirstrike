@@ -24,7 +24,7 @@ sprite_group_t *foreground_group;
 sprite_group_t *ui_group;
 
 static int paused = 0;
-static int max_points = 15;
+static int max_points = 150;
 static Uint32 displayflags = 0;
 static int show_debug = 1; /* If true print dbg info on screen */
 static Uint32 frame_times[32];

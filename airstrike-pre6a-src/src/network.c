@@ -8,6 +8,7 @@
 #include "prototype.h"
 #include "players.h"
 #include "keys.h"
+#include "sprite.h"
 
 void *thread_function( void *arg );
 void network_loop();
@@ -77,6 +78,10 @@ void network_loop(){
 		for(k=0;k<playerCount;k++){
 			sendMessage(clientPeerId[k],MSG_POINTS,k,players[k].points);
 			sendMessage(clientPeerId[k],MSG_DAMAGE,k,players[k].damage);
+			if (players[k].spawnTimer){
+				sendMessage(clientPeerId[k],MSG_TIME2START,k,1+(players[k].spawnTimer-sprite_global.game_clock)/1000);
+				//printf("%d \n",1+(players[k].spawnTimer-sprite_global.game_clock)/1000);
+			}
 		}
 
 
@@ -84,7 +89,7 @@ void network_loop(){
 		/* Keep doing host_service until no events are left */
 		while (serviceResult > 0) {
 			/* Wait up to 1000 milliseconds for an event. */
-			serviceResult = enet_host_service(server, &event, 100);
+			serviceResult = enet_host_service(server, &event, 10);
 
 			if (serviceResult > 0) {
 				switch (event.type) {
