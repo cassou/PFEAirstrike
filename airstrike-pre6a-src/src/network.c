@@ -26,6 +26,8 @@ void *thread_function( void *arg ){
 
 //TODO : separate peerID and playerid (associative array ?)
 
+ENetAddress address;
+ENetHost *server;
 
 void network_loop(){
 
@@ -33,9 +35,6 @@ void network_loop(){
 	rc = enet_initialize();
 	if(rc)
 		error(EXIT_FAILURE, rc, "An error occurred while initializing ENet.\n");
-
-	ENetAddress address;
-	ENetHost *server;
 
 	/* Bind the server to the default localhost.     */
 	/* A specific host address can be specified by   */
@@ -59,18 +58,18 @@ void network_loop(){
 
 	while (42) {
 
-		int k;
-		for(k=0;k<server->peerCount;k++){ //TODO : danger if peercount change
-			ENetPeer *p = &server->peers[k];
-			//if (!(p==NULL)){
-				AS_message_t msg;
-				msg.source_id = 0;
-				msg.mess_type=MSG_POINTS;
-				msg.data=players[p->incomingPeerID].points;
-				ENetPacket *packet = enet_packet_create(&msg, sizeof(AS_message_t), ENET_PACKET_FLAG_RELIABLE);
-				enet_peer_send(p, 0, packet);
-			//}
-		}
+		//		int k;
+		//		for(k=0;k<server->peerCount;k++){ //TODO : danger if peercount change
+		//			ENetPeer *p = &server->peers[k];
+		//			//if (!(p==NULL)){
+		//				AS_message_t msg;
+		//				msg.source_id = 0;
+		//				msg.mess_type=MSG_POINTS;
+		//				msg.data=players[p->incomingPeerID].points;
+		//				ENetPacket *packet = enet_packet_create(&msg, sizeof(AS_message_t), ENET_PACKET_FLAG_RELIABLE);
+		//				enet_peer_send(p, 0, packet);
+		//			//}
+		//		}
 
 
 
@@ -85,8 +84,7 @@ void network_loop(){
 				case ENET_EVENT_TYPE_CONNECT:
 					printf("A new client connected from %x:%u.\n", event.peer->address.host, event.peer->address.port);
 					/* Store any relevant client information here. */
-					event.peer->data = (void *)"Client information";
-
+					//event.peer->data = (void *)"Client information";
 					break;
 
 				case ENET_EVENT_TYPE_RECEIVE:
@@ -109,13 +107,36 @@ void network_loop(){
 }
 
 
+void sendMessage(int peerId, int msgType,int clientId,int data){
+				ENetPeer *p = &server->peers[peerId];
+				if (!(p==NULL)){
+					AS_message_t msg;
+					msg.mess_type=msgType;
+					msg.client_id = clientId;
+					msg.data = data;
+					msg.name[0] = '\0';
+					ENetPacket *packet = enet_packet_create(&msg, sizeof(AS_message_t), ENET_PACKET_FLAG_RELIABLE);
+					enet_peer_send(p, 0, packet);
+				}
+}
+
 void process_packet(ENetEvent * event){
 	AS_message_t * msg = (AS_message_t * )(event->packet->data);
 	int peerID = event->peer->incomingPeerID;
 	printf("Message : ");
 	switch (msg->mess_type) {
 	case MSG_HELLO:
-		//printf("Hello message received from %d\n",peerID);
+		printf("Hello message received from %d\n",peerID);
+
+		//assign an uid if player doesn't have one
+		int client_id=msg->data;
+		if (client_id<0){
+			client_id=rand();
+		}
+		printf("Send Hello to %d\n, assigning id %d",peerID,client_id);
+		sendMessage(peerID,MSG_HELLO,client_id,client_id);
+
+
 		break;
 	case MSG_KEY:
 		printf("Key %d message received from %d\n",msg->data,peerID);
