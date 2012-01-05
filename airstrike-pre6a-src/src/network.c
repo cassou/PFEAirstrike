@@ -76,8 +76,8 @@ void network_loop(){
 		int k;
 		for(k=0;k<playerCount;k++){
 			sendMessage(clientPeerId[k],MSG_POINTS,k,players[k].points);
+			sendMessage(clientPeerId[k],MSG_DAMAGE,k,players[k].damage);
 		}
-
 
 
 		int serviceResult = 1;
