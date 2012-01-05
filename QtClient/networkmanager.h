@@ -22,7 +22,7 @@ private:
     int myClientId;
 
 public:
-    NetworkManager(QString ip_addr = "127.0.0.1", int port=1234);
+    NetworkManager();
     ~NetworkManager();
     void set_key(int key);
     void network_loop();
@@ -31,6 +31,7 @@ public:
     void update_state();
     void testFunction();
     void sendMessage(int msgType,int clientId,int data = 0);
+    void setIP(QString ip_addr = "127.0.0.1", int port=1234);
 
 public slots:
     void start();
