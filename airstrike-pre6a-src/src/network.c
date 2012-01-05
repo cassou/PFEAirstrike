@@ -12,10 +12,12 @@
 void *thread_function( void *arg );
 void network_loop();
 void process_packet(ENetEvent * event);
+void sendMessage(int peerId, int msgType,int clientId,int data);
 
 
 //TODO : separate peerID and playerid (associative array ?)
 int  clientConnected[MAXPLAYERS];
+int  clientPeerId[MAXPLAYERS];
 int  clientCount= 0;
 
 void network_init(){
@@ -28,8 +30,10 @@ void network_init(){
 
 void *thread_function( void *arg ){
 	int i;
-	for (i=0; i<MAXPLAYERS;i++)
+	for (i=0; i<MAXPLAYERS;i++){
 		clientConnected[i]=0;
+		clientPeerId[i]=-1;
+	}
 
 	network_loop();
 	pthread_exit(NULL);
@@ -69,18 +73,19 @@ void network_loop(){
 
 	while (42) {
 
-		//		int k;
-		//		for(k=0;k<server->peerCount;k++){ //TODO : danger if peercount change
-		//			ENetPeer *p = &server->peers[k];
-		//			//if (!(p==NULL)){
-		//				AS_message_t msg;
-		//				msg.source_id = 0;
-		//				msg.mess_type=MSG_POINTS;
-		//				msg.data=players[p->incomingPeerID].points;
-		//				ENetPacket *packet = enet_packet_create(&msg, sizeof(AS_message_t), ENET_PACKET_FLAG_RELIABLE);
-		//				enet_peer_send(p, 0, packet);
-		//			//}
-		//		}
+		int k;
+		for(k=0;k<playerCount;k++){
+			sendMessage(clientPeerId[k],MSG_POINTS,k,players[k].points);
+			//			ENetPeer *p = &server->peers[k];
+			//if (!(p==NULL)){
+			//			AS_message_t msg;
+			//			msg.source_id = 0;
+			//			msg.mess_type=MSG_POINTS;
+			//			msg.data=players[p->incomingPeerID].points;
+			//			ENetPacket *packet = enet_packet_create(&msg, sizeof(AS_message_t), ENET_PACKET_FLAG_RELIABLE);
+			//			enet_peer_send(p, 0, packet);
+			//}
+		}
 
 
 
@@ -146,7 +151,6 @@ void process_packet(ENetEvent * event){
 				int i;
 				for (i=0;i<playerCount;i++){
 					if (!clientConnected[i]){
-						clientConnected[i]=1;
 						client_id = i;
 						clientCount++;
 						break;
@@ -157,10 +161,9 @@ void process_packet(ENetEvent * event){
 				printf("MSG_NO_SPACE message sended to %d\n",peerID);
 				break;
 			}
-
-		}else{
-			clientConnected[client_id]=1;
 		}
+		clientConnected[client_id]=1;
+		clientPeerId[client_id]=peerID;
 		sendMessage(peerID,MSG_HELLO,client_id,client_id);
 		printf("MSG_HELLO message sended to %d\n",peerID);
 
