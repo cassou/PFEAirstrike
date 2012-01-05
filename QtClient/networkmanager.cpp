@@ -4,12 +4,13 @@
 #include <QKeyEvent>
 #include <QTimer>
 
-NetworkManager::NetworkManager()
+NetworkManager::NetworkManager(QString ip_addr, int port)
 {
-    ip_addr="127.0.0.1\0";
-    port = 1234;
+    this->ip_addr=ip_addr;
+    this->port = port;
     next_time = 0;
     keep_running = 42;
+    myClientId = -1;
 }
 
 NetworkManager::~NetworkManager()
@@ -17,7 +18,7 @@ NetworkManager::~NetworkManager()
 
 }
 
-int NetworkManager::network_init(QString ip_addr, int port){
+int NetworkManager::network_init(){
     writeText("Initializing ENet.");
 
     if (enet_initialize() != 0) {
@@ -59,6 +60,7 @@ int NetworkManager::network_init(QString ip_addr, int port){
         if (enet_host_service(client, &event, 3000) > 0 && event.type == ENET_EVENT_TYPE_CONNECT) {
             writeText("Connection to " + ip_addr + ":" + QString::number(port) + "succeeded.");
             connect_succeeded=1;
+            sendMessage(MSG_HELLO,myClientId);
         } else {
             /* Either the 5 seconds are up or a disconnect event was */
             /* received. Reset the peer in the event the 5 seconds   */
@@ -78,10 +80,17 @@ int NetworkManager::network_init(QString ip_addr, int port){
 void NetworkManager::process_packet(ENetEvent * event){
     AS_message_t * msg = (AS_message_t * )(event->packet->data);
     int peerID = event->peer->incomingPeerID;
-    writeText("Message : ");
+    //writeText("Message : ");
     switch (msg->mess_type) {
     case MSG_POINTS:
-        writeText("My Score is : " + QString::number(msg->data));
+        //writeText("My Score is : " + QString::number(msg->data));
+        break;
+    case MSG_HELLO:
+        myClientId = msg->client_id;
+        writeText("Hello received");
+        break;
+    case MSG_NO_SPACE:
+        writeText("Plus de place, reconnectez-vous plus tard.");
         break;
     default:
         break;
@@ -101,7 +110,7 @@ void NetworkManager::update_state(){
 
 void NetworkManager::set_rand_key(int key){
     AS_message_t msg;
-    msg.source_id = 0;
+    msg.client_id = 0;
     msg.mess_type=MSG_KEY;
 
     if (rand()>(RAND_MAX/2)){
@@ -114,14 +123,17 @@ void NetworkManager::set_rand_key(int key){
 }
 
 void NetworkManager::set_key(int key){
+    sendMessage(MSG_KEY, myClientId, key);
+    /*
     AS_message_t msg;
-    msg.source_id = 0;
+    msg.client_id = 0;
     msg.mess_type=MSG_KEY;
     msg.data=key;
     //ENetPacket *packet = enet_packet_create(&msg, sizeof(AS_message_t), ENET_PACKET_FLAG_RELIABLE);
     ENetPacket *packet = enet_packet_create(&msg, sizeof(msg), ENET_PACKET_FLAG_RELIABLE);
     int rc = enet_peer_send(peer, 0, packet);
    // writeText("Key = " + QString::number(key));
+   */
 }
 
 void NetworkManager::network_loop(){
@@ -159,6 +171,20 @@ void NetworkManager::testFunction()
     emit writeText("Test");
 }
 
+void NetworkManager::sendMessage(int msgType, int clientId, int data)
+{
+   // ENetPeer *p = &server->peers[peerId];
+    if (!(peer==NULL)){
+        AS_message_t msg;
+        msg.mess_type=msgType;
+        msg.client_id = clientId;
+        msg.data = data;
+        msg.name[0] = '\0';
+        ENetPacket *packet = enet_packet_create(&msg, sizeof(AS_message_t), ENET_PACKET_FLAG_RELIABLE);
+        enet_peer_send(peer, 0, packet);
+    }
+}
+
 void NetworkManager::process_key(QKeyEvent * event, int key_status){
     //writeText("Process key");
     if (event->key() == Qt::Key_Right )
@@ -178,4 +204,3 @@ void NetworkManager::start()
     network_loop();
     QTimer::singleShot(20, this, SLOT(start()));
 }
-

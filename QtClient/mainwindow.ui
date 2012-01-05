@@ -24,7 +24,11 @@
        <item>
         <layout class="QFormLayout" name="formLayout">
          <item row="2" column="1">
-          <widget class="QLineEdit" name="portEdit"/>
+          <widget class="QLineEdit" name="portEdit">
+           <property name="text">
+            <string>1234</string>
+           </property>
+          </widget>
          </item>
          <item row="2" column="0">
           <widget class="QLabel" name="label_2">
@@ -41,7 +45,11 @@
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QLineEdit" name="ipEdit"/>
+          <widget class="QLineEdit" name="ipEdit">
+           <property name="text">
+            <string>127.0.0.1</string>
+           </property>
+          </widget>
          </item>
          <item row="3" column="0">
           <widget class="QLabel" name="label_4">
@@ -68,7 +76,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton">
+          <widget class="QPushButton" name="disconnectButton">
            <property name="text">
             <string>Déconnecter</string>
            </property>
@@ -185,7 +193,7 @@
   <tabstop>ipEdit</tabstop>
   <tabstop>portEdit</tabstop>
   <tabstop>connectButton</tabstop>
-  <tabstop>pushButton</tabstop>
+  <tabstop>disconnectButton</tabstop>
   <tabstop>debugTextEdit</tabstop>
  </tabstops>
  <resources/>

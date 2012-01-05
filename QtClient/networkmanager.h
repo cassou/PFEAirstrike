@@ -19,24 +19,27 @@ private:
     int port;
     int next_time;
     int keep_running;
+    int myClientId;
 
 public:
-    NetworkManager();
+    NetworkManager(QString ip_addr = "127.0.0.1", int port=1234);
     ~NetworkManager();
-    int network_init(QString ip_addr = "127.0.0.1", int port=1234);
     void set_key(int key);
     void network_loop();
     void process_packet(ENetEvent * event);
     void set_rand_key(int key);
     void update_state();
     void testFunction();
-    void process_key(QKeyEvent * event, int key_status);
+    void sendMessage(int msgType,int clientId,int data = 0);
 
 public slots:
     void start();
+    void process_key(QKeyEvent * event, int key_status);
+    int network_init();
 
 signals:
     void writeText(QString text);
+
 };
 
 #endif // NETWORKMANAGER_H

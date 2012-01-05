@@ -11,16 +11,21 @@
 
 enum messages_types {
 	MSG_HELLO = 0,
-	MSG_HELLO_RESPONSE = 1,
+	MSG_PING = 1,
 	MSG_KEY = 2,
-	MSG_POINTS = 3
+	MSG_POINTS = 3,
+	MSG_NAME = 4,
+	MSG_NO_SPACE = 5,
+	MSG_TIME2START = 6,
 };
 
 typedef struct
 {
-	int source_id;
+	int client_id;
 	int mess_type;
 	int data;
+	char name[32];
+
 }  __attribute__ ((__packed__)) AS_message_t;
 
 #endif /* MESSAGES_C_ */

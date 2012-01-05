@@ -10,11 +10,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     connect(ui->connectButton,SIGNAL(clicked()),this,SLOT(connect_clicked()));
     displayText("Start");
-    networkThread = new QThread();
 
+    networkThread = new QThread();
     networkManager = new NetworkManager();
 
     connect(networkManager, SIGNAL(writeText(QString)), this, SLOT(displayText(QString)));
+    connect(ui->disconnectButton, SIGNAL(released()), this, SLOT(stopPlay()));
+    connect(this, SIGNAL(sendKeyEvent(QKeyEvent*,int)), networkManager, SLOT(process_key(QKeyEvent*,int)));
 }
 
 MainWindow::~MainWindow()
@@ -29,14 +31,14 @@ void MainWindow::displayText(QString string){
 
 void MainWindow::connect_clicked(){
     networkManager->moveToThread(networkThread);
+    connect(networkThread, SIGNAL(started()), networkManager, SLOT(network_init()));
     networkThread->start();
-    networkManager->network_init(ui->ipEdit->text(), ui->portEdit->text().toInt());
-
+    startPlay();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent * event){
     if(!event->isAutoRepeat()){
-        networkManager->process_key(event, 1);
+        emit networkManager->process_key(event, 1);
     } else {
         QWidget::keyPressEvent(event);
     }
@@ -44,7 +46,7 @@ void MainWindow::keyPressEvent(QKeyEvent * event){
 
 void MainWindow::keyReleaseEvent(QKeyEvent * event){
     if(!event->isAutoRepeat()){
-        networkManager->process_key(event, -1);
+        emit sendKeyEvent(event, -1);
     } else {
         QWidget::keyPressEvent(event);
     }

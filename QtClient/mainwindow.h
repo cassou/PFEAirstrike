@@ -30,6 +30,9 @@ private slots:
     void keyReleaseEvent(QKeyEvent * event);
     void startPlay();
     void stopPlay();
+
+signals:
+    void sendKeyEvent(QKeyEvent * event, int key_status);
 };
 
 #endif // MAINWINDOW_H
