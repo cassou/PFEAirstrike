@@ -1,8 +1,8 @@
 #include "networkmanager.h"
 #include "messages.h"
 #include "keys.h"
-#include <QDebug>
 #include <QKeyEvent>
+#include <QTimer>
 
 NetworkManager::NetworkManager()
 {
@@ -10,7 +10,6 @@ NetworkManager::NetworkManager()
     port = 1234;
     next_time = 0;
     keep_running = 42;
-    qDebug() << "Create network manager.";
 }
 
 NetworkManager::~NetworkManager()
@@ -18,15 +17,13 @@ NetworkManager::~NetworkManager()
 
 }
 
-void NetworkManager::network_init(){
-    qDebug() << "Initializing ENet.";
+int NetworkManager::network_init(QString ip_addr, int port){
     writeText("Initializing ENet.");
+
     if (enet_initialize() != 0) {
-        qDebug() << "An error occurred while initializing ENet.";
         emit writeText("An error occurred while initializing ENet");
-        exit( EXIT_FAILURE);
+        return -1;
     }
-    qDebug() << "ENet started.";
     emit writeText("ENet started.");
     client = enet_host_create(NULL /* create a client host */ ,
                               1 /* only allow 1 outgoing connection */ ,
@@ -35,39 +32,34 @@ void NetworkManager::network_init(){
                               14400 / 8 /* 56K modem with 14 Kbps upstream bandwidth */ );
 
     if (client == NULL) {
-        qDebug() << "An error occurred while trying to create an ENet client host..";
         writeText("An error occurred while trying to create an ENet client host.");
-        exit(EXIT_FAILURE);
+        return -1;
     }
 
     /* Connect to some.server.net:1234. */
     // enet_address_set_host(&address, ip_addr.toStdString().c_str());
     //address.port = port;
 
-    enet_address_set_host(&address, "127.0.0.1");
-    address.port = 1234;
+    enet_address_set_host(&address, ip_addr.toStdString().c_str());
+    address.port = port;
 
     /* Wait up to 5 seconds for the connection attempt to succeed. */
     int trying_left = 5;
     int connect_succeeded=0;
     while (!connect_succeeded){
-        qDebug() << "Trying to connect to " << ip_addr << ":" << port;
         writeText("Trying to connect to " + ip_addr + ":" + QString::number(port) + "...");
         /* Initiate the connection, allocating the two channels 0 and 1. */
         peer = enet_host_connect(client, &address, 2, 0);
 
         if (peer == NULL) {
-            qDebug() << "No available peers for initiating an ENet connection.";
             writeText("No available peers for initiating an ENet connection.");
-            exit(EXIT_FAILURE);
+            return -1;
         }
 
         if (enet_host_service(client, &event, 3000) > 0 && event.type == ENET_EVENT_TYPE_CONNECT) {
             writeText("Connection to " + ip_addr + ":" + QString::number(port) + "succeeded.");
-            qDebug() << "Connection to " << ip_addr << ":" << port << " succeeded.";
             connect_succeeded=1;
         } else {
-            qDebug() << "test " ;
             /* Either the 5 seconds are up or a disconnect event was */
             /* received. Reset the peer in the event the 5 seconds   */
             /* had run out without any significant event.            */
@@ -76,11 +68,11 @@ void NetworkManager::network_init(){
             trying_left--;
             if(trying_left<=0){
                 writeText("Could not connect to " + ip_addr + ":" + port);
-                qDebug() << "Could not connect to " << ip_addr << ":" << port;
-                exit(EXIT_FAILURE);
+                return -1;
             }
         }
     }
+    start();
 }
 
 void NetworkManager::process_packet(ENetEvent * event){
@@ -129,8 +121,7 @@ void NetworkManager::set_key(int key){
     //ENetPacket *packet = enet_packet_create(&msg, sizeof(AS_message_t), ENET_PACKET_FLAG_RELIABLE);
     ENetPacket *packet = enet_packet_create(&msg, sizeof(msg), ENET_PACKET_FLAG_RELIABLE);
     int rc = enet_peer_send(peer, 0, packet);
-    qDebug() << "Peer send return code: " << rc;
-    writeText("Peer send return code: " + QString::number(rc));
+   // writeText("Key = " + QString::number(key));
 }
 
 void NetworkManager::network_loop(){
@@ -169,7 +160,7 @@ void NetworkManager::testFunction()
 }
 
 void NetworkManager::process_key(QKeyEvent * event, int key_status){
-    writeText("Process key");
+    //writeText("Process key");
     if (event->key() == Qt::Key_Right )
         set_key(key_status*KEY__DOWN);
     if (event->key() == Qt::Key_Left)
@@ -180,5 +171,11 @@ void NetworkManager::process_key(QKeyEvent * event, int key_status){
         set_key(key_status*KEY_FIRE);
     if (event->key() == Qt::Key_Control)
         set_key(key_status*KEY_BOMB);
+}
+
+void NetworkManager::start()
+{
+    network_loop();
+    QTimer::singleShot(20, this, SLOT(start()));
 }
 

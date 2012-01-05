@@ -28,6 +28,8 @@ private slots:
     void connect_clicked();
     void keyPressEvent(QKeyEvent * event);
     void keyReleaseEvent(QKeyEvent * event);
+    void startPlay();
+    void stopPlay();
 };
 
 #endif // MAINWINDOW_H

@@ -23,7 +23,7 @@ private:
 public:
     NetworkManager();
     ~NetworkManager();
-    void network_init();
+    int network_init(QString ip_addr = "127.0.0.1", int port=1234);
     void set_key(int key);
     void network_loop();
     void process_packet(ENetEvent * event);
@@ -31,6 +31,9 @@ public:
     void update_state();
     void testFunction();
     void process_key(QKeyEvent * event, int key_status);
+
+public slots:
+    void start();
 
 signals:
     void writeText(QString text);

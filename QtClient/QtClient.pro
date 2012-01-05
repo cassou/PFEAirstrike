@@ -23,3 +23,4 @@ HEADERS  += mainwindow.h \
 FORMS    += mainwindow.ui
 
 LIBS += -L./lib -lenet
+INCLUDEPATH += ./include

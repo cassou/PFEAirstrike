@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QThread>
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
@@ -23,16 +24,14 @@ MainWindow::~MainWindow()
 
 void MainWindow::displayText(QString string){
     ui->debugTextEdit->appendPlainText(string);
+    qDebug() << string;
 }
 
 void MainWindow::connect_clicked(){
-    ui->debugTextEdit->appendPlainText("Coucou");
-    this->grabKeyboard();
+    networkManager->moveToThread(networkThread);
+    networkThread->start();
+    networkManager->network_init(ui->ipEdit->text(), ui->portEdit->text().toInt());
 
-    //networkThread->start();
-    //networkManager->moveToThread(networkThread);
-
-    networkManager->network_init();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent * event){
@@ -45,8 +44,18 @@ void MainWindow::keyPressEvent(QKeyEvent * event){
 
 void MainWindow::keyReleaseEvent(QKeyEvent * event){
     if(!event->isAutoRepeat()){
-        networkManager->process_key(event, 0);
+        networkManager->process_key(event, -1);
     } else {
         QWidget::keyPressEvent(event);
     }
+}
+
+void MainWindow::startPlay()
+{
+    this->grabKeyboard();
+}
+
+void MainWindow::stopPlay()
+{
+    this->releaseKeyboard();
 }
