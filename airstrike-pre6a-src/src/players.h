@@ -14,7 +14,7 @@ typedef struct player
 	int ishuman;
 	int points;
 	int keymap[MAX_CONTROLLER_KEYS][2];
-	char name[256];
+	char name[32];
 	sprite_t *sprite;
 	sprite_type_t *sprite_type;
 	controller_t *controller;
