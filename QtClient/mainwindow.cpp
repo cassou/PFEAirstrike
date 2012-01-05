@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include <QThread>
 #include <QDebug>
+#include <SDL/SDL.h>
 
 MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
@@ -20,6 +21,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(networkManager, SIGNAL(newPlayerScore(int)), ui->playerScore, SLOT(setNum(int)));
     connect(networkManager, SIGNAL(newHealthPoints(int)), ui->healthPoints, SLOT(setValue(int)));
     connect(networkManager, SIGNAL(newPlayerId(int)), ui->playerIdLabel, SLOT(setNum(int)));
+
+    this->setAttribute(Qt::WA_KeyCompression,true);
 }
 
 MainWindow::~MainWindow()
@@ -33,6 +36,7 @@ void MainWindow::displayText(QString string){
 }
 
 void MainWindow::connect_clicked(){
+    networkManager->setIP(ui->ipEdit->text(),ui->portEdit->text().toInt());
     networkManager->moveToThread(networkThread);
     connect(networkThread, SIGNAL(started()), networkManager, SLOT(network_init()));
     networkThread->start();
@@ -40,10 +44,10 @@ void MainWindow::connect_clicked(){
 }
 
 void MainWindow::keyPressEvent(QKeyEvent * event){
-//this->displayText("Key pressed " + QString::number(event->key()));
+
     if(!event->isAutoRepeat()){
         emit networkManager->process_key(event, 1);
-
+this->displayText("Key pressed " + QString::number(event->count()));
     } else {
         QWidget::keyPressEvent(event);
     }
@@ -53,7 +57,7 @@ void MainWindow::keyReleaseEvent(QKeyEvent * event){
 
     if(!event->isAutoRepeat()){
         emit sendKeyEvent(event, -1);
-       // this->displayText("Key released");
+       this->displayText("Key released "+ QString::number(event->key()));
     } else {
         QWidget::keyPressEvent(event);
     }
@@ -68,3 +72,5 @@ void MainWindow::stopPlay()
 {
     this->releaseKeyboard();
 }
+SDL_Event event;
+

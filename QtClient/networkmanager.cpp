@@ -4,10 +4,10 @@
 #include <QKeyEvent>
 #include <QTimer>
 
-NetworkManager::NetworkManager(QString ip_addr, int port)
+NetworkManager::NetworkManager()
 {
-    this->ip_addr=ip_addr;
-    this->port = port;
+    this->ip_addr="127.0.0.1";
+    this->port = 1234;
     next_time = 0;
     keep_running = 42;
     myClientId = -1;
@@ -19,7 +19,7 @@ NetworkManager::~NetworkManager()
 }
 
 int NetworkManager::network_init(){
-    writeText("Initializing ENet.");
+    writeText("Initializing ENet. " + ip_addr);
 
     if (enet_initialize() != 0) {
         emit writeText("An error occurred while initializing ENet");
@@ -191,13 +191,19 @@ void NetworkManager::sendMessage(int msgType, int clientId, int data)
     }
 }
 
+void NetworkManager::setIP(QString ip_addr, int port)
+{
+    this->ip_addr = ip_addr;
+    this->port = port;
+}
+
 void NetworkManager::process_key(QKeyEvent * event, int key_status){
     //writeText("Process key");
     if (event->key() == Qt::Key_Right )
         set_key(key_status*KEY__DOWN);
     if (event->key() == Qt::Key_Left)
         set_key(key_status*KEY__UP);
-    if (event->key() == Qt::Key_Up)
+    if (event->key() == Qt::Key_Down)
         set_key(key_status*KEY__ACCELERATE);
     if (event->key() == Qt::Key_Control)
         set_key(key_status*KEY_FIRE);
