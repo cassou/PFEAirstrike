@@ -15,7 +15,7 @@ enum messages_types {
 	MSG_KEY = 2,
 	MSG_POINTS = 3,
 	MSG_NAME = 4,
-	MSG_GAME_STATUS = 5,
+	MSG_NO_SPACE = 5,
 	MSG_TIME2START = 6,
 };
 

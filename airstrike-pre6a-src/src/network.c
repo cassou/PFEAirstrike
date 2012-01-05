@@ -5,11 +5,18 @@
 #include <enet/enet.h>
 #include "network.h"
 #include "messages.h"
+#include "prototype.h"
+#include "players.h"
 #include "keys.h"
 
 void *thread_function( void *arg );
 void network_loop();
 void process_packet(ENetEvent * event);
+
+
+//TODO : separate peerID and playerid (associative array ?)
+int  clientConnected[MAXPLAYERS];
+int  clientCount= 0;
 
 void network_init(){
 	pthread_t thread;
@@ -20,11 +27,15 @@ void network_init(){
 }
 
 void *thread_function( void *arg ){
+	int i;
+	for (i=0; i<MAXPLAYERS;i++)
+		clientConnected[i]=0;
+
 	network_loop();
 	pthread_exit(NULL);
 }
 
-//TODO : separate peerID and playerid (associative array ?)
+
 
 ENetAddress address;
 ENetHost *server;
@@ -108,16 +119,16 @@ void network_loop(){
 
 
 void sendMessage(int peerId, int msgType,int clientId,int data){
-				ENetPeer *p = &server->peers[peerId];
-				if (!(p==NULL)){
-					AS_message_t msg;
-					msg.mess_type=msgType;
-					msg.client_id = clientId;
-					msg.data = data;
-					msg.name[0] = '\0';
-					ENetPacket *packet = enet_packet_create(&msg, sizeof(AS_message_t), ENET_PACKET_FLAG_RELIABLE);
-					enet_peer_send(p, 0, packet);
-				}
+	ENetPeer *p = &server->peers[peerId];
+	if (!(p==NULL)){
+		AS_message_t msg;
+		msg.mess_type=msgType;
+		msg.client_id = clientId;
+		msg.data = data;
+		msg.name[0] = '\0';
+		ENetPacket *packet = enet_packet_create(&msg, sizeof(AS_message_t), ENET_PACKET_FLAG_RELIABLE);
+		enet_peer_send(p, 0, packet);
+	}
 }
 
 void process_packet(ENetEvent * event){
@@ -129,21 +140,34 @@ void process_packet(ENetEvent * event){
 		printf("Hello message received from %d\n",peerID);
 
 		//assign an uid if player doesn't have one
-		int client_id=msg->data;
-		if (client_id<0){
-			client_id=rand();
-		}
-		printf("Send Hello to %d\n, assigning id %d",peerID,client_id);
-		sendMessage(peerID,MSG_HELLO,client_id,client_id);
+		int client_id=msg->client_id;
+		if (client_id<0 || client_id>=playerCount){
+			if (clientCount<playerCount){
+				int i;
+				for (i=0;i<playerCount;i++){
+					if (!clientConnected[i]){
+						client_id = i;
+						break;
+					}
+				}
+			}else{
+				sendMessage(peerID,MSG_NO_SPACE,0,0);
+				printf("MSG_NO_SPACE message sended to %d\n",peerID);
+			}
 
+		}else{
+			clientConnected[client_id]=1;
+		}
+		sendMessage(peerID,MSG_HELLO,client_id,client_id);
+		printf("MSG_HELLO message sended to %d\n",peerID);
 
 		break;
 	case MSG_KEY:
 		printf("Key %d message received from %d\n",msg->data,peerID);
 		if (msg->data>=0){
-			network_keymap[peerID][msg->data]=1;
+			network_keymap[msg->client_id][msg->data]=1;
 		}else{
-			network_keymap[peerID][-msg->data]=0;
+			network_keymap[msg->client_id][-msg->data]=0;
 		}
 		break;
 	default:
