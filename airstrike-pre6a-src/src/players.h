@@ -13,6 +13,7 @@ typedef struct player
 	int id;
 	int ishuman;
 	int points;
+	int damage;
 	int keymap[MAX_CONTROLLER_KEYS][2];
 	char name[32];
 	sprite_t *sprite;

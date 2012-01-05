@@ -18,6 +18,7 @@ void player_init(){
 		players[i].sprite_type=0;
 		players[i].id=i;
 		players[i].team=0;
+		players[i].damage=0;
 	}
 }
 

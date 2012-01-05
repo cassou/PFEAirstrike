@@ -163,6 +163,7 @@ static void sigget(sprite_t *s, int signal, void *data)
 		break;
 	case SIGNAL_DAMAGE:
 		((mech_sprite_t *)s)->damage += *(int *)data;
+		((player_t*)s->owner)->damage=(100*((mech_sprite_t *)s)->damage)/hitpoints;
 		break;
 	case SIGNAL_ACCELERATE:
 		s->state |= PLANE_ACCELERATING;
