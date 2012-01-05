@@ -17,6 +17,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(networkManager, SIGNAL(writeText(QString)), this, SLOT(displayText(QString)));
     connect(ui->disconnectButton, SIGNAL(released()), this, SLOT(stopPlay()));
     connect(this, SIGNAL(sendKeyEvent(QKeyEvent*,int)), networkManager, SLOT(process_key(QKeyEvent*,int)));
+    connect(networkManager, SIGNAL(newPlayerScore(int)), ui->playerScore, SLOT(setNum(int)));
+    connect(networkManager, SIGNAL(newHealthPoints(int)), ui->healthPoints, SLOT(setValue(int)));
+    connect(networkManager, SIGNAL(newPlayerId(int)), ui->playerIdLabel, SLOT(setNum(int)));
 }
 
 MainWindow::~MainWindow()
@@ -37,16 +40,20 @@ void MainWindow::connect_clicked(){
 }
 
 void MainWindow::keyPressEvent(QKeyEvent * event){
+//this->displayText("Key pressed " + QString::number(event->key()));
     if(!event->isAutoRepeat()){
         emit networkManager->process_key(event, 1);
+
     } else {
         QWidget::keyPressEvent(event);
     }
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent * event){
+
     if(!event->isAutoRepeat()){
         emit sendKeyEvent(event, -1);
+       // this->displayText("Key released");
     } else {
         QWidget::keyPressEvent(event);
     }

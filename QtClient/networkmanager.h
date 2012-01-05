@@ -39,6 +39,9 @@ public slots:
 
 signals:
     void writeText(QString text);
+    void newPlayerScore(int score);
+    void newHealthPoints(int value);
+    void newPlayerId(int value);
 
 };
 

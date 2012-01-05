@@ -17,6 +17,7 @@ enum messages_types {
 	MSG_NAME = 4,
 	MSG_NO_SPACE = 5,
 	MSG_TIME2START = 6,
+	MSG_DAMAGE = 7,
 };
 
 typedef struct

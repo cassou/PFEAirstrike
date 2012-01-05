@@ -83,14 +83,20 @@ void NetworkManager::process_packet(ENetEvent * event){
     //writeText("Message : ");
     switch (msg->mess_type) {
     case MSG_POINTS:
-        //writeText("My Score is : " + QString::number(msg->data));
+       //writeText("My Score is : " + QString::number(msg->data));
+        emit newPlayerScore(msg->data);
         break;
     case MSG_HELLO:
         myClientId = msg->client_id;
+        emit newPlayerId(myClientId);
         writeText("Hello received");
         break;
     case MSG_NO_SPACE:
         writeText("Plus de place, reconnectez-vous plus tard.");
+        break;
+    case MSG_DAMAGE:
+        writeText("Damage = " + QString::number(msg->data));
+        emit newHealthPoints(100 - msg->data);
         break;
     default:
         break;
@@ -193,9 +199,9 @@ void NetworkManager::process_key(QKeyEvent * event, int key_status){
         set_key(key_status*KEY__UP);
     if (event->key() == Qt::Key_Up)
         set_key(key_status*KEY__ACCELERATE);
-    if (event->key() == Qt::Key_Space)
-        set_key(key_status*KEY_FIRE);
     if (event->key() == Qt::Key_Control)
+        set_key(key_status*KEY_FIRE);
+    if (event->key() == Qt::Key_Shift)
         set_key(key_status*KEY_BOMB);
 }
 
