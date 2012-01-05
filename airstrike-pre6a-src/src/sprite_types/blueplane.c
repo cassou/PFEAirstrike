@@ -101,6 +101,7 @@ static sprite_t *create(void * owner)
 	player_t *p = (player_t *)owner;
 	CRITICAL(s = calloc(1,sizeof(struct biplane)));
 	s->owner=owner;
+	p->damage=(100*((mech_sprite_t *)s)->damage)/hitpoints;
 	s->animation = right_anim[s->owner->team->id];
 	s->anim_p = 32;
 
