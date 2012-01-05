@@ -146,6 +146,7 @@ void process_packet(ENetEvent * event){
 				int i;
 				for (i=0;i<playerCount;i++){
 					if (!clientConnected[i]){
+						clientConnected[i]=1;
 						client_id = i;
 						clientCount++;
 						break;
