@@ -76,15 +76,6 @@ void network_loop(){
 		int k;
 		for(k=0;k<playerCount;k++){
 			sendMessage(clientPeerId[k],MSG_POINTS,k,players[k].points);
-			//			ENetPeer *p = &server->peers[k];
-			//if (!(p==NULL)){
-			//			AS_message_t msg;
-			//			msg.source_id = 0;
-			//			msg.mess_type=MSG_POINTS;
-			//			msg.data=players[p->incomingPeerID].points;
-			//			ENetPacket *packet = enet_packet_create(&msg, sizeof(AS_message_t), ENET_PACKET_FLAG_RELIABLE);
-			//			enet_peer_send(p, 0, packet);
-			//}
 		}
 
 
