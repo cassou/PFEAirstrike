@@ -21,8 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(networkManager, SIGNAL(newPlayerScore(int)), ui->playerScore, SLOT(setNum(int)));
     connect(networkManager, SIGNAL(newHealthPoints(int)), ui->healthPoints, SLOT(setValue(int)));
     connect(networkManager, SIGNAL(newPlayerId(int)), ui->playerIdLabel, SLOT(setNum(int)));
-
-    this->setAttribute(Qt::WA_KeyCompression,true);
+    connect(ui->checkBoxBot, SIGNAL(clicked(bool)), this, SLOT(setBot(bool)));
 }
 
 MainWindow::~MainWindow()
@@ -47,17 +46,21 @@ void MainWindow::keyPressEvent(QKeyEvent * event){
 
     if(!event->isAutoRepeat()){
         emit networkManager->process_key(event, 1);
-this->displayText("Key pressed " + QString::number(event->count()));
+        //this->displayText("Key pressed " + QString::number(event->count()));
     } else {
         QWidget::keyPressEvent(event);
     }
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent * event){
-
+    if(event->key() == Qt::Key_Escape)
+    {
+        stopPlay();
+        return;
+    }
     if(!event->isAutoRepeat()){
         emit sendKeyEvent(event, -1);
-       this->displayText("Key released "+ QString::number(event->key()));
+       //this->displayText("Key released "+ QString::number(event->key()));
     } else {
         QWidget::keyPressEvent(event);
     }
@@ -65,12 +68,34 @@ void MainWindow::keyReleaseEvent(QKeyEvent * event){
 
 void MainWindow::startPlay()
 {
-    this->grabKeyboard();
+    if(!isBot)
+    {
+        this->grabKeyboard();
+    }
+    else
+    {
+       botTimer = new QTimer();
+       botTimer->setInterval(100);
+       connect(botTimer, SIGNAL(timeout()), networkManager, SLOT(set_rand_key()));
+       botTimer->start();
+    }
 }
 
 void MainWindow::stopPlay()
 {
-    this->releaseKeyboard();
+    if(isBot)
+    {
+        botTimer->stop();
+    }
+    else
+    {
+        this->releaseKeyboard();
+
+    }
 }
-SDL_Event event;
+
+void MainWindow::setBot(bool state)
+{
+    isBot = state;
+}
 

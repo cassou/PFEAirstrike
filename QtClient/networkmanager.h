@@ -26,8 +26,7 @@ public:
     ~NetworkManager();
     void set_key(int key);
     void network_loop();
-    void process_packet(ENetEvent * event);
-    void set_rand_key(int key);
+    void process_packet(ENetEvent * event);  
     void update_state();
     void testFunction();
     void sendMessage(int msgType,int clientId,int data = 0);
@@ -37,6 +36,7 @@ public slots:
     void start();
     void process_key(QKeyEvent * event, int key_status);
     int network_init();
+    void set_rand_key();
 
 signals:
     void writeText(QString text);

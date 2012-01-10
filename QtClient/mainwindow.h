@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "networkmanager.h"
+#include <QTimer>
 
 namespace Ui {
     class MainWindow;
@@ -23,6 +24,8 @@ private:
     Ui::MainWindow *ui;
     NetworkManager *networkManager;
     QThread *networkThread;
+    bool isBot;
+    QTimer* botTimer;
 
 private slots:
     void connect_clicked();
@@ -30,6 +33,7 @@ private slots:
     void keyReleaseEvent(QKeyEvent * event);
     void startPlay();
     void stopPlay();
+    void setBot(bool state);
 
 signals:
     void sendKeyEvent(QKeyEvent * event, int key_status);
