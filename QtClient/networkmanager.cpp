@@ -79,7 +79,7 @@ int NetworkManager::network_init(){
 
 void NetworkManager::process_packet(ENetEvent * event){
     AS_message_t * msg = (AS_message_t * )(event->packet->data);
-    int peerID = event->peer->incomingPeerID;
+    //int peerID = event->peer->incomingPeerID;
     //writeText("Message : ");
     switch (msg->mess_type) {
     case MSG_POINTS:
@@ -95,7 +95,7 @@ void NetworkManager::process_packet(ENetEvent * event){
         writeText("Plus de place, reconnectez-vous plus tard.");
         break;
     case MSG_DAMAGE:
-        writeText("Damage = " + QString::number(msg->data));
+        //writeText("Damage = " + QString::number(msg->data));
         emit newHealthPoints(100 - msg->data);
         break;
     default:
@@ -105,41 +105,43 @@ void NetworkManager::process_packet(ENetEvent * event){
 }
 
 void NetworkManager::update_state(){
+    /*
     int current_time = time(NULL);
     if (current_time>next_time){
         set_key(KEY__ACCELERATE);
         next_time = current_time+(rand()%1)+1;
         set_rand_key(KEY_FIRE);
         //printf("%d",current_time);
-    }
+    }*/
 }
 
-void NetworkManager::set_rand_key(int key){
-    AS_message_t msg;
-    msg.client_id = 0;
-    msg.mess_type=MSG_KEY;
+void NetworkManager::set_rand_key(){
 
-    if (rand()>(RAND_MAX/2)){
-        msg.data=key;
-    }else{
-        msg.data=-key;
-    }
-    ENetPacket *packet = enet_packet_create(&msg, sizeof(AS_message_t), ENET_PACKET_FLAG_RELIABLE);
-    enet_peer_send(peer, 0, packet);
+    qDebug("3");
+    set_key(3);
+    qDebug("4");
+    int num = rand();
+    int key;
+    if (num<(RAND_MAX/3)){
+        key = KEY_FIRE;
+        if (rand()>(RAND_MAX/2)){
+            sendMessage(MSG_KEY, myClientId, key);
+        }else{
+            sendMessage(MSG_KEY, myClientId, -key);
+        }
+   } /*
+else if (num>(2*RAND_MAX/3)) {
+        key = KEY__UP;
+    } else {
+        key = KEY__DOWN;
+    }*/
+
+
+qDebug("5");
 }
 
 void NetworkManager::set_key(int key){
     sendMessage(MSG_KEY, myClientId, key);
-    /*
-    AS_message_t msg;
-    msg.client_id = 0;
-    msg.mess_type=MSG_KEY;
-    msg.data=key;
-    //ENetPacket *packet = enet_packet_create(&msg, sizeof(AS_message_t), ENET_PACKET_FLAG_RELIABLE);
-    ENetPacket *packet = enet_packet_create(&msg, sizeof(msg), ENET_PACKET_FLAG_RELIABLE);
-    int rc = enet_peer_send(peer, 0, packet);
-   // writeText("Key = " + QString::number(key));
-   */
 }
 
 void NetworkManager::network_loop(){
@@ -203,7 +205,7 @@ void NetworkManager::process_key(QKeyEvent * event, int key_status){
         set_key(key_status*KEY__DOWN);
     if (event->key() == Qt::Key_Left)
         set_key(key_status*KEY__UP);
-    if (event->key() == Qt::Key_Down)
+    if (event->key() == Qt::Key_Down || event->key() == Qt::Key_Up)
         set_key(key_status*KEY__ACCELERATE);
     if (event->key() == Qt::Key_Control)
         set_key(key_status*KEY_FIRE);
