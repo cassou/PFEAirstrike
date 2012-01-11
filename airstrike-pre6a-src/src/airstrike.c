@@ -15,6 +15,8 @@
 #include "prototype.h"
 #include "network.h"
 #include "teams.h"
+#include <unistd.h>
+
 
 sprite_group_t *mech_group;
 sprite_group_t *bullet_group;
@@ -34,6 +36,7 @@ static int screen_h;
 
 int nbTeams;
 int nbPlayers; //TODO: eliminate nbPlayers or player count, redundant
+
 
 static void atexit_cleanup(void)
 {
@@ -510,6 +513,12 @@ void console_mode()
 			show_debug = 1 - show_debug;
 			break;
 		case 6:
+			netStop=1;
+			while (netStopped!=1){
+				//sleep(10);
+				//printf("haha\n");
+			}
+
 			exit(EXIT_SUCCESS);
 			break;
 		default:
