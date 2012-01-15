@@ -10,12 +10,14 @@
 #define DELAYSPAWN 1000
 #define DELAYRESPAWN 4000
 
+//struct player;
 typedef struct player
 {
 	int id;
 	int ishuman;
 	int points;
 	int damage;
+	struct player * lastEnnemi;
 	int keymap[MAX_CONTROLLER_KEYS][2];
 	char name[32];
 	sprite_t *sprite;

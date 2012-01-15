@@ -33,7 +33,7 @@ static sprite_t *create(void * owner)
 {
 	sprite_t *s;
 	int teamid =((team_t *)(owner))->id;
-	printf("%d --------------------\n",teamid);
+//	printf("%d --------------------\n",teamid);
 	s = calloc(1,sizeof(struct teamicon));
 	s->animation = anim[teamid];
 	s->state = 0;

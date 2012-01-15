@@ -10,7 +10,8 @@
 #include "players.h"
 
 static float ttl;
-static int damage;
+static int bullet_damage;
+static int bullet_point;
 
 static animation_t *anim;
 
@@ -22,7 +23,8 @@ static void killme(sprite_t *s)
 static int setup()
 {
 	ttl = cfgnum("bullet.ttl",1000);
-	damage = cfgnum("bullet.damage",1);
+	bullet_damage = cfgnum("bullet.damage",1);
+	bullet_point = cfgnum("bullet.point",1);
 	assert(anim = animation_load(path_to_data("bullet.png"),1,1,ttl));
 	animation_last_frame(anim)->trigger = killme;
 	return 0;
@@ -54,10 +56,10 @@ static void collide(struct sprite *this_sprite,
 	sprite_get_vel(other_sprite,n);
 	sprite_set_vel(s,n);
 	sprite_group_insert(effects_group,s);
-	sprite_signal(other_sprite,SIGNAL_DAMAGE,&damage);
+	sprite_signal(other_sprite,SIGNAL_DAMAGE,&bullet_damage);
+	sprite_signal(other_sprite,SIGNAL_LAST_ENNEMI,this_sprite->owner);
 	if (!(other_sprite->state & PLANE_CRASHING)){
-		this_sprite->owner->points+=1;
-		//this_sprite->owner->points +=1 ; //TODO : gestion plus fine des pts
+		this_sprite->owner->points+=bullet_point;
 	}
 	sprite_kill(this_sprite);
 	sound_effect(&sound_bullethit,s->x,s->y);

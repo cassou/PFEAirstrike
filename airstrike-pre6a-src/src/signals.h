@@ -19,11 +19,12 @@ enum sprite_signals{
   SIGNAL_DEBUG, /* Target should print info about itself to stderr */
   SIGNAL_ALARM, /* A previously set alarm was activated. */
   SIGNAL_DAMAGE,  /* data is a pointer to an int with the amount */
+  SIGNAL_LAST_ENNEMI,
   SIGNAL_POSTARGET,   /* data is a pointer to position (int[2]) */
   SIGNAL_SPRITETARGET,/* data points to a sprite */
   SIGNAL_RESTORE, /* The sprite should return to its initial state */
   SIGNAL_BGSTUCK, /* This sprite is somehow completely inside the
-		     background. It should be restored or killed. */ 
+		     background. It should be restored or killed. */
   SIGNAL_KILL, /* The sprite should kill itself */
 
   SIGNAL_CANCONTROL, /* set the int in data to 1 if the sprite

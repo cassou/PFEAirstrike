@@ -31,6 +31,7 @@ static float air_isotropic;
 static float air_turnrate;
 static float air_normal;
 static int nr_bombs;
+static int crash_point;
 
 static animation_t *right_anim[MAXTEAMS];
 static animation_t *crashing[MAXTEAMS];
@@ -92,6 +93,7 @@ static int setup(void * owner)
 	air_turnrate = cfgnum("blueplane.air_turnrate",0.00005);
 	air_normal = cfgnum("blueplane.air_normal",0.001);
 	nr_bombs = cfgnum("blueplane.nr_bombs",5);
+	crash_point = cfgnum("blueplane.crash_point",20);
 	return 0;
 }
 
@@ -143,6 +145,7 @@ static void update(sprite_t *s)
 		{
 			s->state |= PLANE_CRASHING;
 			sprite_set_animation(s,crashing[0]);//TODO replace the zero
+			s->owner->lastEnnemi->points+=crash_point;
 			create_effect(&fire,s->x,s->y);
 			sprite_alarm(7000,s,SIGNAL_KILL,0);
 		}
@@ -165,6 +168,9 @@ static void sigget(sprite_t *s, int signal, void *data)
 	case SIGNAL_DAMAGE:
 		((mech_sprite_t *)s)->damage += *(int *)data;
 		((player_t*)s->owner)->damage=(100*((mech_sprite_t *)s)->damage)/hitpoints;
+		break;
+	case SIGNAL_LAST_ENNEMI:
+		((player_t*)s->owner)->lastEnnemi=(player_t*)data;
 		break;
 	case SIGNAL_ACCELERATE:
 		s->state |= PLANE_ACCELERATING;

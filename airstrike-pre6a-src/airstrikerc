@@ -7,8 +7,8 @@
 datapath "data"
 
 #window size or fullscreen resolution
-screen.width 1024
-screen.height 768
+screen.width 1920
+screen.height 1080
 
 # Set fullscreen to 1 for fullscreen mode
 # Can also be changed in-game
@@ -74,12 +74,17 @@ blueplane.nr_bombs 100
 blueplane.bullet_delay 50
 blueplane.hitpoints 15
 blueplane.mass 1
-blueplane.turn_amount 0.06
+blueplane.turn_amount 0.03
 blueplane.air_turnrate 0.005
 blueplane.air_isotropic 0.01
 blueplane.air_normal 0.1
+blueplane.crash_point 20
 
 # Standard bullet parameters
 #time-to-live in milliseconds
 bullet.ttl 1400
 bullet.damage 1
+bullet.point 1
+
+bomb.point 20
+bomb.damage 20

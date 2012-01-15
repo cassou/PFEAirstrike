@@ -7,11 +7,17 @@
 #include "mech.h"
 #include "airstrike.h"
 #include "players.h"
+#include "plane_flags.h"
 
 static animation_t *anim;
+static int bomb_damage;
+static int bomb_point;
 
 static int setup()
 {
+
+	bomb_point = cfgnum("bomb.point",1);
+	bomb_damage = cfgnum("bomb.damage",20);
 	assert(anim = animation_load(path_to_data("bomb.png"),
 			64,1,1000000));
 	return 0;
@@ -27,7 +33,7 @@ static sprite_t *create(void * owner)
 	mech_defaults((mech_sprite_t *)s,1);
 	((mech_sprite_t *)s)->angle = 0;
 	((mech_sprite_t *)s)->rmass = 4;
-	((mech_sprite_t *)s)->gravity = 0.001;
+	((mech_sprite_t *)s)->gravity = 0.1;
 	((mech_sprite_t *)s)->air_turnrate = 0.01;
 	return s;
 }
@@ -42,14 +48,17 @@ static void collide(struct sprite *this_sprite,
 		int x, int y)
 {
 	sprite_t *s;
-	int damage = 20;
 
 	if (other_sprite->type == &bomb)
 		return;
 	s = sprite_create(&explosion,NULL);
 	sprite_set_pos(s,x,y);
 	sprite_group_insert(effects_group,s);
-	sprite_signal(other_sprite,SIGNAL_DAMAGE,&damage);
+	sprite_signal(other_sprite,SIGNAL_DAMAGE,&bomb_damage);
+	sprite_signal(other_sprite,SIGNAL_LAST_ENNEMI,this_sprite->owner);
+	if (!(other_sprite->state & PLANE_CRASHING)){
+		this_sprite->owner->points+=bomb_point;
+	}
 	sprite_kill(this_sprite);
 }
 
