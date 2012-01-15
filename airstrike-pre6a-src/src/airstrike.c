@@ -107,11 +107,11 @@ void players_setup(void)
 	{
 		players[i].sprite_type = &blueplane;
 		//	players[i].sprite_type = &biplane;
-		players[i].startpos[0] = 100 * i;
-		players[i].startpos[1] = 300 + 20 * (i % 10);
 		players[i].points = 0;
 		player_sethuman(i);
 		players[i].team = &teams[team];
+		players[i].startpos[0] = screen_w-200;
+		players[i].startpos[1] = (players[i].team->id+1)*90;
 		nbMembers++;
 		printf("Player %d is in team %d, %d\n", i, team, players[i].team);
 
