@@ -23,5 +23,6 @@ extern sprite_type_t missile;
 extern sprite_type_t parachute;
 extern sprite_type_t puff;
 extern sprite_type_t blacksmoke;
+extern sprite_type_t teamicon;
 
 #endif

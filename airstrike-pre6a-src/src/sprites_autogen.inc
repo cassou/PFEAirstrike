@@ -23,4 +23,5 @@ void sprite_types_register()
     sprite_types_list[nr_sprite_types++] = &parachute;
     sprite_types_list[nr_sprite_types++] = &puff;
     sprite_types_list[nr_sprite_types++] = &blacksmoke;
+    sprite_types_list[nr_sprite_types++] = &teamicon;
 }

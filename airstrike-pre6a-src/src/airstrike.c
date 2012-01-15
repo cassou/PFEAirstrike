@@ -150,6 +150,14 @@ void objects_setup(void)
 
 	srand(23);
 
+	sprite_t *s;
+
+	for (i=0;i<nbTeams;i++){
+		s = sprite_create(&teamicon,&teams[i]);
+		sprite_set_pos(s,75+100*(i), sprite_global.display->h - 75);
+		sprite_group_insert(foreground_group, s);
+	}
+
 	/*sp = sprite_create(&bonusmachine);
 	 sprite_group_insert(mech_group,sp);
 	 sprite_set_pos(sp,level.xmax/2,15);*/
@@ -257,10 +265,10 @@ void draw_ui(void)
 	float av_dt, s_dt;
 
 	for(i=0;i<nbTeams;i++){
-		sprintf(cbuf, "Team %d", i);
-		text_render(sprite_global.display, 0, small_font, 20+90*(i), sprite_global.display->h - 27, ALIGN_LEFT, ALIGN_BOTTOM, cbuf);
-		sprintf(cbuf, "%2.2i Points", teams[i].points);
-		text_render(sprite_global.display, 0, small_font, 20+90*(i), sprite_global.display->h - 17, ALIGN_LEFT, ALIGN_BOTTOM, cbuf);
+		//sprintf(cbuf, "Team %d", i);
+		//text_render(sprite_global.display, 0, big_font, 20+90*(i), sprite_global.display->h - 100, ALIGN_LEFT, ALIGN_BOTTOM, cbuf);
+		sprintf(cbuf, "%2.2i", teams[i].points);
+		text_render(sprite_global.display, 0, big_font, 60+100*(i), sprite_global.display->h - 90, ALIGN_LEFT, ALIGN_BOTTOM, cbuf);
 	}
 
 	for(i=0;i<nbPlayers;i++){
@@ -593,6 +601,8 @@ void scorekeeper()
 			return;
 		}
 
+
+
 	}
 
 
@@ -615,6 +625,9 @@ void scorekeeper()
 					//s->owner = &players[i]; //TODO : find a way to integrate that in 1 of the previous constructors ?
 					sprite_group_insert(mech_group, s);
 					sprite_set_pos(s, players[i].startpos[0], players[i].startpos[1]);
+
+
+
 					/*if (!players[i].ishuman) //TODO : check if ai still works and reintegrate it ?
 						ai_controller_set_enemy(players[i].controller, players[(i + 1) % playerCount].sprite);*/
 					/*s = sprite_create(&energymeter);
@@ -768,10 +781,11 @@ int main(int argc, char *argv[])
 	assert(res);
 	engine_setup();
 	//message_mode("      Airstrike 1.0 pre 6\n\nIn the game press ESC for a menu\n  Winner is first to 5 points\n     Press any key to start");
-	objects_setup();
+
 	DEBUGPOINT(1);
 	teams_setup();
 	players_setup();
+	objects_setup();
 	//addPlayers(nbTeams);
 	network_init();
 	init_spawn_delays();
