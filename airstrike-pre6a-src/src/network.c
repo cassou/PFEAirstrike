@@ -9,6 +9,10 @@
 #include "players.h"
 #include "keys.h"
 #include "sprite.h"
+#include <sys/time.h>
+#include <sys/resource.h>
+
+
 
 void *thread_function( void *arg );
 void network_loop();
@@ -21,6 +25,14 @@ int  clientCount= 0;
 
 unsigned int counterOut = 0;
 unsigned int counterIn = 0;
+
+int prev_utime;
+int cur_utime;
+int prevClock;
+int currClock;
+struct timeval tim;
+struct rusage usage;
+int tdiff;
 
 volatile int netStop=0 ;//place to 1 to stop the network
 volatile int netStopped=0 ;//place to 1 when network stopped
@@ -98,9 +110,6 @@ void network_loop(){
 		if (sprite_global.game_clock-prevTime>=1000){
 			mylog(LOG_NETWORK_OUT,"Output", counterOut);
 			mylog(LOG_NETWORK_IN,"Input", counterIn);
-			prevTime = sprite_global.game_clock;
-
-
 			pingMin=99999;
 			pingMax=0;
 			pingAverage=0;
@@ -124,6 +133,17 @@ void network_loop(){
 			}
 
 
+
+			if (!getrusage(RUSAGE_SELF, &usage) && !gettimeofday(&tim, NULL)){
+				prev_utime=cur_utime;
+				cur_utime=clock();
+				prevClock=currClock;
+				currClock=tim.tv_sec*1000000+tim.tv_usec;
+				if ((tdiff = currClock-prevClock)!=0)
+					mylog(LOG_CPU,"CPU %",(cur_utime-prev_utime)/(tdiff/100));
+			}
+
+			prevTime = sprite_global.game_clock;
 		}
 
 

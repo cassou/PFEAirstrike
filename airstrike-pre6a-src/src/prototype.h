@@ -36,6 +36,7 @@ enum log_enum {
 	LOG_PING_MIN = 6,
 	LOG_PING_MAX = 7,
 	LOG_PING_AV = 8,
+	LOG_CPU = 9,
 };
 
 
