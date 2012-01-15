@@ -9,16 +9,18 @@ static SDL_Surface *chars[256];
 
 font_t *big_font = 0;
 font_t *small_font = 0;
+font_t *medium_font = 0;
 
 int text_setup(void)
 {
   static char *ascii = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmnopqrstuvwxyz{|}~ ";
   big_font = text_load_font(path_to_data("bigfont.png"),ascii,15,25);
+  medium_font = text_load_font(path_to_data("mediumfont.png"),ascii,15,25);
   small_font = text_load_font(path_to_data("smallfont-green.png"),ascii,9,11);
   return 0;
 }
 
-font_t *text_load_font(const char *image, const char *chars, 
+font_t *text_load_font(const char *image, const char *chars,
 		       int char_width, int char_pitch)
 {
   SDL_Surface *src;
@@ -48,12 +50,12 @@ font_t *text_load_font(const char *image, const char *chars,
 
 void text_render(SDL_Surface *target, SDL_Rect *r,
 		 font_t *font,
-		 int x, int y, 
-		 enum text_alignment xalign, 
+		 int x, int y,
+		 enum text_alignment xalign,
 		 enum text_alignment yalign,
 		 char *s)
 {
-  int w = 0,h = font->char_h; 
+  int w = 0,h = font->char_h;
   int rw = 0;
   int xstart,ystart;
   char *c = s;
@@ -102,7 +104,7 @@ void text_render(SDL_Surface *target, SDL_Rect *r,
   t.y = ystart;
   t.w = font->char_w;
   t.h = font->char_h;
-  /* Now we can finally render */  
+  /* Now we can finally render */
   for (c = s; *c != 0; c++)
     {
       if (*c == '\n')

@@ -29,6 +29,7 @@ int text_setup(void);
 
 extern font_t *big_font;
 extern font_t *small_font;
+extern font_t *medium_font;
 
 /* Draw a sequence of characters on the screen
  * If boundary is nonzero then it is filled with the
@@ -38,9 +39,9 @@ extern font_t *small_font;
  */
 void text_render(SDL_Surface *target, SDL_Rect *boundary,
 		 font_t *font,
-		 int x, int y, 
-		 enum text_alignment xalign, 
-		 enum text_alignment yalign,		 
+		 int x, int y,
+		 enum text_alignment xalign,
+		 enum text_alignment yalign,
 		 char *string);
 
 #endif

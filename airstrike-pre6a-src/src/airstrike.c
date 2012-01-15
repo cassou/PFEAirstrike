@@ -263,6 +263,15 @@ void draw_ui(void)
 		text_render(sprite_global.display, 0, small_font, 20+90*(i), sprite_global.display->h - 17, ALIGN_LEFT, ALIGN_BOTTOM, cbuf);
 	}
 
+	for(i=0;i<nbPlayers;i++){
+		sprintf(cbuf, "%d", i);
+		//int px,py;
+		if(players[i].sprite!=NULL){
+			text_render(sprite_global.display, 0, medium_font,  players[i].sprite->x, players[i].sprite->y-20, ALIGN_LEFT, ALIGN_BOTTOM, cbuf);
+		}
+	}
+
+
 	/* left player stats */
 	/*text_render(sprite_global.display, 0, big_font, 54, sprite_global.display->h - 27, ALIGN_LEFT, ALIGN_BOTTOM, players[1].name);
 	if (sprite_isvalid(&(players[1].sprite)))
@@ -570,7 +579,7 @@ void scorekeeper()
 			init_spawn_delays();
 			//printf("rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr\n");
 
-		//TODO : page affichage des scores
+			//TODO : page affichage des scores
 
 			int j;
 			for (j = 0; j< nbTeams; j++){
