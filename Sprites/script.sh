@@ -1,6 +1,5 @@
 #!/bin/bash
 
-echo "Start script"
 NUMTYPE=$1
 NUMCOLOR=0
 
