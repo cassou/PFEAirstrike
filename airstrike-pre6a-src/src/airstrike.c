@@ -26,6 +26,7 @@ sprite_group_t *foreground_group;
 sprite_group_t *ui_group;
 
 static int paused = 0;
+static int inGame = 0;
 static int max_points;
 static Uint32 displayflags = 0;
 static int show_debug = 1; /* If true print dbg info on screen */
@@ -82,7 +83,7 @@ static int general_setup(void)
 	console_set_pos(9, 254);
 	console_load_bg(path_to_data("console-bg.png"));
 	sprite_types_setup();
-	sprite_background_load("data/bg800.png", "data/bgmask800.png");
+	sprite_background_load("data/bg.png", "data/bgmask.png");
 
 	level_setup();
 	winds_setup();
@@ -752,6 +753,106 @@ void saveanimframe()
 	SDL_SaveBMP(img,filename);
 }
 
+connect_frame(){
+	//usleep(100000);
+	int i;
+	/* collect frame time statistics */
+	static Uint32 lasttime = 0;
+	Uint32 now = SDL_GetTicks();
+	frame_times[frame_time_i] = now - lasttime;
+	frame_time_i = (frame_time_i + 1) & 31;
+	lasttime = now;
+
+	/*  sprite_viewport_center_on(player_sprite[0]);*/
+
+	sprite_start_frame();
+
+	/*sprite_group_move(mech_group, sprite_global.dt);
+	sprite_group_move(bullet_group, sprite_global.dt);
+	sprite_group_move(bomb_group, sprite_global.dt);
+	sprite_group_move(effects_group, sprite_global.dt);
+	sprite_group_move(foreground_group, sprite_global.dt);*/
+
+	/*sprite_group_animate(mech_group, sprite_global.dt);
+	sprite_group_animate(bullet_group, sprite_global.dt);
+	sprite_group_animate(bomb_group, sprite_global.dt);
+	sprite_group_animate(effects_group, sprite_global.dt);
+	sprite_group_animate(foreground_group, sprite_global.dt);*/
+
+	/*mech_gravity(mech_group);*/ /* has to be before bg_coll */
+
+	/*prite_group_coll(mech_group, mech_sprite_collide);
+	sprite_group_coll2(bullet_group, mech_group, 0);
+	sprite_group_coll2(bomb_group, mech_group, 0);
+	sprite_group_coll2(bomb_group, bullet_group, 0);
+	sprite_group_coll2(bomb_group, bomb_group, 0);
+	sprite_group_bg_coll(mech_group, mech_sprite_bg_collide);
+	sprite_group_bg_coll(bullet_group, 0);
+	sprite_group_bg_coll(bomb_group, 0);*/
+
+	char cbuf[256];
+	int cnt = -1;
+	int oldt=0;
+	for (i = 0; i < playerCount; i++)
+	{
+		cnt++;
+		if (oldt!=players[i].team->id){
+			oldt=players[i].team->id;
+			cnt=0;
+		}
+		int x = 100+300*(players[i].team->id%5);
+		int y = 100+30*cnt;
+
+		if (players[i].team->id>4)
+			y+=400;
+
+		if (players[i].isConnected){
+			sprintf(cbuf, "[%d]-%s",i,players[i].name);
+		}else{
+			sprintf(cbuf, "[%d]-Empty", i);
+		}
+		text_render(sprite_global.display, 0, big_font, x,y, ALIGN_LEFT, ALIGN_TOP, cbuf);
+	}
+
+	/*sprite_group_update(mech_group);
+	sprite_group_update(bullet_group);
+	sprite_group_update(bomb_group);
+	sprite_group_update(effects_group);
+	sprite_group_update(foreground_group);
+	sprite_group_update(ui_group);*/
+
+	//sprite_group_cleanup(bullet_group);
+	//sprite_group_cleanup(bomb_group);
+	//sprite_group_cleanup(mech_group);
+	//sprite_group_cleanup(effects_group);
+	//sprite_group_cleanup(foreground_group);
+	//sprite_group_cleanup(ui_group);
+
+	/* Refresh sprite positions to reflect changes
+	 by collisions */
+
+	//sprite_group_pos_update(mech_group);
+
+	//sprite_group_draw(mech_group);
+	//sprite_group_draw(bullet_group);
+	//sprite_group_draw(bomb_group);
+	//sprite_group_draw(effects_group);
+	//sprite_group_draw(foreground_group);
+	//sprite_group_draw(ui_group);
+
+
+
+	//draw_ui();
+
+	if (!sprite_end_frame())
+	{
+		//printf("lag");
+		//fflush(stdout);
+	}
+
+	//scorekeeper();
+}
+
 int main(int argc, char *argv[])
 {
 	int res;
@@ -799,11 +900,17 @@ int main(int argc, char *argv[])
 	network_init();
 	init_spawn_delays();
 	fprintf(stderr, "Entering main loop.\n");
+
+
 	while (process_events())
 	{
 		if (!paused)
 		{
-			game_frame();
+			if(inGame){
+				game_frame();
+			}else{
+				connect_frame();
+			}
 		}
 		else
 		{

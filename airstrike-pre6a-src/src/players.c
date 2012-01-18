@@ -19,8 +19,12 @@ void player_init(){
 		players[i].id=i;
 		players[i].team=0;
 		players[i].damage=0;
-		players[i].timeBeforeRespawn=TIMEFIRSTSPAWN;
+	//	players[i].timeBeforeRespawn=TIMEFIRSTSPAWN;
 		players[i].spawnTimer=NULL;
+		players[i].isConnected=0;
+		sprintf(players[i].name,"Player %d\0",i);
+		//printf("OOOOOOOOOOOOOOOOOOOO%s\n",players[i].name);
+
 	}
 }
 
