@@ -26,7 +26,7 @@ sprite_group_t *foreground_group;
 sprite_group_t *ui_group;
 
 static int paused = 0;
-static int max_points = 150;
+static int max_points;
 static Uint32 displayflags = 0;
 static int show_debug = 1; /* If true print dbg info on screen */
 static Uint32 frame_times[32];
@@ -130,6 +130,7 @@ void teams_setup(void)
 	int i;
 	teamCount = nbTeams;
 	teams_init(nbTeams, nbPlayers);
+	max_points=cfgnum("game.teamWinScore",400);
 }
 
 void engine_setup(void)
@@ -305,6 +306,7 @@ void draw_ui(void)
 		for (i = 0; i < 32; i++)
 			av_dt += frame_times[i];
 		av_dt /= 32;
+		fps=1000/av_dt;
 		for (i = 0; i < 32; i++)
 			s_dt += (frame_times[i] - av_dt) * (frame_times[i] - av_dt);
 		s_dt = sqrt(s_dt / 32);
@@ -548,15 +550,19 @@ void console_mode()
 int startDelay[MAXTEAMS];
 void init_spawn_delays()
 {
+
+	int timefirstspawn=1000*cfgnum("game.firstSpawn",3);
+	int delaySpawn=1000*cfgnum("game.delaySpawn",2);
+
 	int a;
 	for (a = 0; a< nbTeams; a++){
-		startDelay[a]=TIMEFIRSTSPAWN;
+		startDelay[a]=timefirstspawn;
 	}
 	for (a = 0; a < playerCount; a++)
 	{
 		int tid = players[a].team->id;
 		players[a].timeBeforeRespawn=startDelay[tid];
-		startDelay[tid]+=DELAYSPAWN;
+		startDelay[tid]+=delaySpawn;
 
 		printf("Player %d will start after %d\n",a,players[a].timeBeforeRespawn);
 	}
@@ -622,7 +628,6 @@ void scorekeeper()
 					sprite_aquire(players[i].sprite, &(players[i].controller->target));
 					assert(sprite_isvalid(&(players[i].controller->target)));
 					s = players[i].sprite;
-					//s->owner = &players[i]; //TODO : find a way to integrate that in 1 of the previous constructors ?
 					sprite_group_insert(mech_group, s);
 					sprite_set_pos(s, players[i].startpos[0], players[i].startpos[1]);
 

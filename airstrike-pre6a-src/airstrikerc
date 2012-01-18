@@ -24,6 +24,21 @@ alpha 2
 # Can now be changed in-game
 nr_players 2
 
+game.firstSpawn 3
+game.delaySpawn 2
+
+game.firstSpawn 3
+game.delaySpawn 2
+game.teamWinScore 15
+
+bullet.damage 1
+bullet.point 1
+bomb.point 20
+bomb.damage 20
+
+blueplane.hitpoints 15
+blueplane.crash_point 20
+
 
 #set sound to 1 to enable sound, 0 to disable.
 sound 0
@@ -72,19 +87,15 @@ blueplane.engine_strength 0.3
 blueplane.bomb_delay 300
 blueplane.nr_bombs 100
 blueplane.bullet_delay 50
-blueplane.hitpoints 15
 blueplane.mass 1
 blueplane.turn_amount 0.03
 blueplane.air_turnrate 0.005
 blueplane.air_isotropic 0.01
 blueplane.air_normal 0.1
-blueplane.crash_point 20
 
 # Standard bullet parameters
 #time-to-live in milliseconds
 bullet.ttl 1400
-bullet.damage 1
-bullet.point 1
 
-bomb.point 20
-bomb.damage 20
+
+

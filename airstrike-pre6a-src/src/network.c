@@ -32,6 +32,7 @@ unsigned int lastCounterIn = 0;
 
 volatile int netStop=0 ;//place to 1 to stop the network
 volatile int netStopped=0 ;//place to 1 when network stopped
+int fps=0;
 
 int networkLoad = 0;
 void * loadData;
@@ -118,10 +119,11 @@ void network_loop(){
 	while (netStop!=1) {
 		int k;
 		if (sprite_global.game_clock-prevTimeStat>=1000){
-			mylog(LOG_NETWORK_OUT,"Total Output", counterOut);
-			mylog(LOG_NETWORK_IN,"Total Input", counterIn);
+			mylog(LOG_NETWORK_TOTAL_OUT,"Total Output", counterOut);
+			mylog(LOG_NETWORK_TOTAL_IN,"Total Input", counterIn);
 			mylog(LOG_NETWORK_OUT,"Output", counterOut-lastCounterOut);
 			mylog(LOG_NETWORK_IN,"Input", counterIn-lastCounterIn);
+			mylog(LOG_FPS,"fps", fps);
 
 			lastCounterOut=counterOut;
 			lastCounterIn=counterIn;
