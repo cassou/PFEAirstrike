@@ -18,6 +18,7 @@ void *thread_function( void *arg );
 void network_loop();
 void process_packet(ENetEvent * event);
 void sendMessage(int peerId, int msgType,int clientId,int data);
+void sendMessageLoad(int peerId, int sizeInByte);
 
 int  clientConnected[MAXPLAYERS];
 int  clientPeerId[MAXPLAYERS];
@@ -26,17 +27,14 @@ int  clientCount= 0;
 unsigned int counterOut = 0;
 unsigned int counterIn = 0;
 
-int prev_utime;
-int cur_utime;
-int prevClock;
-int currClock;
-struct timeval tim;
-struct rusage usage;
-int tdiff;
+unsigned int lastCounterOut = 0;
+unsigned int lastCounterIn = 0;
 
 volatile int netStop=0 ;//place to 1 to stop the network
 volatile int netStopped=0 ;//place to 1 when network stopped
 
+int networkLoad = 0;
+void * loadData;
 
 void network_init(){
 	pthread_t thread;
@@ -91,25 +89,43 @@ void network_loop(){
 			0 /* assume any amount of incoming bandwidth */ ,
 			0 /* assume any amount of outgoing bandwidth */ );
 	if (server == NULL) {
-		//fprintf(stderr, "An error occurred while trying to create an ENet server host.\n");
 		mylog(LOG_ERROR,"An error occurred while trying to create an ENet server host.",0);
 		exit(EXIT_FAILURE);
 	}
 
 	ENetEvent event;
 
-	int prevTime = sprite_global.game_clock;
+	int prevTimeStat = sprite_global.game_clock;
+	int prevTimeLoad = prevTimeStat;
 
 	int pingMin;
 	int pingMax;
 	int pingAverage;
 	int pingCnt ;
+	int prev_utime=0;
+	int cur_utime=0;
+	int prevClock=0;
+	int currClock=0;
+	struct timeval tim;
+	struct rusage usage;
+	int tdiff;
+
+	loadData = malloc(networkLoad/1);
+	if (!loadData){
+		perror("Issue in malloc of network load.");
+	}
 
 	while (netStop!=1) {
 		int k;
-		if (sprite_global.game_clock-prevTime>=1000){
-			mylog(LOG_NETWORK_OUT,"Output", counterOut);
-			mylog(LOG_NETWORK_IN,"Input", counterIn);
+		if (sprite_global.game_clock-prevTimeStat>=1000){
+			mylog(LOG_NETWORK_OUT,"Total Output", counterOut);
+			mylog(LOG_NETWORK_IN,"Total Input", counterIn);
+			mylog(LOG_NETWORK_OUT,"Output", counterOut-lastCounterOut);
+			mylog(LOG_NETWORK_IN,"Input", counterIn-lastCounterIn);
+
+			lastCounterOut=counterOut;
+			lastCounterIn=counterIn;
+
 			pingMin=99999;
 			pingMax=0;
 			pingAverage=0;
@@ -132,8 +148,6 @@ void network_loop(){
 				mylog(LOG_PING_MAX,"Ping max",pingMax);
 			}
 
-
-
 			if (!getrusage(RUSAGE_SELF, &usage) && !gettimeofday(&tim, NULL)){
 				prev_utime=cur_utime;
 				cur_utime=clock();
@@ -143,9 +157,17 @@ void network_loop(){
 					mylog(LOG_CPU,"CPU %",(cur_utime-prev_utime)/(tdiff/100));
 			}
 
-			prevTime = sprite_global.game_clock;
+			prevTimeStat = sprite_global.game_clock;
 		}
 
+		if (sprite_global.game_clock-prevTimeLoad>=1000){
+			for(k=0;k<playerCount;k++){
+				if (clientConnected[k]){
+					sendMessageLoad(k,networkLoad/10);
+				}
+			}
+			prevTimeLoad = sprite_global.game_clock;
+		}
 
 
 		for(k=0;k<playerCount;k++){
@@ -187,7 +209,8 @@ void network_loop(){
 					mylog(LOG_NETWORK,"A client disconnected from ",event.peer->address.host);
 					/* Reset the peer's client information. */
 					event.peer->data = NULL;
-
+					break;
+				case ENET_EVENT_TYPE_NONE:
 					break;
 				}
 			} else if (serviceResult > 0) {
@@ -196,6 +219,7 @@ void network_loop(){
 			}
 		}
 	}
+	free(loadData);
 }
 
 
@@ -214,6 +238,19 @@ void sendMessage(int peerId, int msgType,int clientId,int data){
 
 	}
 }
+
+
+void sendMessageLoad(int peerId, int sizeInByte){
+	ENetPeer *p = &server->peers[peerId];
+	if (!(p==NULL)){
+		if(loadData){
+			ENetPacket *packet = enet_packet_create(loadData, sizeInByte, ENET_PACKET_FLAG_RELIABLE);
+			enet_peer_send(p, 1, packet);
+			counterOut+=sizeInByte;
+		}
+	}
+}
+
 
 void process_packet(ENetEvent * event){
 	AS_message_t * msg = (AS_message_t * )(event->packet->data);

@@ -7,8 +7,8 @@
 datapath "data"
 
 #window size or fullscreen resolution
-screen.width 1920
-screen.height 1080
+screen.width 800
+screen.height 450
 
 # Set fullscreen to 1 for fullscreen mode
 # Can also be changed in-game
@@ -26,7 +26,7 @@ nr_players 2
 
 
 #set sound to 1 to enable sound, 0 to disable.
-sound 1
+sound 0
 
 #Level parameters
 level.gravity 0.2

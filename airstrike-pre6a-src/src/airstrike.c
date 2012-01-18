@@ -82,7 +82,7 @@ static int general_setup(void)
 	console_set_pos(9, 254);
 	console_load_bg(path_to_data("console-bg.png"));
 	sprite_types_setup();
-	sprite_background_load("data/bg.png", "data/bgmask.png");
+	sprite_background_load("data/bg800.png", "data/bgmask800.png");
 
 	level_setup();
 	winds_setup();
@@ -645,6 +645,7 @@ void scorekeeper()
 /* Creates a new game frame */
 void game_frame()
 {
+	//usleep(100000);
 	int i;
 	/* collect frame time statistics */
 	static Uint32 lasttime = 0;
@@ -750,7 +751,7 @@ int main(int argc, char *argv[])
 {
 	int res;
 
-	if (argc == 3)
+	if (argc == 4)
 	{
 		nbTeams = (int) strtol(argv[1], &argv[1], 10);
 		//TODO : mettre des #define pour equipe min et max
@@ -767,11 +768,13 @@ int main(int argc, char *argv[])
 			exit(EXIT_SUCCESS);
 		}
 
-		printf("%d teams, %d players\n", nbTeams, nbPlayers);
+		networkLoad = (int) strtol(argv[3], &argv[3], 10);
+
+		printf("%d teams, %d players, %d Bytes per beconds\n", nbTeams, nbPlayers,networkLoad);
 	}
 	else
 	{
-		printf("Airstrike nbOfTeams nbOfPlayers\n");
+		printf("Airstrike nbOfTeams nbOfPlayers NetworkLoad(B/s)\n");
 		exit(EXIT_SUCCESS);
 	}
 
@@ -784,6 +787,7 @@ int main(int argc, char *argv[])
 
 	DEBUGPOINT(1);
 	teams_setup();
+	DEBUGPOINT(42);
 	players_setup();
 	objects_setup();
 	//addPlayers(nbTeams);
