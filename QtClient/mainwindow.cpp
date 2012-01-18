@@ -8,6 +8,9 @@ MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
         ui(new Ui::MainWindow)
 {
+
+    isBot=false;
+
     ui->setupUi(this);
     connect(ui->connectButton,SIGNAL(clicked()),this,SLOT(connect_clicked()));
     displayText("Start");
