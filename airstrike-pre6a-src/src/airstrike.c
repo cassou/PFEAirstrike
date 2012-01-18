@@ -24,6 +24,7 @@ sprite_group_t *bomb_group;
 sprite_group_t *effects_group;
 sprite_group_t *foreground_group;
 sprite_group_t *ui_group;
+sprite_group_t *ui_group_connect;
 
 static int paused = 0;
 static int inGame = 0;
@@ -142,6 +143,7 @@ void engine_setup(void)
 	effects_group = sprite_group_create();
 	foreground_group = sprite_group_create();
 	ui_group = sprite_group_create();
+	ui_group_connect = sprite_group_create();
 }
 
 void objects_setup(void)
@@ -157,8 +159,21 @@ void objects_setup(void)
 	for (i=0;i<nbTeams;i++){
 		s = sprite_create(&teamicon,&teams[i]);
 		sprite_set_pos(s,75+100*(i), sprite_global.display->h - 75);
-		sprite_group_insert(foreground_group, s);
+		sprite_group_insert(ui_group, s);
 	}
+
+	for (i=0;i<nbTeams;i++){
+
+		int x = 190+300*(i%5);
+		int y = 80;
+		if (i>4)
+			y+=400;
+
+		s = sprite_create(&teamicon,&teams[i]);
+		sprite_set_pos(s,x, y);
+		sprite_group_insert(ui_group_connect, s);
+	}
+
 
 	/*sp = sprite_create(&bonusmachine);
 	 sprite_group_insert(mech_group,sp);
@@ -265,40 +280,47 @@ void draw_ui(void)
 	int i;
 	char cbuf[256];
 	float av_dt, s_dt;
+	if(inGame){
 
-	for(i=0;i<nbTeams;i++){
-		//sprintf(cbuf, "Team %d", i);
-		//text_render(sprite_global.display, 0, big_font, 20+90*(i), sprite_global.display->h - 100, ALIGN_LEFT, ALIGN_BOTTOM, cbuf);
-		sprintf(cbuf, "%2.2i", teams[i].points);
-		text_render(sprite_global.display, 0, big_font, 60+100*(i), sprite_global.display->h - 90, ALIGN_LEFT, ALIGN_BOTTOM, cbuf);
-	}
+		for(i=0;i<nbTeams;i++){
+			//sprintf(cbuf, "Team %d", i);
+			//text_render(sprite_global.display, 0, big_font, 20+90*(i), sprite_global.display->h - 100, ALIGN_LEFT, ALIGN_BOTTOM, cbuf);
+			sprintf(cbuf, "%2.2i", teams[i].points);
+			text_render(sprite_global.display, 0, big_font, 60+100*(i), sprite_global.display->h - 90, ALIGN_LEFT, ALIGN_BOTTOM, cbuf);
+		}
 
-	for(i=0;i<nbPlayers;i++){
-		sprintf(cbuf, "%d", i);
-		//int px,py;
-		if(players[i].sprite!=NULL){
-			text_render(sprite_global.display, 0, medium_font,  players[i].sprite->x, players[i].sprite->y-20, ALIGN_LEFT, ALIGN_BOTTOM, cbuf);
+		for(i=0;i<nbPlayers;i++){
+			sprintf(cbuf, "%d", i);
+			//int px,py;
+			if(players[i].sprite!=NULL){
+				text_render(sprite_global.display, 0, medium_font,  players[i].sprite->x, players[i].sprite->y-20, ALIGN_LEFT, ALIGN_BOTTOM, cbuf);
+			}
+		}
+	}else{
+		int cnt = -1;
+		int oldt=0;
+		for (i = 0; i < playerCount; i++)
+		{
+			cnt++;
+			if (oldt!=players[i].team->id){
+				oldt=players[i].team->id;
+				cnt=0;
+			}
+			int x = 100+300*(players[i].team->id%5);
+			int y = 100+30*cnt;
+
+			if (players[i].team->id>4)
+				y+=400;
+
+			if (players[i].isConnected){
+				sprintf(cbuf, "[%d]-%s",i,players[i].name);
+			}else{
+				sprintf(cbuf, "[%d]-Empty", i);
+			}
+			text_render(sprite_global.display, 0, big_font, x,y, ALIGN_LEFT, ALIGN_TOP, cbuf);
 		}
 	}
 
-
-	/* left player stats */
-	/*text_render(sprite_global.display, 0, big_font, 54, sprite_global.display->h - 27, ALIGN_LEFT, ALIGN_BOTTOM, players[1].name);
-	if (sprite_isvalid(&(players[1].sprite)))
-	{
-		sprite_signal(players[1].sprite, SIGNAL_STATSTRING, cbuf);
-		text_render(sprite_global.display, 0, small_font, 54, sprite_global.display->h - 17, ALIGN_LEFT, ALIGN_BOTTOM, cbuf);
-	}*/
-	/* right player stats */
-	/*text_render(sprite_global.display, 0, big_font, sprite_global.display->w - 54, sprite_global.display->h - 27, ALIGN_RIGHT, ALIGN_BOTTOM, players[0].name);
-	if (sprite_isvalid(&(players[0].sprite)))
-	{
-		sprite_signal(players[0].sprite, SIGNAL_STATSTRING, cbuf);
-		text_render(sprite_global.display, 0, small_font, sprite_global.display->w - 54, sprite_global.display->h - 17, ALIGN_RIGHT, ALIGN_BOTTOM, cbuf);
-	}*/
-	/* score */
-	/*sprintf(cbuf, "%2.2i-%2.2i\nSCORE", max_points - 1 - players[0].points, max_points - 1 - players[1].points);
-	text_render(sprite_global.display, 0, big_font, sprite_global.display->w / 2, sprite_global.display->h - 5, ALIGN_CENTER, ALIGN_BOTTOM, cbuf);*/
 	if (show_debug)
 	{
 		/* calculate frame time stats */
@@ -325,7 +347,11 @@ void console_frame(void)
 	sprite_group_draw(bomb_group);
 	sprite_group_draw(effects_group);
 	sprite_group_draw(foreground_group);
-	sprite_group_draw(ui_group);
+	if (inGame){
+		sprite_group_draw(ui_group);
+	}else{
+		sprite_group_draw(ui_group_connect);
+	}
 
 	winds_change();
 
@@ -763,86 +789,12 @@ connect_frame(){
 	frame_time_i = (frame_time_i + 1) & 31;
 	lasttime = now;
 
-	/*  sprite_viewport_center_on(player_sprite[0]);*/
-
 	sprite_start_frame();
 
-	/*sprite_group_move(mech_group, sprite_global.dt);
-	sprite_group_move(bullet_group, sprite_global.dt);
-	sprite_group_move(bomb_group, sprite_global.dt);
-	sprite_group_move(effects_group, sprite_global.dt);
-	sprite_group_move(foreground_group, sprite_global.dt);*/
-
-	/*sprite_group_animate(mech_group, sprite_global.dt);
-	sprite_group_animate(bullet_group, sprite_global.dt);
-	sprite_group_animate(bomb_group, sprite_global.dt);
-	sprite_group_animate(effects_group, sprite_global.dt);
-	sprite_group_animate(foreground_group, sprite_global.dt);*/
-
-	/*mech_gravity(mech_group);*/ /* has to be before bg_coll */
-
-	/*prite_group_coll(mech_group, mech_sprite_collide);
-	sprite_group_coll2(bullet_group, mech_group, 0);
-	sprite_group_coll2(bomb_group, mech_group, 0);
-	sprite_group_coll2(bomb_group, bullet_group, 0);
-	sprite_group_coll2(bomb_group, bomb_group, 0);
-	sprite_group_bg_coll(mech_group, mech_sprite_bg_collide);
-	sprite_group_bg_coll(bullet_group, 0);
-	sprite_group_bg_coll(bomb_group, 0);*/
-
-	char cbuf[256];
-	int cnt = -1;
-	int oldt=0;
-	for (i = 0; i < playerCount; i++)
-	{
-		cnt++;
-		if (oldt!=players[i].team->id){
-			oldt=players[i].team->id;
-			cnt=0;
-		}
-		int x = 100+300*(players[i].team->id%5);
-		int y = 100+30*cnt;
-
-		if (players[i].team->id>4)
-			y+=400;
-
-		if (players[i].isConnected){
-			sprintf(cbuf, "[%d]-%s",i,players[i].name);
-		}else{
-			sprintf(cbuf, "[%d]-Empty", i);
-		}
-		text_render(sprite_global.display, 0, big_font, x,y, ALIGN_LEFT, ALIGN_TOP, cbuf);
-	}
-
-	/*sprite_group_update(mech_group);
-	sprite_group_update(bullet_group);
-	sprite_group_update(bomb_group);
-	sprite_group_update(effects_group);
-	sprite_group_update(foreground_group);
-	sprite_group_update(ui_group);*/
-
-	//sprite_group_cleanup(bullet_group);
-	//sprite_group_cleanup(bomb_group);
-	//sprite_group_cleanup(mech_group);
-	//sprite_group_cleanup(effects_group);
-	//sprite_group_cleanup(foreground_group);
-	//sprite_group_cleanup(ui_group);
-
-	/* Refresh sprite positions to reflect changes
-	 by collisions */
-
-	//sprite_group_pos_update(mech_group);
-
-	//sprite_group_draw(mech_group);
-	//sprite_group_draw(bullet_group);
-	//sprite_group_draw(bomb_group);
-	//sprite_group_draw(effects_group);
-	//sprite_group_draw(foreground_group);
-	//sprite_group_draw(ui_group);
+	sprite_group_draw(ui_group_connect);
 
 
-
-	//draw_ui();
+	draw_ui();
 
 	if (!sprite_end_frame())
 	{
