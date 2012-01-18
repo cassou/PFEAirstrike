@@ -7,8 +7,8 @@
 datapath "data"
 
 #window size or fullscreen resolution
-screen.width 800
-screen.height 450
+screen.width 1920
+screen.height 1080
 
 # Set fullscreen to 1 for fullscreen mode
 # Can also be changed in-game

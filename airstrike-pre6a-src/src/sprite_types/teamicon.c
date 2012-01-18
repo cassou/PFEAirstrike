@@ -22,10 +22,13 @@ static int setup()
 			16,1,4000000));*/
 	char cbuf[200];
 	int i;
+
 	for (i=0;i<MAXTEAMS;i++){
-		sprintf(cbuf,"plane%d.png", i);
-		anim[i] = animation_load(path_to_data(cbuf),64,1,100);
+		sprintf(cbuf,"plane-%d-0.png", i);
+		CRITICAL(anim[i] = animation_load(path_to_data(cbuf),64,1,100));
 	}
+
+
 	return 0;
 }
 
@@ -33,7 +36,7 @@ static sprite_t *create(void * owner)
 {
 	sprite_t *s;
 	int teamid =((team_t *)(owner))->id;
-//	printf("%d --------------------\n",teamid);
+	//	printf("%d --------------------\n",teamid);
 	s = calloc(1,sizeof(struct teamicon));
 	s->animation = anim[teamid];
 	s->state = 0;

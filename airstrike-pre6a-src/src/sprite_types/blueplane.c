@@ -33,8 +33,8 @@ static float air_normal;
 static int nr_bombs;
 static int crash_point;
 
-static animation_t *right_anim[MAXTEAMS];
-static animation_t *crashing[MAXTEAMS];
+static animation_t *right_anim[MAXTEAMS][MAXPLAYERINTEAMS];
+static animation_t *crashing[MAXTEAMS][MAXPLAYERINTEAMS];
 
 static void frame_trigger(sprite_t *s)
 {
@@ -65,22 +65,20 @@ static void crashing_trigger(sprite_t *s)
 
 static int setup(void * owner)
 {
-	int i;
+	int i,j;
 	char cbuf[200];
 	for (i=0;i<MAXTEAMS;i++){
+		for (j=0;i<MAXPLAYERINTEAMS;j++){
+			sprintf(cbuf,"plane-%d-%d.png", i,j);
+			CRITICAL(right_anim[i][j] = animation_load(path_to_data(cbuf),64,1,100));
+			sprintf(cbuf,"plane-%d-%d-wreck.png", i,j);
+			CRITICAL(crashing[i][j] = animation_load(path_to_data(cbuf),64,1,180));
 
-
-		sprintf(cbuf,"plane%d.png", i);
-		CRITICAL(right_anim[i] = animation_load(path_to_data(cbuf),
-				64,1,100));
-		sprintf(cbuf,"plane%dwreck.png", i);
-		CRITICAL(crashing[i] = animation_load(path_to_data(cbuf),
-				64,1,180));
-
-		animation_make_loop(right_anim[i]);
-		animation_make_loop(crashing[i]);
-		right_anim[i]->trigger = frame_trigger;
-		crashing[i]->trigger = crashing_trigger;
+			animation_make_loop(right_anim[i][j]);
+			animation_make_loop(crashing[i][j]);
+			right_anim[i][j]->trigger = frame_trigger;
+			crashing[i][j]->trigger = crashing_trigger;
+		}
 	}
 
 	engine_strength = cfgnum("blueplane.engine_strength",5);

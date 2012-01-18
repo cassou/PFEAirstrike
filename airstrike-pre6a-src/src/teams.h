@@ -2,6 +2,7 @@
 #define TEAM_H_
 
 #define MAXTEAMS 10
+#define MAXPLAYERINTEAMS 10
 
 typedef struct team
 {

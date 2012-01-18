@@ -272,6 +272,7 @@ void process_packet(ENetEvent * event){
 				for (i=0;i<playerCount;i++){
 					if (!clientConnected[i]){
 						client_id = i;
+						players[i].isConnected=1;
 						clientCount++;
 						break;
 					}

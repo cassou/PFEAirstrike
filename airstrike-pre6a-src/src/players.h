@@ -6,9 +6,7 @@
 #include "teams.h"
 
 #define MAXPLAYERS 128
-#define TIMEFIRSTSPAWN 3000
-#define DELAYSPAWN 1000
-#define DELAYRESPAWN 4000
+
 
 //struct player;
 typedef struct player
@@ -27,6 +25,7 @@ typedef struct player
 	struct team *team;
 	sprite_timer_t spawnTimer;
 	int timeBeforeRespawn;
+	int isConnected;
 } player_t;
 
 extern player_t players[MAXPLAYERS];
