@@ -78,30 +78,33 @@ int NetworkManager::network_init(){
 }
 
 void NetworkManager::process_packet(ENetEvent * event){
-    AS_message_t * msg = (AS_message_t * )(event->packet->data);
-    //int peerID = event->peer->incomingPeerID;
-    //writeText("Message : ");
-    switch (msg->mess_type) {
-    case MSG_POINTS:
-       //writeText("My Score is : " + QString::number(msg->data));
-        emit newPlayerScore(msg->data);
-        break;
-    case MSG_HELLO:
-        myClientId = msg->client_id;
-        emit newPlayerId(myClientId);
-        writeText("Hello received");
-        break;
-    case MSG_NO_SPACE:
-        writeText("Plus de place, reconnectez-vous plus tard.");
-        break;
-    case MSG_DAMAGE:
-        //writeText("Damage = " + QString::number(msg->data));
-        emit newHealthPoints(100 - msg->data);
-        break;
-    default:
-        break;
+
+    if(event->channelID==0){
+        AS_message_t * msg = (AS_message_t * )(event->packet->data);
+        //int peerID = event->peer->incomingPeerID;
+        //writeText("Message : ");
+        switch (msg->mess_type) {
+        case MSG_POINTS:
+           //writeText("My Score is : " + QString::number(msg->data));
+            emit newPlayerScore(msg->data);
+            break;
+        case MSG_HELLO:
+            myClientId = msg->client_id;
+            emit newPlayerId(myClientId);
+            writeText("Hello received");
+            break;
+        case MSG_NO_SPACE:
+            writeText("Plus de place, reconnectez-vous plus tard.");
+            break;
+        case MSG_DAMAGE:
+            //writeText("Damage = " + QString::number(msg->data));
+            emit newHealthPoints(100 - msg->data);
+            break;
+        default:
+            break;
+        }
+        enet_packet_destroy(event->packet);
     }
-    enet_packet_destroy(event->packet);
 }
 
 void NetworkManager::update_state(){
