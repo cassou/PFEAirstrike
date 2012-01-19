@@ -286,9 +286,10 @@ void process_packet(ENetEvent * event){
 		clientConnected[client_id]=1;
 		clientPeerId[client_id]=peerID;
 		strncpy(players[client_id].name,msg->name,32);
+		//printf("*******************************%s\n",msg->name);
 		players[client_id].name[31]="\0";
 		sendMessage(peerID,MSG_HELLO,client_id,client_id);
-		mylog(LOG_MESSAGE,"MSG_HELLO sended to",peerID);
+		mylog(LOG_MESSAGE,"MSG_HELLO sent to",peerID);
 		break;
 	case MSG_KEY:
 		printf("Key %d message received from %d\n",msg->data,peerID);

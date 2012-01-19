@@ -242,6 +242,9 @@ static int process_events(void)
 			case SDLK_s:
 				SDL_SaveBMP(sprite_global.display,"screenshot.bmp");
 				break;
+			case SDLK_RETURN:
+				inGame = 1-inGame;
+				break;
 			default:
 				break;
 			}
@@ -594,12 +597,16 @@ void init_spawn_delays()
 
 void scorekeeper()
 {
+
+
 	char cbuf[200];
 	sprite_t *s;
 	int i;
 
 
+
 	update_teams_score(nbTeams,nbPlayers);
+
 
 	for (i = 0; i < nbTeams; i++)
 	{
@@ -681,6 +688,7 @@ void game_frame()
 
 	/*  sprite_viewport_center_on(player_sprite[0]);*/
 
+
 	sprite_start_frame();
 
 	sprite_group_move(mech_group, sprite_global.dt);
@@ -750,6 +758,7 @@ void game_frame()
 	}
 
 	scorekeeper();
+
 }
 
 /* Dirty function to save an animation of the game */

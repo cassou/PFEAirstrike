@@ -44,7 +44,7 @@ static void frame_trigger(sprite_t *s)
 	{
 		if (((mech_sprite_t *)s)->damage < 10){
 			/*FUME*/
-			if(schrodinger=s->owner->id)
+			if(schrodinger==s->owner->id)
 				create_effect(&puff,s->x,s->y);
 		}
 		else
@@ -73,6 +73,7 @@ static int setup(void * owner)
 	char cbuf[200];
 	for (i=0;i<MAXTEAMS;i++){
 		for (j=0;j<MAXPLAYERINTEAMS;j++){
+
 			sprintf(cbuf,"plane-%d-%d.png", i,j);
 			CRITICAL(right_anim[i][j] = animation_load(path_to_data(cbuf),64,1,100));
 			sprintf(cbuf,"plane-%d-%d.png", i,j);
@@ -82,6 +83,7 @@ static int setup(void * owner)
 			animation_make_loop(crashing[i][j]);
 			right_anim[i][j]->trigger = frame_trigger;
 			crashing[i][j]->trigger = crashing_trigger;
+
 		}
 	}
 
@@ -111,6 +113,7 @@ static int setup(void * owner)
 	nr_bombs = cfgnum("blueplane.nr_bombs",5);
 	crash_point = cfgnum("blueplane.crash_point",20);
 	return 0;
+
 }
 
 static sprite_t *create(void * owner)
