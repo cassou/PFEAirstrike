@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>223</width>
-    <height>464</height>
+    <width>316</width>
+    <height>512</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,7 @@
     <item>
      <widget class="QGroupBox" name="groupBox">
       <property name="title">
-       <string>Connection au serveur</string>
+       <string>Paramètres de connection</string>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
@@ -81,36 +81,36 @@
          </item>
         </layout>
        </item>
-       <item>
-        <widget class="QCheckBox" name="checkBoxBot">
-         <property name="text">
-          <string>Bot</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="QPushButton" name="connectButton">
-           <property name="text">
-            <string>Connecter</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="disconnectButton">
-           <property name="text">
-            <string>Déconnecter</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
       </layout>
      </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="checkBoxBot">
+      <property name="text">
+       <string>Bot</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QPushButton" name="connectButton">
+        <property name="text">
+         <string>Connecter</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="disconnectButton">
+        <property name="text">
+         <string>Déconnecter</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
     <item>
      <widget class="QGroupBox" name="groupBox_2">
@@ -182,7 +182,7 @@
     <item>
      <widget class="QGroupBox" name="groupBox_3">
       <property name="title">
-       <string>Débug</string>
+       <string>Debug</string>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
@@ -198,7 +198,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>223</width>
+     <width>316</width>
      <height>21</height>
     </rect>
    </property>
@@ -217,8 +217,6 @@
  <tabstops>
   <tabstop>ipEdit</tabstop>
   <tabstop>portEdit</tabstop>
-  <tabstop>connectButton</tabstop>
-  <tabstop>disconnectButton</tabstop>
   <tabstop>debugTextEdit</tabstop>
  </tabstops>
  <resources/>

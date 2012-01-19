@@ -12,7 +12,7 @@ NetworkManager::NetworkManager()
     next_time = 0;
     keep_running = 42;
     myClientId = -1;
-    this->login = "Toto";
+    this->login;
 }
 
 NetworkManager::~NetworkManager()
@@ -56,6 +56,7 @@ int NetworkManager::network_init(){
 
         if (peer == NULL) {
             writeText("No available peers for initiating an ENet connection.");
+            emit disconnected();
             return -1;
         }
 
@@ -72,6 +73,7 @@ int NetworkManager::network_init(){
             trying_left--;
             if(trying_left<=0){
                 writeText("Could not connect to " + ip_addr + ":" + port);
+                emit disconnected();
                 return -1;
             }
         }
@@ -97,6 +99,7 @@ void NetworkManager::process_packet(ENetEvent * event){
             break;
         case MSG_NO_SPACE:
             writeText("Plus de place, reconnectez-vous plus tard.");
+            emit disconnected();
             break;
         case MSG_DAMAGE:
             //writeText("Damage = " + QString::number(msg->data));
@@ -171,15 +174,17 @@ void NetworkManager::network_loop(){
 
             case ENET_EVENT_TYPE_DISCONNECT:
                 writeText("Server disconected.\n");
-                exit(EXIT_FAILURE);
-
+                emit disconnected();
+                //exit(EXIT_FAILURE);
                 break;
+
             case ENET_EVENT_TYPE_NONE:
                 break;
             }
         } else if (serviceResult < 0) {
             writeText("Error with servicing the client");
-            exit(EXIT_FAILURE);
+            emit disconnected();
+            //exit(EXIT_FAILURE);
         }
     }
 }
@@ -209,6 +214,35 @@ void NetworkManager::setIP(QString ip_addr, int port)
 {
     this->ip_addr = ip_addr;
     this->port = port;
+}
+
+void NetworkManager::disconnectClient()
+{
+    ENetEvent event;
+
+    enet_peer_disconnect (peer, 0);
+
+    /* Allow up to 3 seconds for the disconnect to succeed
+ and drop any packets received packets.
+     */
+    while (enet_host_service (client, & event, 3000) > 0)
+    {
+        switch (event.type)
+        {
+        case ENET_EVENT_TYPE_RECEIVE:
+            enet_packet_destroy (event.packet);
+            break;
+
+        case ENET_EVENT_TYPE_DISCONNECT:
+            writeText("Disconnection succeeded.");
+            emit disconnected();
+            return;
+        }
+    }
+
+    /* We've arrived here, so the disconnect attempt didn't */
+    /* succeed yet.  Force the connection down.             */
+    enet_peer_reset (peer);
 }
 
 void NetworkManager::process_key(QKeyEvent * event, int key_status){

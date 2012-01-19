@@ -5,18 +5,22 @@
 #include <QSettings>
 
 MainWindow::MainWindow(QWidget *parent) :
-        QMainWindow(parent),
-        ui(new Ui::MainWindow)
+    QMainWindow(parent),
+    ui(new Ui::MainWindow)
 {
 
     isBot=false;
 
     ui->setupUi(this);
-    readSettings();
+
     displayText("Start");
 
     networkThread = new QThread();
     networkManager = new NetworkManager();
+
+    networkManager->moveToThread(networkThread);
+    networkThread->start();
+    //connect(networkThread, SIGNAL(started()), networkManager, SLOT(network_init()));
 
     connect(ui->connectButton,SIGNAL(clicked()),this,SLOT(connect_clicked()));
     connect(networkManager, SIGNAL(writeText(QString)), this, SLOT(displayText(QString)));
@@ -27,6 +31,12 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(networkManager, SIGNAL(newPlayerId(int)), ui->playerIdLabel, SLOT(setNum(int)));
     connect(ui->checkBoxBot, SIGNAL(clicked(bool)), this, SLOT(setBot(bool)));
     connect(ui->nameEdit, SIGNAL(textChanged(QString)), networkManager, SLOT(setLogin(QString)));
+    connect(ui->disconnectButton, SIGNAL(released()), networkManager, SLOT(disconnectClient()));
+    connect(this, SIGNAL(setIP(QString,int)), networkManager, SLOT(setIP(QString,int)));
+    connect(networkManager, SIGNAL(disconnected()), this, SLOT(stopPlay()));
+    connect(this, SIGNAL(startNetworkManager()), networkManager, SLOT(network_init()));
+
+    readSettings();
 }
 
 MainWindow::~MainWindow()
@@ -40,10 +50,8 @@ void MainWindow::displayText(QString string){
 }
 
 void MainWindow::connect_clicked(){
-    networkManager->setIP(ui->ipEdit->text(),ui->portEdit->text().toInt());
-    networkManager->moveToThread(networkThread);
-    connect(networkThread, SIGNAL(started()), networkManager, SLOT(network_init()));
-    networkThread->start();
+    emit setIP(ui->ipEdit->text(),ui->portEdit->text().toInt());
+    emit startNetworkManager();
     startPlay();
 }
 
@@ -65,7 +73,7 @@ void MainWindow::keyReleaseEvent(QKeyEvent * event){
     }
     if(!event->isAutoRepeat()){
         emit sendKeyEvent(event, -1);
-       //this->displayText("Key released "+ QString::number(event->key()));
+        //this->displayText("Key released "+ QString::number(event->key()));
     } else {
         QWidget::keyPressEvent(event);
     }
@@ -73,21 +81,25 @@ void MainWindow::keyReleaseEvent(QKeyEvent * event){
 
 void MainWindow::startPlay()
 {
+    ui->groupBox->setEnabled(false);
+    ui->connectButton->setEnabled(false);
     if(!isBot)
     {
-        this->grabKeyboard();
+        // this->grabKeyboard();
     }
     else
     {
-       botTimer = new QTimer();
-       botTimer->setInterval(100);
-       connect(botTimer, SIGNAL(timeout()), networkManager, SLOT(set_rand_key()));
-       botTimer->start();
+        botTimer = new QTimer();
+        botTimer->setInterval(100);
+        connect(botTimer, SIGNAL(timeout()), networkManager, SLOT(set_rand_key()));
+        botTimer->start();
     }
 }
 
 void MainWindow::stopPlay()
 {
+    ui->groupBox->setEnabled(true);
+    ui->connectButton->setEnabled(true);
     if(isBot)
     {
         botTimer->stop();
@@ -95,7 +107,6 @@ void MainWindow::stopPlay()
     else
     {
         this->releaseKeyboard();
-
     }
 }
 
@@ -140,6 +151,6 @@ void MainWindow::readSettings()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-        writeSettings();
-        event->accept();
+    writeSettings();
+    event->accept();
 }
