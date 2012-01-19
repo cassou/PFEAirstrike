@@ -216,11 +216,11 @@ void network_loop(){
 							strncpy(players[i].name," \0",32);
 							players[i].isConnected=0;
 							clientCount-=1;
+							mylog(LOG_NETWORK,"A client disconnected ",i);
 						}
 					}
 
-					mylog(LOG_NETWORK,"A client disconnected from ",event.peer->address.host);
-					/* Reset the peer's client information. */
+				/* Reset the peer's client information. */
 					event.peer->data = NULL;
 					break;
 				case ENET_EVENT_TYPE_NONE:
@@ -304,7 +304,7 @@ void process_packet(ENetEvent * event){
 
 		}else{
 			int client_id=msg->client_id;
-			if (client_id>0 && client_id<playerCount && !clientConnected[client_id]){
+			if (client_id>=0 && client_id<playerCount && !clientConnected[client_id]){
 					clientCount++;
 					clientConnected[client_id]=1;
 					players[client_id].isConnected=1;

@@ -205,6 +205,7 @@ void sprite_group_point_coll(sprite_group_t *group,
 				       int x, int y));
 
 void sprite_group_draw(sprite_group_t *group);
+void sprite_group_draw2(sprite_group_t *group);
 
 /* future functions below */
 

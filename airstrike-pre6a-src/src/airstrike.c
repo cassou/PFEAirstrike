@@ -743,7 +743,7 @@ void game_frame()
 
 
 	sprite_group_draw(effects_group);
-	sprite_group_draw(mech_group);
+	sprite_group_draw2(mech_group);
 	sprite_group_draw(bullet_group);
 	sprite_group_draw(bomb_group);
 	sprite_group_draw(foreground_group);
