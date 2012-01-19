@@ -9,8 +9,6 @@ QT       += core gui
 TARGET = QtClient
 TEMPLATE = app
 
-
-
 SOURCES += main.cpp\
         mainwindow.cpp \
     networkmanager.cpp
@@ -22,5 +20,5 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui
 
-LIBS += -L./lib -lenet -lSDL
-INCLUDEPATH += ./include
+LIBS += -L../enet/enet-1.3.3/.libs/ -lenet
+INCLUDEPATH += ../enet/enet-1.3.3/include/
