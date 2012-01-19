@@ -27,11 +27,11 @@ public:
     ~NetworkManager();
     void set_key(int key);
     void network_loop();
-    void process_packet(ENetEvent * event);  
+    void process_packet(ENetEvent * event);
     void update_state();
     void testFunction();
     void sendMessage(int msgType,int clientId,int data = 0);
-    void setIP(QString ip_addr = "127.0.0.1", int port=1234);
+
 
 public slots:
     void start();
@@ -39,12 +39,15 @@ public slots:
     int network_init();
     void set_rand_key();
     void setLogin(QString newLogin);
+    void disconnectClient();
+    void setIP(QString ip_addr = "127.0.0.1", int port=1234);
 
 signals:
     void writeText(QString text);
     void newPlayerScore(int score);
     void newHealthPoints(int value);
     void newPlayerId(int value);
+    void disconnected();
 
 };
 

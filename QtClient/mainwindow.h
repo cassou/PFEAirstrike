@@ -6,7 +6,7 @@
 #include <QTimer>
 
 namespace Ui {
-    class MainWindow;
+class MainWindow;
 }
 
 class MainWindow : public QMainWindow
@@ -16,13 +16,13 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-
     void writeSettings();
     void readSettings();
-
     void closeEvent(QCloseEvent *event);
+
 public slots:
     void displayText(QString string);
+    void stopPlay();
 
 private:
     Ui::MainWindow *ui;
@@ -36,11 +36,13 @@ private slots:
     void keyPressEvent(QKeyEvent * event);
     void keyReleaseEvent(QKeyEvent * event);
     void startPlay();
-    void stopPlay();
+
     void setBot(bool state);
 
 signals:
     void sendKeyEvent(QKeyEvent * event, int key_status);
+    void setIP(QString ip_addr, int port);
+    void startNetworkManager();
 };
 
 #endif // MAINWINDOW_H
