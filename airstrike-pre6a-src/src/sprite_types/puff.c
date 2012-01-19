@@ -17,7 +17,7 @@ static void frame_trigger(sprite_t *s)
 static int setup()
 {
   CRITICAL(grow = animation_load(path_to_data("whitesmoke.png"),
-				 1,32,60));
+				 1,32,100));
   animation_set_alpha(grow,128);
   //animation_set_alpha(dissolve,128);
   // animation_last_frame(grow)->next_frame = dissolve;
@@ -35,13 +35,13 @@ static sprite_t *create()
   return s;
 }
 
-static void collide(struct sprite *this_sprite, 
-		    struct sprite *other_sprite, 
+static void collide(struct sprite *this_sprite,
+		    struct sprite *other_sprite,
 		    int x, int y)
 {
   if (this_sprite->state == 0)
     {
-      this_sprite->state = 1;  
+      this_sprite->state = 1;
       sprite_set_animation(this_sprite, dissolve);
     }
 }

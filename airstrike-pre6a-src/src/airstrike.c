@@ -27,7 +27,7 @@ sprite_group_t *ui_group;
 sprite_group_t *ui_group_connect;
 
 static int paused = 0;
-static int inGame = 0;
+static int inGame = 1;
 static int max_points;
 static Uint32 displayflags = 0;
 static int show_debug = 1; /* If true print dbg info on screen */
@@ -36,8 +36,8 @@ static int frame_time_i = 0;
 static int screen_w;
 static int screen_h;
 
-int nbTeams;
-int nbPlayers; //TODO: eliminate nbPlayers or player count, redundant
+static int nbTeams;
+static int nbPlayers; //TODO: eliminate nbPlayers or player count, redundant
 
 
 static void atexit_cleanup(void)
@@ -738,10 +738,11 @@ void game_frame()
 
 	sprite_group_pos_update(mech_group);
 
+
+	sprite_group_draw(effects_group);
 	sprite_group_draw(mech_group);
 	sprite_group_draw(bullet_group);
 	sprite_group_draw(bomb_group);
-	sprite_group_draw(effects_group);
 	sprite_group_draw(foreground_group);
 	sprite_group_draw(ui_group);
 
@@ -790,10 +791,7 @@ connect_frame(){
 	lasttime = now;
 
 	sprite_start_frame();
-
 	sprite_group_draw(ui_group_connect);
-
-
 	draw_ui();
 
 	if (!sprite_end_frame())

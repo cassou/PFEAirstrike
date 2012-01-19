@@ -24,11 +24,9 @@ alpha 2
 # Can now be changed in-game
 nr_players 2
 
-game.firstSpawn 3
+game.firstSpawn 1
 game.delaySpawn 2
 
-game.firstSpawn 3
-game.delaySpawn 2
 game.teamWinScore 15
 
 bullet.damage 1
