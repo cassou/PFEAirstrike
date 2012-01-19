@@ -27,7 +27,7 @@ sprite_group_t *ui_group;
 sprite_group_t *ui_group_connect;
 
 static int paused = 0;
-static int inGame = 1;
+static int inGame = 0;
 static int max_points;
 static Uint32 displayflags = 0;
 static int show_debug = 1; /* If true print dbg info on screen */
@@ -112,6 +112,7 @@ void players_setup(void)
 		players[i].points = 0;
 		player_sethuman(i);
 		players[i].team = &teams[team];
+		players[i].id_in_team=nbMembers;
 		players[i].startpos[0] = screen_w-200;
 		players[i].startpos[1] = (players[i].team->id+1)*90;
 		nbMembers++;
@@ -297,18 +298,10 @@ void draw_ui(void)
 			}
 		}
 	}else{
-		int cnt = -1;
-		int oldt=0;
 		for (i = 0; i < playerCount; i++)
 		{
-			cnt++;
-			if (oldt!=players[i].team->id){
-				oldt=players[i].team->id;
-				cnt=0;
-			}
 			int x = 100+300*(players[i].team->id%5);
-			int y = 100+30*cnt;
-
+			int y = 100+30*players[i].id_in_team;
 			if (players[i].team->id>4)
 				y+=400;
 
