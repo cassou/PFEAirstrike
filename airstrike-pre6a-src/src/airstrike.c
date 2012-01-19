@@ -27,7 +27,6 @@ sprite_group_t *ui_group;
 sprite_group_t *ui_group_connect;
 
 static int paused = 0;
-static int inGame = 0;
 static int max_points;
 static Uint32 displayflags = 0;
 static int show_debug = 1; /* If true print dbg info on screen */
@@ -38,6 +37,8 @@ static int screen_h;
 
 static int nbTeams;
 static int nbPlayers; //TODO: eliminate nbPlayers or player count, redundant
+
+
 
 
 static void atexit_cleanup(void)
@@ -294,7 +295,8 @@ void draw_ui(void)
 		}
 
 		for(i=0;i<nbPlayers;i++){
-			sprintf(cbuf, "%d", i);
+			//sprintf(cbuf, "%d", i);
+			sprintf(cbuf, "%s", players[i].name);
 			//int px,py;
 			if(players[i].sprite!=NULL){
 				text_render(sprite_global.display, 0, medium_font,  players[i].sprite->x, players[i].sprite->y-20, ALIGN_LEFT, ALIGN_BOTTOM, cbuf);
