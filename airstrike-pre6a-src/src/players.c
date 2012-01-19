@@ -22,7 +22,8 @@ void player_init(){
 	//	players[i].timeBeforeRespawn=TIMEFIRSTSPAWN;
 		players[i].spawnTimer=NULL;
 		players[i].isConnected=0;
-		sprintf(players[i].name,"Player %d\0",i);
+		sprintf(players[i].name," \0");
+		//sprintf(players[i].name,"nyan-cat\0",i);
 		//printf("OOOOOOOOOOOOOOOOOOOO%s\n",players[i].name);
 
 	}

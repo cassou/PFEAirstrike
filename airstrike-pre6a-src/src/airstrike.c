@@ -27,7 +27,6 @@ sprite_group_t *ui_group;
 sprite_group_t *ui_group_connect;
 
 static int paused = 0;
-static int inGame = 0;
 static int max_points;
 static Uint32 displayflags = 0;
 static int show_debug = 1; /* If true print dbg info on screen */
@@ -36,8 +35,10 @@ static int frame_time_i = 0;
 static int screen_w;
 static int screen_h;
 
-int nbTeams;
-int nbPlayers; //TODO: eliminate nbPlayers or player count, redundant
+static int nbTeams;
+static int nbPlayers; //TODO: eliminate nbPlayers or player count, redundant
+
+
 
 
 static void atexit_cleanup(void)
@@ -112,6 +113,7 @@ void players_setup(void)
 		players[i].points = 0;
 		player_sethuman(i);
 		players[i].team = &teams[team];
+		players[i].id_in_team=nbMembers;
 		players[i].startpos[0] = screen_w-200;
 		players[i].startpos[1] = (players[i].team->id+1)*90;
 		nbMembers++;
@@ -241,6 +243,9 @@ static int process_events(void)
 			case SDLK_s:
 				SDL_SaveBMP(sprite_global.display,"screenshot.bmp");
 				break;
+			case SDLK_RETURN:
+				inGame = 1-inGame;
+				break;
 			default:
 				break;
 			}
@@ -290,25 +295,18 @@ void draw_ui(void)
 		}
 
 		for(i=0;i<nbPlayers;i++){
-			sprintf(cbuf, "%d", i);
+			//sprintf(cbuf, "%d", i);
+			sprintf(cbuf, "%s", players[i].name);
 			//int px,py;
 			if(players[i].sprite!=NULL){
 				text_render(sprite_global.display, 0, medium_font,  players[i].sprite->x, players[i].sprite->y-20, ALIGN_LEFT, ALIGN_BOTTOM, cbuf);
 			}
 		}
 	}else{
-		int cnt = -1;
-		int oldt=0;
 		for (i = 0; i < playerCount; i++)
 		{
-			cnt++;
-			if (oldt!=players[i].team->id){
-				oldt=players[i].team->id;
-				cnt=0;
-			}
 			int x = 100+300*(players[i].team->id%5);
-			int y = 100+30*cnt;
-
+			int y = 100+30*players[i].id_in_team;
 			if (players[i].team->id>4)
 				y+=400;
 
@@ -601,12 +599,16 @@ void init_spawn_delays()
 
 void scorekeeper()
 {
+
+
 	char cbuf[200];
 	sprite_t *s;
 	int i;
 
 
+
 	update_teams_score(nbTeams,nbPlayers);
+
 
 	for (i = 0; i < nbTeams; i++)
 	{
@@ -688,6 +690,7 @@ void game_frame()
 
 	/*  sprite_viewport_center_on(player_sprite[0]);*/
 
+
 	sprite_start_frame();
 
 	sprite_group_move(mech_group, sprite_global.dt);
@@ -738,10 +741,11 @@ void game_frame()
 
 	sprite_group_pos_update(mech_group);
 
+
+	sprite_group_draw(effects_group);
 	sprite_group_draw(mech_group);
 	sprite_group_draw(bullet_group);
 	sprite_group_draw(bomb_group);
-	sprite_group_draw(effects_group);
 	sprite_group_draw(foreground_group);
 	sprite_group_draw(ui_group);
 
@@ -756,6 +760,7 @@ void game_frame()
 	}
 
 	scorekeeper();
+
 }
 
 /* Dirty function to save an animation of the game */
@@ -790,10 +795,7 @@ connect_frame(){
 	lasttime = now;
 
 	sprite_start_frame();
-
 	sprite_group_draw(ui_group_connect);
-
-
 	draw_ui();
 
 	if (!sprite_end_frame())

@@ -7,6 +7,7 @@
 
 int playerCount;
 int teamCount;
+int inGame;
 
 FILE *fpLog;
 

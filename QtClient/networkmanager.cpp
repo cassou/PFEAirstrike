@@ -3,6 +3,7 @@
 #include "keys.h"
 #include <QKeyEvent>
 #include <QTimer>
+#include <QDebug>
 
 NetworkManager::NetworkManager()
 {
@@ -11,6 +12,7 @@ NetworkManager::NetworkManager()
     next_time = 0;
     keep_running = 42;
     myClientId = -1;
+    this->login = "Toto";
 }
 
 NetworkManager::~NetworkManager()
@@ -140,7 +142,12 @@ else if (num>(2*RAND_MAX/3)) {
     }*/
 
 
-qDebug("5");
+    qDebug("5");
+}
+
+void NetworkManager::setLogin(QString newLogin)
+{
+    this->login = newLogin;
 }
 
 void NetworkManager::set_key(int key){
@@ -190,7 +197,9 @@ void NetworkManager::sendMessage(int msgType, int clientId, int data)
         msg.mess_type=msgType;
         msg.client_id = clientId;
         msg.data = data;
-        msg.name[0] = '\0';
+        //msg.name = "Noki";
+        //strcpy(msg.name,"Noki\0");
+        strcpy(msg.name,login.toUtf8().data());
         ENetPacket *packet = enet_packet_create(&msg, sizeof(AS_message_t), ENET_PACKET_FLAG_RELIABLE);
         enet_peer_send(peer, 0, packet);
     }

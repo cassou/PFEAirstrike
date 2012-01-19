@@ -20,6 +20,7 @@ private:
     int next_time;
     int keep_running;
     int myClientId;
+    QString login;
 
 public:
     NetworkManager();
@@ -37,6 +38,7 @@ public slots:
     void process_key(QKeyEvent * event, int key_status);
     int network_init();
     void set_rand_key();
+    void setLogin(QString newLogin);
 
 signals:
     void writeText(QString text);

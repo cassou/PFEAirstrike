@@ -17,6 +17,10 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    void writeSettings();
+    void readSettings();
+
+    void closeEvent(QCloseEvent *event);
 public slots:
     void displayText(QString string);
 

@@ -12,6 +12,7 @@
 typedef struct player
 {
 	int id;
+	int id_in_team;
 	int ishuman;
 	int points;
 	int damage;

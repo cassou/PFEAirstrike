@@ -25,6 +25,7 @@
 
 extern int playerCount;
 extern int teamCount;
+extern int inGame;
 
 enum log_enum {
 	LOG_ERROR = 0,
