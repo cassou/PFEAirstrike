@@ -409,16 +409,18 @@ void sprite_group_coll2(sprite_group_t *group1,
 			for (j = 0; j < group2->nr_sprites; j++)
 			{
 				s2 = group2->sprites[j];
-				if (bitmask_overlap_pos(b1,s2->animation->masks[s2->anim_p],
-						s2->x - s2->animation->xoff -
-						s1->x + s1->animation->xoff,
-						s2->y - s2->animation->yoff -
-						s1->y + s1->animation->yoff,
-						&x, &y))
-				{
-					x += s1->x - s1->animation->xoff;
-					y += s1->y - s1->animation->yoff;
-					f(s1,s2,x,y);
+				if(s1->owner->isConnected && s2->owner->isConnected){
+					if (bitmask_overlap_pos(b1,s2->animation->masks[s2->anim_p],
+							s2->x - s2->animation->xoff -
+							s1->x + s1->animation->xoff,
+							s2->y - s2->animation->yoff -
+							s1->y + s1->animation->yoff,
+							&x, &y))
+					{
+						x += s1->x - s1->animation->xoff;
+						y += s1->y - s1->animation->yoff;
+						f(s1,s2,x,y);
+					}
 				}
 			}
 		}

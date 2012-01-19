@@ -290,7 +290,7 @@ void process_packet(ENetEvent * event){
 						clientPeerId[client_id]=peerID;
 						strncpy(players[client_id].name,msg->name,32);
 						printf("*******************************%s   %s\n",msg->name,players[client_id].name);
-						players[client_id].name[31]="\0";
+						players[client_id].name[31]='\0';
 						sendMessage(peerID,MSG_HELLO,client_id,client_id);
 						mylog(LOG_MESSAGE,"MSG_HELLO sent to",peerID);
 						break;
@@ -311,7 +311,7 @@ void process_packet(ENetEvent * event){
 					clientPeerId[client_id]=peerID;
 					strncpy(players[client_id].name,msg->name,32);
 					printf("*******************************%s   %s\n",msg->name,players[client_id].name);
-					players[client_id].name[31]="\0";
+					players[client_id].name[31]='\0';
 					sendMessage(peerID,MSG_HELLO,client_id,client_id);
 					mylog(LOG_MESSAGE,"MSG_HELLO sent to",peerID);
 			}else{
