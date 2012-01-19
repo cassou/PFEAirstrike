@@ -285,6 +285,8 @@ void process_packet(ENetEvent * event){
 		}
 		clientConnected[client_id]=1;
 		clientPeerId[client_id]=peerID;
+		strncpy(players[client_id].name,msg->name,32);
+		players[client_id].name[31]="\0";
 		sendMessage(peerID,MSG_HELLO,client_id,client_id);
 		mylog(LOG_MESSAGE,"MSG_HELLO sended to",peerID);
 		break;
