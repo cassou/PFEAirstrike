@@ -2,7 +2,6 @@
 #include "ui_mainwindow.h"
 #include <QThread>
 #include <QDebug>
-#include <SDL/SDL.h>
 #include <QSettings>
 
 MainWindow::MainWindow(QWidget *parent) :
