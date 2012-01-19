@@ -208,6 +208,17 @@ void network_loop(){
 
 				case ENET_EVENT_TYPE_DISCONNECT:
 					printf("%s disconected.\n", (char*)event.peer->data);
+					int i;
+					for (i=0;i<playerCount;i++){
+						if (clientPeerId[i]==event.peer->incomingPeerID){
+							clientConnected[i]=0;
+							clientPeerId[i]=-1;
+							strncpy(players[i].name," \0",32);
+							players[i].isConnected=0;
+							clientCount-=1;
+						}
+					}
+
 					mylog(LOG_NETWORK,"A client disconnected from ",event.peer->address.host);
 					/* Reset the peer's client information. */
 					event.peer->data = NULL;
@@ -264,16 +275,64 @@ void process_packet(ENetEvent * event){
 	case MSG_HELLO:
 		mylog(LOG_MESSAGE,"MSG_HELLO message received from",peerID);
 
+
+
+		if(!inGame){
+			int client_id;
+			if (clientCount<playerCount){
+				int i;
+				for (i=0;i<playerCount;i++){
+					if (!clientConnected[i]){
+						client_id = i;
+						clientCount++;
+						clientConnected[client_id]=1;
+						players[client_id].isConnected=1;
+						clientPeerId[client_id]=peerID;
+						strncpy(players[client_id].name,msg->name,32);
+						printf("*******************************%s   %s\n",msg->name,players[client_id].name);
+						players[client_id].name[31]="\0";
+						sendMessage(peerID,MSG_HELLO,client_id,client_id);
+						mylog(LOG_MESSAGE,"MSG_HELLO sent to",peerID);
+						break;
+					}
+				}
+			}else{
+				sendMessage(peerID,MSG_NO_SPACE,0,0);
+				mylog(LOG_MESSAGE,"MSG_NO_SPACE sent to",peerID);
+				break;
+			}
+
+		}else{
+			int client_id=msg->client_id;
+			if (client_id>0 && client_id<playerCount && !clientConnected[client_id]){
+					clientCount++;
+					clientConnected[client_id]=1;
+					players[client_id].isConnected=1;
+					clientPeerId[client_id]=peerID;
+					strncpy(players[client_id].name,msg->name,32);
+					printf("*******************************%s   %s\n",msg->name,players[client_id].name);
+					players[client_id].name[31]="\0";
+					sendMessage(peerID,MSG_HELLO,client_id,client_id);
+					mylog(LOG_MESSAGE,"MSG_HELLO sent to",peerID);
+			}else{
+				sendMessage(peerID,MSG_NO_SPACE,0,0);
+				mylog(LOG_MESSAGE,"MSG_NO_SPACE sent to",peerID);
+				break;
+			}
+
+		}
+
+
+
+
 		//assign an uid if player doesn't have one
-		int client_id=msg->client_id;
+		/*int client_id=msg->client_id;
 		if (client_id<0 || client_id>=playerCount){
 			if (clientCount<playerCount){
 				int i;
 				for (i=0;i<playerCount;i++){
 					if (!clientConnected[i]){
 						client_id = i;
-						players[i].isConnected=1;
-						clientCount++;
 						break;
 					}
 				}
@@ -282,14 +341,8 @@ void process_packet(ENetEvent * event){
 				mylog(LOG_MESSAGE,"MSG_NO_SPACE sended to",peerID);
 				break;
 			}
-		}
-		clientConnected[client_id]=1;
-		clientPeerId[client_id]=peerID;
-		strncpy(players[client_id].name,msg->name,32);
-		//printf("*******************************%s\n",msg->name);
-		players[client_id].name[31]="\0";
-		sendMessage(peerID,MSG_HELLO,client_id,client_id);
-		mylog(LOG_MESSAGE,"MSG_HELLO sent to",peerID);
+		}*/
+
 		break;
 	case MSG_KEY:
 		printf("Key %d message received from %d\n",msg->data,peerID);
