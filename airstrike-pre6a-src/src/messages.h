@@ -18,6 +18,8 @@ enum messages_types {
 	MSG_NO_SPACE = 5,
 	MSG_TIME2START = 6,
 	MSG_DAMAGE = 7,
+	MSG_TEAM_ID = 8,
+	MSG_ID_IN_TEAM = 9,
 };
 
 typedef struct
