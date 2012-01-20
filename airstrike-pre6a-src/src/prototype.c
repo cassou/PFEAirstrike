@@ -11,8 +11,8 @@ int inGame;
 
 FILE *fpLog;
 
-void logOpen(){
-	fpLog=fopen("airstrike.log","a");
+void logOpen(char * file){
+	fpLog=fopen(file,"a");
 	if(fpLog==NULL){
 		perror("Failed to open log file.");
 	}
