@@ -30,6 +30,7 @@ private:
     QThread *networkThread;
     bool isBot;
     QTimer* botTimer;
+    bool started;
 
 private slots:
     void connect_clicked();

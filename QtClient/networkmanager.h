@@ -21,6 +21,7 @@ private:
     int keep_running;
     int myClientId;
     QString login;
+    int startTime;
 
 public:
     NetworkManager();
@@ -49,6 +50,7 @@ signals:
     void newPlayerId(int value);
     void newTeamId(int value);
     void newIdInTeam(int value);
+    //void newStartTime(int value);
     void disconnected();
 
 };
