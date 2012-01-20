@@ -317,6 +317,7 @@ void process_packet(ENetEvent * event){
 					sendMessage(peerID,MSG_HELLO,client_id,client_id);
 					sendMessage(peerID,MSG_TEAM_ID,client_id,players[client_id].team->id);
 					sendMessage(peerID,MSG_ID_IN_TEAM,client_id,players[client_id].id_in_team);
+					//sendMessage(peerID,MSG_ID_IN_TEAM,client_id,0);
 					mylog(LOG_MESSAGE,"MSG_HELLO sent to",peerID);
 			}else{
 				sendMessage(peerID,MSG_NO_SPACE,0,0);

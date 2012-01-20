@@ -44,8 +44,9 @@ static void frame_trigger(sprite_t *s)
 	{
 		if (((mech_sprite_t *)s)->damage < 10){
 			/*FUME*/
-			if(s->owner->schrodinger)
+			if(s->owner->schrodinger==1){
 				create_effect(&puff,s->x,s->y);
+			}
 		}
 		else
 			create_effect(&blacksmoke,s->x,s->y);
@@ -84,15 +85,15 @@ static int setup(void * owner)
 
 	//NYANCAT
 
-		sprintf(cbuf,"planes/nyan-cat.png");
-		CRITICAL(right_anim[MAXTEAMS][0] = animation_load(path_to_data(cbuf),64,1,100));
-		sprintf(cbuf,"planes/nyan-cat.png");
-		CRITICAL(crashing[MAXTEAMS] = animation_load(path_to_data(cbuf),64,1,180));
+	sprintf(cbuf,"planes/nyan-cat.png");
+	CRITICAL(right_anim[MAXTEAMS][0] = animation_load(path_to_data(cbuf),64,1,100));
+	sprintf(cbuf,"planes/nyan-cat.png");
+	CRITICAL(crashing[MAXTEAMS] = animation_load(path_to_data(cbuf),64,1,180));
 
-		animation_make_loop(right_anim[MAXTEAMS][0]);
-		animation_make_loop(crashing[MAXTEAMS]);
-		right_anim[MAXTEAMS][0]->trigger = frame_trigger;
-		crashing[MAXTEAMS]->trigger = crashing_trigger;
+	animation_make_loop(right_anim[MAXTEAMS][0]);
+	animation_make_loop(crashing[MAXTEAMS]);
+	right_anim[MAXTEAMS][0]->trigger = frame_trigger;
+	crashing[MAXTEAMS]->trigger = crashing_trigger;
 
 
 
@@ -123,6 +124,7 @@ static sprite_t *create(void * owner)
 		s->animation = right_anim[MAXTEAMS][0];
 		s->owner->schrodinger=1;
 	}else{
+		s->owner->schrodinger=0;
 		s->animation = right_anim[s->owner->team->id][s->owner->id_in_team];//TODO hack numéro
 	}
 	s->anim_p = 32;
