@@ -38,7 +38,7 @@ static int screen_h;
 static int nbTeams;
 static int nbPlayers; //TODO: eliminate nbPlayers or player count, redundant
 
-
+static int timeToStop;
 
 
 static void atexit_cleanup(void)
@@ -117,7 +117,7 @@ void players_setup(void)
 		players[i].startpos[0] = screen_w-200;
 		players[i].startpos[1] = (players[i].team->id+1)*90;
 		nbMembers++;
-		printf("Player %d is in team %d, %d\n", i, team, players[i].team);
+		//printf("Player %d is in team %d, %d\n", i, team, players[i].team);
 
 
 		if ((nbMembers == perTeam && team > (remains-1)) || nbMembers > perTeam)
@@ -244,7 +244,10 @@ static int process_events(void)
 				SDL_SaveBMP(sprite_global.display,"screenshot.bmp");
 				break;
 			case SDLK_RETURN:
-				inGame = 1-inGame;
+				if (!inGame){
+					inGame = 1-inGame;
+					timeToStop=sprite_global.game_clock+1000*cfgnum("game.max_duration",60);
+				}
 				break;
 			default:
 				break;
@@ -288,20 +291,21 @@ void draw_ui(void)
 	if(inGame){
 
 		for(i=0;i<nbTeams;i++){
-			//sprintf(cbuf, "Team %d", i);
-			//text_render(sprite_global.display, 0, big_font, 20+90*(i), sprite_global.display->h - 100, ALIGN_LEFT, ALIGN_BOTTOM, cbuf);
 			sprintf(cbuf, "%2.2i", teams[i].points);
 			text_render(sprite_global.display, 0, big_font, 60+100*(i), sprite_global.display->h - 90, ALIGN_LEFT, ALIGN_BOTTOM, cbuf);
 		}
 
 		for(i=0;i<nbPlayers;i++){
-			//sprintf(cbuf, "%d", i);
-			sprintf(cbuf, "%s", players[i].name);
-			//int px,py;
-			if(players[i].sprite!=NULL){
+			if(players[i].sprite){
+				sprintf(cbuf, "%s", players[i].name);
 				text_render(sprite_global.display, 0, medium_font,  players[i].sprite->x, players[i].sprite->y-20, ALIGN_LEFT, ALIGN_BOTTOM, cbuf);
 			}
 		}
+		int t = (timeToStop-sprite_global.game_clock)/1000;
+		if(t>900){t=0;}
+		sprintf(cbuf, "%d", t);
+		text_render(sprite_global.display, 0, big_font,  sprite_global.display->w-100, sprite_global.display->h - 90, ALIGN_LEFT, ALIGN_BOTTOM, cbuf);
+
 	}else{
 		for (i = 0; i < playerCount; i++)
 		{
@@ -313,7 +317,7 @@ void draw_ui(void)
 			if (players[i].isConnected){
 				sprintf(cbuf, "[%d]-%s",i,players[i].name);
 			}else{
-				sprintf(cbuf, "[%d]-Empty", i);
+				sprintf(cbuf, "[%d]-_______", i);
 			}
 			text_render(sprite_global.display, 0, big_font, x,y, ALIGN_LEFT, ALIGN_TOP, cbuf);
 		}
@@ -601,44 +605,56 @@ void scorekeeper()
 {
 
 
-	char cbuf[200];
+	char cbuf[500];
+	char cbuf2[40];
 	sprite_t *s;
 	int i;
-
-
-
 	update_teams_score(nbTeams,nbPlayers);
 
+	int endOfGame=0;
+	int maxscore = 0;
+	/** une équipe atteint le score max**/
+	for (i = 0; i < nbTeams; i++){
+		if (teams[i].points>=max_points)
+			endOfGame=1;
+		if (teams[i].points>maxscore)
+			maxscore=teams[i].points;
+	}
+	/** le temps est écoulé **/
+	if (sprite_global.game_clock>timeToStop)
+		endOfGame=1;
 
-	for (i = 0; i < nbTeams; i++)
-	{
-		if (teams[i].points>=max_points){
-			sprintf(cbuf,"And the winner is Team %d, by %i point(s)", i, teams[i].points);
-			message_time(cbuf,2);
-			message_time("Starting in 3",1);
-			message_time("Starting in 2",1);
-			message_time("Starting in 1",1);
-			message_time("GO !",1);
-			init_spawn_delays();
-			//printf("rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr\n");
-
-			//TODO : page affichage des scores
-
-			int j;
-			for (j = 0; j< nbTeams; j++){
-				teams[j].points=0;
+	if(endOfGame){
+		sprintf(cbuf,"And the winner are :\n");
+		for (i = 0; i < nbTeams; i++){
+			if(teams[i].points==maxscore){
+				sprintf(cbuf2,"     Team %d\n",i);
+				strcat(cbuf,cbuf2);
 			}
+		}
+		sprintf(cbuf2,"With %d points\n",maxscore);
+		strcat(cbuf,cbuf2);
+		message_time(cbuf,3);
+		message_time("Starting in 3",1);
+		message_time("Starting in 2",1);
+		message_time("Starting in 1",1);
+		message_time("GO !",1);
 
-			for (j = 0; j < playerCount; j++){
-				players[j].points=0;
-				sprite_kill(players[j].sprite);
-			}
-			return;
+		init_spawn_delays();
+		int j;
+		for (j = 0; j< nbTeams; j++){
+			teams[j].points=0;
 		}
 
-
+		for (j = 0; j < playerCount; j++){
+			players[j].points=0;
+			sprite_kill(players[j].sprite);
+		}
+		timeToStop=sprite_global.game_clock+1000*cfgnum("game.max_duration",60);
+		return;
 
 	}
+
 
 
 	for (i = 0; i < playerCount; i++)
@@ -743,7 +759,7 @@ void game_frame()
 
 
 	sprite_group_draw(effects_group);
-	sprite_group_draw(mech_group);
+	sprite_group_draw2(mech_group);
 	sprite_group_draw(bullet_group);
 	sprite_group_draw(bomb_group);
 	sprite_group_draw(foreground_group);

@@ -27,6 +27,7 @@ nr_players 2
 game.firstSpawn 1
 game.delaySpawn 2
 game.teamWinScore 15
+game.max_duration 20
 
 bullet.damage 1
 bullet.point 1

@@ -216,11 +216,11 @@ void network_loop(){
 							strncpy(players[i].name," \0",32);
 							players[i].isConnected=0;
 							clientCount-=1;
+							mylog(LOG_NETWORK,"A client disconnected ",i);
 						}
 					}
 
-					mylog(LOG_NETWORK,"A client disconnected from ",event.peer->address.host);
-					/* Reset the peer's client information. */
+				/* Reset the peer's client information. */
 					event.peer->data = NULL;
 					break;
 				case ENET_EVENT_TYPE_NONE:
@@ -290,8 +290,10 @@ void process_packet(ENetEvent * event){
 						clientPeerId[client_id]=peerID;
 						strncpy(players[client_id].name,msg->name,32);
 						printf("*******************************%s   %s\n",msg->name,players[client_id].name);
-						players[client_id].name[31]="\0";
+						players[client_id].name[31]='\0';
 						sendMessage(peerID,MSG_HELLO,client_id,client_id);
+						sendMessage(peerID,MSG_TEAM_ID,client_id,players[client_id].team->id);
+						sendMessage(peerID,MSG_ID_IN_TEAM,client_id,players[client_id].id_in_team);
 						mylog(LOG_MESSAGE,"MSG_HELLO sent to",peerID);
 						break;
 					}
@@ -304,15 +306,18 @@ void process_packet(ENetEvent * event){
 
 		}else{
 			int client_id=msg->client_id;
-			if (client_id>0 && client_id<playerCount && !clientConnected[client_id]){
+			if (client_id>=0 && client_id<playerCount && !clientConnected[client_id]){
 					clientCount++;
 					clientConnected[client_id]=1;
 					players[client_id].isConnected=1;
 					clientPeerId[client_id]=peerID;
 					strncpy(players[client_id].name,msg->name,32);
 					printf("*******************************%s   %s\n",msg->name,players[client_id].name);
-					players[client_id].name[31]="\0";
+					players[client_id].name[31]='\0';
 					sendMessage(peerID,MSG_HELLO,client_id,client_id);
+					sendMessage(peerID,MSG_TEAM_ID,client_id,players[client_id].team->id);
+					sendMessage(peerID,MSG_ID_IN_TEAM,client_id,players[client_id].id_in_team);
+					//sendMessage(peerID,MSG_ID_IN_TEAM,client_id,0);
 					mylog(LOG_MESSAGE,"MSG_HELLO sent to",peerID);
 			}else{
 				sendMessage(peerID,MSG_NO_SPACE,0,0);

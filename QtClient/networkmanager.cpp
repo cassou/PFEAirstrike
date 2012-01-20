@@ -85,25 +85,29 @@ void NetworkManager::process_packet(ENetEvent * event){
 
     if(event->channelID==0){
         AS_message_t * msg = (AS_message_t * )(event->packet->data);
-        //int peerID = event->peer->incomingPeerID;
-        //writeText("Message : ");
         switch (msg->mess_type) {
         case MSG_POINTS:
-           //writeText("My Score is : " + QString::number(msg->data));
             emit newPlayerScore(msg->data);
             break;
         case MSG_HELLO:
             myClientId = msg->client_id;
             emit newPlayerId(myClientId);
-            writeText("Hello received");
+            writeText("Connected");
             break;
         case MSG_NO_SPACE:
             writeText("Plus de place, reconnectez-vous plus tard.");
             emit disconnected();
             break;
         case MSG_DAMAGE:
-            //writeText("Damage = " + QString::number(msg->data));
             emit newHealthPoints(100 - msg->data);
+            break;
+        case MSG_TEAM_ID:
+            writeText("Recu team id");
+            emit newTeamId(msg->data);
+            break;
+        case MSG_ID_IN_TEAM:
+            emit newIdInTeam(msg->data);
+            qDebug()<< "Recu id in team"<< msg->data;
             break;
         default:
             break;
@@ -124,10 +128,7 @@ void NetworkManager::update_state(){
 }
 
 void NetworkManager::set_rand_key(){
-
-    qDebug("3");
     set_key(3);
-    qDebug("4");
     int num = rand();
     int key;
     if (num<(RAND_MAX/3)){
@@ -137,15 +138,23 @@ void NetworkManager::set_rand_key(){
         }else{
             sendMessage(MSG_KEY, myClientId, -key);
         }
-   } /*
-else if (num>(2*RAND_MAX/3)) {
+    }
+    if (num<(RAND_MAX/3)) {
         key = KEY__UP;
-    } else {
+        if (rand()<(RAND_MAX/4)){
+            sendMessage(MSG_KEY, myClientId, key);
+        }else{
+            sendMessage(MSG_KEY, myClientId, -key);
+        }
+    }
+    if (num<(RAND_MAX/3)) {
         key = KEY__DOWN;
-    }*/
-
-
-    qDebug("5");
+        if (rand()<(RAND_MAX/3)){
+            sendMessage(MSG_KEY, myClientId, key);
+        }else{
+            sendMessage(MSG_KEY, myClientId, -key);
+        }
+    }
 }
 
 void NetworkManager::setLogin(QString newLogin)
@@ -196,7 +205,7 @@ void NetworkManager::testFunction()
 
 void NetworkManager::sendMessage(int msgType, int clientId, int data)
 {
-   // ENetPeer *p = &server->peers[peerId];
+    // ENetPeer *p = &server->peers[peerId];
     if (!(peer==NULL)){
         AS_message_t msg;
         msg.mess_type=msgType;

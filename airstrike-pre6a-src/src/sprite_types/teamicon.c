@@ -24,7 +24,7 @@ static int setup()
 	int i;
 
 	for (i=0;i<MAXTEAMS;i++){
-		sprintf(cbuf,"plane-%d-0.png", i);
+		sprintf(cbuf,"planes/plane-%d-0.png", i);
 		CRITICAL(anim[i] = animation_load(path_to_data(cbuf),64,1,100));
 	}
 

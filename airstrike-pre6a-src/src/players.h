@@ -27,6 +27,7 @@ typedef struct player
 	sprite_timer_t spawnTimer;
 	int timeBeforeRespawn;
 	int isConnected;
+	int schrodinger;
 } player_t;
 
 extern player_t players[MAXPLAYERS];

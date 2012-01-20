@@ -34,8 +34,8 @@ static int nr_bombs;
 static int crash_point;
 
 static animation_t *right_anim[MAXTEAMS+1][MAXPLAYERINTEAMS];
-static animation_t *crashing[MAXTEAMS+1][MAXPLAYERINTEAMS];
-static int schrodinger = 0;
+static animation_t *crashing[MAXTEAMS+1];
+
 
 static void frame_trigger(sprite_t *s)
 {
@@ -44,8 +44,9 @@ static void frame_trigger(sprite_t *s)
 	{
 		if (((mech_sprite_t *)s)->damage < 10){
 			/*FUME*/
-			if(schrodinger==s->owner->id)
+			if(s->owner->schrodinger==1){
 				create_effect(&puff,s->x,s->y);
+			}
 		}
 		else
 			create_effect(&blacksmoke,s->x,s->y);
@@ -63,10 +64,6 @@ static void crashing_trigger(sprite_t *s)
 	create_effect(&fire,s->x,s->y);
 }
 
-
-
-
-
 static int setup(void * owner)
 {
 	int i,j;
@@ -74,30 +71,29 @@ static int setup(void * owner)
 	for (i=0;i<MAXTEAMS;i++){
 		for (j=0;j<MAXPLAYERINTEAMS;j++){
 
-			sprintf(cbuf,"plane-%d-%d.png", i,j);
+			sprintf(cbuf,"planes/plane-%d-%d.png", i,j);
 			CRITICAL(right_anim[i][j] = animation_load(path_to_data(cbuf),64,1,100));
-			sprintf(cbuf,"plane-%d-%d.png", i,j);
-			CRITICAL(crashing[i][j] = animation_load(path_to_data(cbuf),64,1,180));
-
 			animation_make_loop(right_anim[i][j]);
-			animation_make_loop(crashing[i][j]);
 			right_anim[i][j]->trigger = frame_trigger;
-			crashing[i][j]->trigger = crashing_trigger;
 
 		}
+		sprintf(cbuf,"planes/plane-%d-wreck.png", i);
+		CRITICAL(crashing[i] = animation_load(path_to_data(cbuf),64,1,180));
+		animation_make_loop(crashing[i]);
+		crashing[i]->trigger = crashing_trigger;
 	}
 
 	//NYANCAT
 
-		sprintf(cbuf,"nyan-cat.png");
-		CRITICAL(right_anim[MAXTEAMS][0] = animation_load(path_to_data(cbuf),64,1,100));
-		sprintf(cbuf,"nyan-cat.png");
-		CRITICAL(crashing[MAXTEAMS][0] = animation_load(path_to_data(cbuf),64,1,180));
+	sprintf(cbuf,"planes/nyan-cat.png");
+	CRITICAL(right_anim[MAXTEAMS][0] = animation_load(path_to_data(cbuf),64,1,100));
+	sprintf(cbuf,"planes/nyan-cat.png");
+	CRITICAL(crashing[MAXTEAMS] = animation_load(path_to_data(cbuf),64,1,180));
 
-		animation_make_loop(right_anim[MAXTEAMS][0]);
-		animation_make_loop(crashing[MAXTEAMS][0]);
-		right_anim[MAXTEAMS][0]->trigger = frame_trigger;
-		crashing[MAXTEAMS][0]->trigger = crashing_trigger;
+	animation_make_loop(right_anim[MAXTEAMS][0]);
+	animation_make_loop(crashing[MAXTEAMS]);
+	right_anim[MAXTEAMS][0]->trigger = frame_trigger;
+	crashing[MAXTEAMS]->trigger = crashing_trigger;
 
 
 
@@ -123,11 +119,12 @@ static sprite_t *create(void * owner)
 	CRITICAL(s = calloc(1,sizeof(struct biplane)));
 	s->owner=owner;
 	p->damage=(100*((mech_sprite_t *)s)->damage)/hitpoints;
-	if(strcmp(s->owner->name, "nyan-cat\0")==0){
+	if(strcmp(s->owner->name, "nyan-cat\0")==0 || strcmp(s->owner->name, "nyancat\0")==0 ){
 		printf("Nya nya Nyaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaan\n");
 		s->animation = right_anim[MAXTEAMS][0];
-		schrodinger=s->owner->id;
+		s->owner->schrodinger=1;
 	}else{
+		s->owner->schrodinger=0;
 		s->animation = right_anim[s->owner->team->id][s->owner->id_in_team];//TODO hack numéro
 	}
 	s->anim_p = 32;
@@ -169,7 +166,7 @@ static void update(sprite_t *s)
 		if (ms->damage >= hitpoints)
 		{
 			s->state |= PLANE_CRASHING;
-			sprite_set_animation(s,crashing[s->owner->team->id][s->owner->id_in_team]);//TODO replace the zeros
+			sprite_set_animation(s,crashing[s->owner->team->id]);
 			s->owner->lastEnnemi->points+=crash_point;
 			create_effect(&fire,s->x,s->y);
 			sprite_alarm(7000,s,SIGNAL_KILL,0);
