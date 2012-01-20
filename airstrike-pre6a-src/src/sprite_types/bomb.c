@@ -33,7 +33,7 @@ static sprite_t *create(void * owner)
 	mech_defaults((mech_sprite_t *)s,1);
 	((mech_sprite_t *)s)->angle = 0;
 	((mech_sprite_t *)s)->rmass = 4;
-	((mech_sprite_t *)s)->gravity = 0.1;
+	((mech_sprite_t *)s)->gravity = 2;
 	((mech_sprite_t *)s)->air_turnrate = 0.01;
 	return s;
 }

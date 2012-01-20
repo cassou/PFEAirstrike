@@ -40,7 +40,7 @@ static int nbTeams;
 static int nbPlayers; //TODO: eliminate nbPlayers or player count, redundant
 
 static int timeToStop;
-
+static int planeCollision=1;
 
 static void atexit_cleanup(void)
 {
@@ -86,7 +86,13 @@ static int general_setup(void)
 	console_set_pos(9, 254);
 	console_load_bg(path_to_data("console-bg.png"));
 	sprite_types_setup();
-	sprite_background_load("data/bg.png", "data/bgmask.png");
+
+	char bg1[255];
+	char bg2[255];
+	sprintf(bg1,"data/bg%d.png",screen_w);
+	sprintf(bg2,"data/bgmask%d.png",screen_w);
+
+	sprite_background_load(bg1, bg2);
 
 	level_setup();
 	winds_setup();
@@ -345,7 +351,7 @@ void draw_ui(void)
 void console_frame(void)
 {
 	sprite_start_frame();
-	sprite_group_draw(mech_group);
+	sprite_group_draw2(mech_group);
 	sprite_group_draw(bullet_group);
 	sprite_group_draw(bomb_group);
 	sprite_group_draw(effects_group);
@@ -485,7 +491,7 @@ void player_setup_mode(void)
 void message_mode(char *message)
 {
 	sprite_start_frame();
-	sprite_group_draw(mech_group);
+	sprite_group_draw2(mech_group);
 	sprite_group_draw(bullet_group);
 	sprite_group_draw(bomb_group);
 	sprite_group_draw(effects_group);
@@ -500,7 +506,7 @@ void message_mode(char *message)
 void message_time(char *message,int duration)
 {
 	sprite_start_frame();
-	sprite_group_draw(mech_group);
+	sprite_group_draw2(mech_group);
 	sprite_group_draw(bomb_group);
 	sprite_group_draw(bullet_group);
 	sprite_group_draw(effects_group);
@@ -592,8 +598,9 @@ void init_spawn_delays()
 	{
 		int tid = players[a].team->id;
 		players[a].timeBeforeRespawn=startDelay[tid];
-		startDelay[tid]+=delaySpawn;
-
+		if(players[a].isConnected){
+			startDelay[tid]+=delaySpawn;
+		}
 		printf("Player %d will start after %d\n",a,players[a].timeBeforeRespawn);
 	}
 
@@ -723,8 +730,11 @@ void game_frame()
 	sprite_group_animate(foreground_group, sprite_global.dt);
 
 	mech_gravity(mech_group); /* has to be before bg_coll */
+	mech_gravity(bomb_group); /* has to be before bg_coll */
 
-	sprite_group_coll(mech_group, mech_sprite_collide);
+	if(planeCollision){
+		sprite_group_coll(mech_group, mech_sprite_collide);
+	}
 	sprite_group_coll2(bullet_group, mech_group, 0);
 	sprite_group_coll2(bomb_group, mech_group, 0);
 	sprite_group_coll2(bomb_group, bullet_group, 0);
@@ -871,6 +881,7 @@ int main(int argc, char *argv[])
 	//addPlayers(nbTeams);
 	network_init();
 	init_spawn_delays();
+	planeCollision=cfgnum("game.planeCollision",1);
 	fprintf(stderr, "Entering main loop.\n");
 
 

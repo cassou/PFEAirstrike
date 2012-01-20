@@ -231,7 +231,7 @@ static void sigget(sprite_t *s, int signal, void *data)
 			vrot(r,-9);
 			sprite_set_pos(p,s->x + r[0],s->y + r[1]);
 			sprite_get_vel(s,v);
-			vmadd(v,100,mech_heading((mech_sprite_t *)s));
+			vmadd(v,200,mech_heading((mech_sprite_t *)s));
 			sprite_set_vel(p,v);
 			/* cannot fire again in some time */
 			sprite_timer_set(&(((struct biplane*)s)->gun_timer),bullet_delay);

@@ -7,12 +7,15 @@
 datapath "data"
 
 #window size or fullscreen resolution
-screen.width 1920
-screen.height 1080
+#screen.width 1920
+#screen.height 1080
+
+screen.width 1024
+screen.height 768
 
 # Set fullscreen to 1 for fullscreen mode
 # Can also be changed in-game
-fullscreen 0
+fullscreen 1
 
 # alpha 0 No transparent sprites (fastest)
 # alpha 1 Only some transparent sprites (per surface alpha)
@@ -24,17 +27,18 @@ alpha 2
 # Can now be changed in-game
 nr_players 2
 
-game.firstSpawn 1
-game.delaySpawn 2
+game.firstSpawn 10
+game.delaySpawn 5
 game.teamWinScore 15
-game.max_duration 20
+game.max_duration 60
+game.planeCollision 1
 
-bullet.damage 1
+bullet.damage 5
 bullet.point 1
 bomb.point 20
 bomb.damage 20
 
-blueplane.hitpoints 15
+blueplane.hitpoints 50
 blueplane.crash_point 20
 
 
@@ -83,8 +87,8 @@ redplane.air_normal 0.1
 
 blueplane.engine_strength 0.3
 blueplane.bomb_delay 300
-blueplane.nr_bombs 100
-blueplane.bullet_delay 50
+blueplane.nr_bombs 5
+blueplane.bullet_delay 65
 blueplane.mass 1
 blueplane.turn_amount 0.03
 blueplane.air_turnrate 0.005
