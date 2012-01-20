@@ -16,6 +16,7 @@
 #include "network.h"
 #include "teams.h"
 #include <unistd.h>
+#include "SDL/SDL_mixer.h"
 
 
 sprite_group_t *mech_group;
@@ -634,7 +635,7 @@ void scorekeeper()
 		}
 		sprintf(cbuf2,"With %d points\n",maxscore);
 		strcat(cbuf,cbuf2);
-		message_time(cbuf,3);
+		message_time(cbuf,10);
 		message_time("Starting in 3",1);
 		message_time("Starting in 2",1);
 		message_time("Starting in 1",1);
@@ -827,7 +828,7 @@ int main(int argc, char *argv[])
 {
 	int res;
 
-	if (argc == 4)
+	if (argc == 5)
 	{
 		nbTeams = (int) strtol(argv[1], &argv[1], 10);
 		//TODO : mettre des #define pour equipe min et max
@@ -845,12 +846,13 @@ int main(int argc, char *argv[])
 		}
 
 		networkLoad = (int) strtol(argv[3], &argv[3], 10);
+		networkLoadinterval = (int) strtol(argv[4], &argv[4], 10);
+		printf("%d teams, %d players\n", nbTeams, nbPlayers);
 
-		printf("%d teams, %d players, %d Bytes per beconds\n", nbTeams, nbPlayers,networkLoad);
 	}
 	else
 	{
-		printf("Airstrike nbOfTeams nbOfPlayers NetworkLoad(B/s)\n");
+		printf("Airstrike nbOfTeams nbOfPlayers NetworkLoad(Bytes) networkLoadinterval(ms)\n");
 		exit(EXIT_SUCCESS);
 	}
 
@@ -871,6 +873,11 @@ int main(int argc, char *argv[])
 	init_spawn_delays();
 	fprintf(stderr, "Entering main loop.\n");
 
+
+	Mix_Music *play_sound = NULL;
+	play_sound = Mix_LoadMUS("data/sound/Xcyril-La_decouverte_et_la_conquete.wav");
+	Mix_PlayMusic(play_sound, -1);
+	//Mix_VolumeMusic(MIX_MAX_VOLUME/2);
 
 	while (process_events())
 	{

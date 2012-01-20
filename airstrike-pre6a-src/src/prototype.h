@@ -41,12 +41,15 @@ enum log_enum {
 	LOG_PING_AV = 10,
 	LOG_CPU = 11,
 	LOG_FPS = 12,
+	LOG_CLIENT_COUNT = 13,
+	LOG_NETWORK_DISCONNECT = 14,
+	LOG_NETWORK_CONNECT = 15,
 };
 
 
 
 void mylog(int type, char * message, int value);
-void logOpen();
+void logOpen(char * file);
 void logClose();
 
 

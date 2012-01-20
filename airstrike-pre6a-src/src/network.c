@@ -35,6 +35,7 @@ volatile int netStopped=0 ;//place to 1 when network stopped
 int fps=0;
 
 int networkLoad = 0;
+int networkLoadinterval = 0;
 void * loadData;
 
 void network_init(){
@@ -52,8 +53,15 @@ void *thread_function( void *arg ){
 		clientConnected[i]=0;
 		clientPeerId[i]=-1;
 	}
-	logOpen();
+
+	char cb[250];
+	time_t h = 0;
+	h = time(NULL);
+	sprintf(cb,"airlog_%dB_%d_ms_%d.log",networkLoad,networkLoadinterval,h);
+	logOpen(cb);
 	mylog(LOG_INFO,"Starting the game",0);
+	sprintf(cb,"%d players; %d teams; load %d Bytes each %dms",playerCount,teamCount,networkLoad,networkLoadinterval);
+	mylog(LOG_INFO,cb,0);
 	network_loop();
 	mylog(LOG_INFO,"Closing the game",0);
 	logClose();
@@ -98,6 +106,7 @@ void network_loop(){
 
 	int prevTimeStat = sprite_global.game_clock;
 	int prevTimeLoad = prevTimeStat;
+	int prevTimePlay = prevTimeStat;
 
 	int pingMin;
 	int pingMax;
@@ -111,7 +120,7 @@ void network_loop(){
 	struct rusage usage;
 	int tdiff;
 
-	loadData = malloc(networkLoad/1);
+	loadData = malloc(networkLoad);
 	if (!loadData){
 		perror("Issue in malloc of network load.");
 	}
@@ -124,6 +133,7 @@ void network_loop(){
 			mylog(LOG_NETWORK_OUT,"Output", counterOut-lastCounterOut);
 			mylog(LOG_NETWORK_IN,"Input", counterIn-lastCounterIn);
 			mylog(LOG_FPS,"fps", fps);
+			mylog(LOG_CLIENT_COUNT,"Clients", clientCount);
 
 			lastCounterOut=counterOut;
 			lastCounterIn=counterIn;
@@ -162,28 +172,29 @@ void network_loop(){
 			prevTimeStat = sprite_global.game_clock;
 		}
 
-		if (sprite_global.game_clock-prevTimeLoad>=1000){
+		if (sprite_global.game_clock-prevTimeLoad>=networkLoadinterval){
 			for(k=0;k<playerCount;k++){
 				if (clientConnected[k]){
-					sendMessageLoad(k,networkLoad/10);
+					sendMessageLoad(k,networkLoad);
 				}
 			}
 			prevTimeLoad = sprite_global.game_clock;
 		}
 
+		if (sprite_global.game_clock-prevTimePlay>=100){
+			for(k=0;k<playerCount;k++){
+				if (clientConnected[k]){
+					sendMessage(clientPeerId[k],MSG_POINTS,k,players[k].points);
+					sendMessage(clientPeerId[k],MSG_DAMAGE,k,players[k].damage);
+					if (players[k].spawnTimer){
+						sendMessage(clientPeerId[k],MSG_TIME2START,k,1+(players[k].spawnTimer-sprite_global.game_clock)/1000);
+						//printf("%d \n",1+(players[k].spawnTimer-sprite_global.game_clock)/1000);
+					}
 
-		for(k=0;k<playerCount;k++){
-			if (clientConnected[k]){
-				sendMessage(clientPeerId[k],MSG_POINTS,k,players[k].points);
-				sendMessage(clientPeerId[k],MSG_DAMAGE,k,players[k].damage);
-				if (players[k].spawnTimer){
-					sendMessage(clientPeerId[k],MSG_TIME2START,k,1+(players[k].spawnTimer-sprite_global.game_clock)/1000);
-					//printf("%d \n",1+(players[k].spawnTimer-sprite_global.game_clock)/1000);
 				}
-
 			}
+			prevTimePlay=sprite_global.game_clock;
 		}
-
 
 
 
@@ -197,7 +208,7 @@ void network_loop(){
 				switch (event.type) {
 				case ENET_EVENT_TYPE_CONNECT:
 					//printf("A new client connected from %x:%u.\n", event.peer->address.host, event.peer->address.port);
-					mylog(LOG_NETWORK,"A new client connected from ",event.peer->address.host);
+					mylog(LOG_NETWORK_CONNECT,"A new client connected from ",event.peer->address.host);
 					/* Store any relevant client information here. */
 					//event.peer->data = (void *)"Client information";
 					break;
@@ -216,11 +227,11 @@ void network_loop(){
 							strncpy(players[i].name," \0",32);
 							players[i].isConnected=0;
 							clientCount-=1;
-							mylog(LOG_NETWORK,"A client disconnected ",i);
+							mylog(LOG_NETWORK_DISCONNECT,"A client disconnected ",i);
 						}
 					}
 
-				/* Reset the peer's client information. */
+					/* Reset the peer's client information. */
 					event.peer->data = NULL;
 					break;
 				case ENET_EVENT_TYPE_NONE:
@@ -307,18 +318,18 @@ void process_packet(ENetEvent * event){
 		}else{
 			int client_id=msg->client_id;
 			if (client_id>=0 && client_id<playerCount && !clientConnected[client_id]){
-					clientCount++;
-					clientConnected[client_id]=1;
-					players[client_id].isConnected=1;
-					clientPeerId[client_id]=peerID;
-					strncpy(players[client_id].name,msg->name,32);
-					printf("*******************************%s   %s\n",msg->name,players[client_id].name);
-					players[client_id].name[31]='\0';
-					sendMessage(peerID,MSG_HELLO,client_id,client_id);
-					sendMessage(peerID,MSG_TEAM_ID,client_id,players[client_id].team->id);
-					sendMessage(peerID,MSG_ID_IN_TEAM,client_id,players[client_id].id_in_team);
-					//sendMessage(peerID,MSG_ID_IN_TEAM,client_id,0);
-					mylog(LOG_MESSAGE,"MSG_HELLO sent to",peerID);
+				clientCount++;
+				clientConnected[client_id]=1;
+				players[client_id].isConnected=1;
+				clientPeerId[client_id]=peerID;
+				strncpy(players[client_id].name,msg->name,32);
+				printf("*******************************%s   %s\n",msg->name,players[client_id].name);
+				players[client_id].name[31]='\0';
+				sendMessage(peerID,MSG_HELLO,client_id,client_id);
+				sendMessage(peerID,MSG_TEAM_ID,client_id,players[client_id].team->id);
+				sendMessage(peerID,MSG_ID_IN_TEAM,client_id,players[client_id].id_in_team);
+				//sendMessage(peerID,MSG_ID_IN_TEAM,client_id,0);
+				mylog(LOG_MESSAGE,"MSG_HELLO sent to",peerID);
 			}else{
 				sendMessage(peerID,MSG_NO_SPACE,0,0);
 				mylog(LOG_MESSAGE,"MSG_NO_SPACE sent to",peerID);
@@ -327,30 +338,9 @@ void process_packet(ENetEvent * event){
 
 		}
 
-
-
-
-		//assign an uid if player doesn't have one
-		/*int client_id=msg->client_id;
-		if (client_id<0 || client_id>=playerCount){
-			if (clientCount<playerCount){
-				int i;
-				for (i=0;i<playerCount;i++){
-					if (!clientConnected[i]){
-						client_id = i;
-						break;
-					}
-				}
-			}else{
-				sendMessage(peerID,MSG_NO_SPACE,0,0);
-				mylog(LOG_MESSAGE,"MSG_NO_SPACE sended to",peerID);
-				break;
-			}
-		}*/
-
 		break;
 	case MSG_KEY:
-		printf("Key %d message received from %d\n",msg->data,peerID);
+		//printf("Key %d message received from %d\n",msg->data,peerID);
 		if (clientConnected[msg->client_id]){
 			if (msg->data>=0){
 				network_keymap[msg->client_id][msg->data]=1;

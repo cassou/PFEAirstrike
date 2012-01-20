@@ -39,7 +39,7 @@ blueplane.crash_point 20
 
 
 #set sound to 1 to enable sound, 0 to disable.
-sound 0
+sound 1
 
 #Level parameters
 level.gravity 0.2
