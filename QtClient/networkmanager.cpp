@@ -13,6 +13,7 @@ NetworkManager::NetworkManager()
     keep_running = 42;
     myClientId = -1;
     this->login;
+    startTime = 0;
 }
 
 NetworkManager::~NetworkManager()
@@ -97,6 +98,13 @@ void NetworkManager::process_packet(ENetEvent * event){
         case MSG_NO_SPACE:
             writeText("Plus de place, reconnectez-vous plus tard.");
             emit disconnected();
+            break;
+        case MSG_TIME2START:
+            //emit newStartTime(msg->data);
+            if(msg->data != startTime){
+                writeText("Decollage dans " + QString::number(msg->data) + " seconde(s)");
+                startTime = msg->data;
+            }
             break;
         case MSG_DAMAGE:
             emit newHealthPoints(100 - msg->data);

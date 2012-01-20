@@ -3,6 +3,7 @@
 #include <QThread>
 #include <QDebug>
 #include <QSettings>
+#include <QKeyEvent>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -10,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 
     isBot=false;
+    started = false;
 
     ui->setupUi(this);
 
@@ -47,7 +49,7 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::displayText(QString string){
-    ui->debugTextEdit->appendPlainText(string);
+    ui->debugTextEdit->append(string);
     qDebug() << string;
 }
 
@@ -58,7 +60,10 @@ void MainWindow::connect_clicked(){
 }
 
 void MainWindow::keyPressEvent(QKeyEvent * event){
-
+    if(!started){
+        event->ignore();
+        return;
+    }
     if(!event->isAutoRepeat()){
         emit networkManager->process_key(event, 1);
     } else {
@@ -67,6 +72,10 @@ void MainWindow::keyPressEvent(QKeyEvent * event){
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent * event){
+    if(!started)    {
+        event->ignore();
+        return;
+    }
     if(event->key() == Qt::Key_Escape)
     {
         stopPlay();
@@ -81,11 +90,12 @@ void MainWindow::keyReleaseEvent(QKeyEvent * event){
 
 void MainWindow::startPlay()
 {
+    started = true;
     ui->groupBox->setEnabled(false);
     ui->connectButton->setEnabled(false);
     if(!isBot)
     {
-        // this->grabKeyboard();
+        this->grabKeyboard();
     }
     else
     {
@@ -98,6 +108,7 @@ void MainWindow::startPlay()
 
 void MainWindow::stopPlay()
 {
+    started = false;
     ui->groupBox->setEnabled(true);
     ui->connectButton->setEnabled(true);
     if(isBot)
@@ -120,7 +131,7 @@ void MainWindow::setBot(int state)
 
 void MainWindow::setSprite(int idInTeam)
 {
-    QString fileName = "./Sprites/plane-" + ui->equipe->text() + "-" +  QString::number(idInTeam) + ".png";
+    QString fileName = "./Solo/plane-" + ui->equipe->text() + "-" +  QString::number(idInTeam) + ".png";
     displayText(fileName);
     QPixmap image(fileName);
     ui->sprite->setPixmap(image);
