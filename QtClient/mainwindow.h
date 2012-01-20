@@ -36,8 +36,8 @@ private slots:
     void keyPressEvent(QKeyEvent * event);
     void keyReleaseEvent(QKeyEvent * event);
     void startPlay();
-
-    void setBot(bool state);
+    void setBot(int state);
+    void setSprite(int idInTeam);
 
 signals:
     void sendKeyEvent(QKeyEvent * event, int key_status);

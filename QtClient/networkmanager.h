@@ -47,6 +47,8 @@ signals:
     void newPlayerScore(int score);
     void newHealthPoints(int value);
     void newPlayerId(int value);
+    void newTeamId(int value);
+    void newIdInTeam(int value);
     void disconnected();
 
 };

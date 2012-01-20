@@ -29,7 +29,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(networkManager, SIGNAL(newPlayerScore(int)), ui->playerScore, SLOT(setNum(int)));
     connect(networkManager, SIGNAL(newHealthPoints(int)), ui->healthPoints, SLOT(setValue(int)));
     connect(networkManager, SIGNAL(newPlayerId(int)), ui->playerIdLabel, SLOT(setNum(int)));
-    connect(ui->checkBoxBot, SIGNAL(clicked(bool)), this, SLOT(setBot(bool)));
+    connect(networkManager, SIGNAL(newTeamId(int)),ui->equipe, SLOT(setNum(int)));
+    connect(networkManager, SIGNAL(newIdInTeam(int)), this, SLOT(setSprite(int)));
+    connect(ui->checkBoxBot, SIGNAL(stateChanged(int)), this, SLOT(setBot(int)));
     connect(ui->nameEdit, SIGNAL(textChanged(QString)), networkManager, SLOT(setLogin(QString)));
     connect(ui->disconnectButton, SIGNAL(released()), networkManager, SLOT(disconnectClient()));
     connect(this, SIGNAL(setIP(QString,int)), networkManager, SLOT(setIP(QString,int)));
@@ -59,7 +61,6 @@ void MainWindow::keyPressEvent(QKeyEvent * event){
 
     if(!event->isAutoRepeat()){
         emit networkManager->process_key(event, 1);
-        //this->displayText("Key pressed " + QString::number(event->count()));
     } else {
         QWidget::keyPressEvent(event);
     }
@@ -73,7 +74,6 @@ void MainWindow::keyReleaseEvent(QKeyEvent * event){
     }
     if(!event->isAutoRepeat()){
         emit sendKeyEvent(event, -1);
-        //this->displayText("Key released "+ QString::number(event->key()));
     } else {
         QWidget::keyPressEvent(event);
     }
@@ -110,9 +110,20 @@ void MainWindow::stopPlay()
     }
 }
 
-void MainWindow::setBot(bool state)
+void MainWindow::setBot(int state)
 {
-    isBot = state;
+    if(state == 0)
+        isBot = false;
+    if(state == 2)
+        isBot = true;
+}
+
+void MainWindow::setSprite(int idInTeam)
+{
+    QString fileName = "./Sprites/plane-" + ui->equipe->text() + "-" +  QString::number(idInTeam) + ".png";
+    displayText(fileName);
+    QPixmap image(fileName);
+    ui->sprite->setPixmap(image);
 }
 
 void MainWindow::writeSettings()
