@@ -13,7 +13,7 @@ build_enet () {
     ./configure
     make
     if [ $? -ne 0 ]; then
-	echo "Error while compiling eNet"
+	echo "Error while compiling eNet. Exiting."
 	exit 0
     fi
     cd $HOME
