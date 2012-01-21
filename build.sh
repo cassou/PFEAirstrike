@@ -34,7 +34,23 @@ build_qt () {
     cd QtClient
     qmake
     make
-    cd ..
+    cd $HOME
+    echo "Done"
+}
+
+create_package_qt () {
+    echo
+    echo "Create package for Qt client for Linux"
+    mkdir -p Release/ClientLinux/bin
+    mkdir -p Release/ClientLinux/lib
+    mkdir -p Release/ClientLinux/Solo
+    cp QtClient/QtClient Release/ClientLinux/bin/
+    cp enet/enet-1.3.3/.libs/libenet.so Release/ClientLinux/lib/
+    cp Sprites/Solo/* Release/ClientLinux/Solo/
+    cp QtClient/start.sh Release/ClientLinux/
+    cp QtClient/lib/libQtCore.so.4.7.4 Release/ClientLinux/lib/libQtCore.so
+    cp QtClient/lib/libQtGui.so.4.7.4 Release/ClientLinux/lib/libQtGui.so
+    tar -czvf clientLinux.tar.gz Release/ClientLinux
     echo "Done"
 }
 
@@ -44,12 +60,16 @@ build_airstrike () {
     echo "Build airstrike server"
     cd airstrike-pre6a-src
     make
+    cd $HOME
     echo "Done"
 }
 
 build_all () {
     echo "Build all"
-
+    build_enet
+    build_airstrike
+    build_qt
+    create_package_qt
     echo "Done"
 }
 
@@ -61,31 +81,23 @@ showmenu () {
     echo "3. Build eNet library"
     echo "4. Create Qt client package for Linux"
     echo "5. All"
-    echo "6. Quit"
 }
 
-check_enet
-while true ; do
-    showmenu
-    read choices
-    for choice in $choices ; do
-	case "$choice" in
-	    1)
-		build_airstrike ;;
-	    2)
-		build_qt ;;
-	    3)
-		echo "Number Three" ;;
-	    4)
-		echo "Numbers One, two, three" ;;
-	    5)
-		echo "5" ;;
-	    6)
-		echo "Exit"
-		exit 0 ;;
-	    *)
-		echo "Please enter number ONLY ranging from 1-5!"
-		;;
-	esac
-    done
+showmenu
+read choices
+for choice in $choices ; do
+    case "$choice" in
+	1)
+	    build_airstrike ;;
+	2)
+	    build_qt ;;
+	3)
+	    build_enet ;;
+	4)
+	    create_package_qt ;;
+	5)
+	    build_all ;;
+	*)
+	    exit 0 ;;
+    esac
 done
