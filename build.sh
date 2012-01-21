@@ -9,8 +9,13 @@ echo "Home=$HOME"
 build_enet () {
     echo "Build eNet library"
     cd enet/enet-1.3.3
+    autoreconf -vfi
     ./configure
     make
+    if [ $? -ne 0 ]; then
+	echo "Error while compiling eNet"
+	exit 0
+    fi
     cd $HOME
     echo "Done"
 }
@@ -18,11 +23,9 @@ build_enet () {
 check_enet () {
     if [ -e ./enet/enet-1.3.3/.libs/libenet.so ]; then
 	echo "eNet ok"
-	return 1
     else
 	echo "eNet not ok"
 	build_enet
-	return 0
     fi
     
 }

@@ -66,7 +66,7 @@
            <item row="3" column="1">
             <widget class="QLineEdit" name="nameEdit">
              <property name="maxLength">
-              <number>30</number>
+              <number>8</number>
              </property>
             </widget>
            </item>
@@ -209,6 +209,11 @@
            </item>
            <item row="0" column="1">
             <widget class="QLabel" name="playerScore">
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+              </font>
+             </property>
              <property name="text">
               <string>0</string>
              </property>
@@ -219,6 +224,11 @@
            </item>
            <item row="1" column="1">
             <widget class="QLabel" name="teamScore">
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+              </font>
+             </property>
              <property name="text">
               <string>0</string>
              </property>
@@ -243,6 +253,11 @@
            </item>
            <item row="2" column="1">
             <widget class="QProgressBar" name="healthPoints">
+             <property name="font">
+              <font>
+               <pointsize>20</pointsize>
+              </font>
+             </property>
              <property name="value">
               <number>100</number>
              </property>
@@ -288,7 +303,7 @@
      <x>0</x>
      <y>0</y>
      <width>568</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
   </widget>
