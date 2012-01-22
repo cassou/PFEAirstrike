@@ -40,7 +40,7 @@ static animation_t *crashing[MAXPLAYERINTEAMS+1];
 static void frame_trigger(sprite_t *s)
 {
 
-	if (s->state & PLANE_ACCELERATING)
+	if (s->state & PLANE_ACCELERATING && s->owner->isConnected)
 	{
 		if (((mech_sprite_t *)s)->damage < 10){
 			/*FUME*/
@@ -122,7 +122,7 @@ static sprite_t *create(void * owner)
 	CRITICAL(s = calloc(1,sizeof(struct biplane)));
 	s->owner=owner;
 	p->damage=(100*((mech_sprite_t *)s)->damage)/hitpoints;
-	if(strcmp(s->owner->name, "nyan-cat\0")==0 || strcmp(s->owner->name, "nyancat\0")==0 ){
+	if(strcmp(s->owner->name, "nyan-cat\0")==0 || strcmp(s->owner->name, "Nyan-cat\0")==0 ){
 		printf("Nya nya Nyaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaan\n");
 		s->animation = right_anim[MAXTEAMS][0];
 		s->owner->schrodinger=1;
@@ -169,7 +169,12 @@ static void update(sprite_t *s)
 		if (ms->damage >= hitpoints)
 		{
 			s->state |= PLANE_CRASHING;
-			sprite_set_animation(s,crashing[s->owner->id_in_team]);
+			if (!(s->owner->schrodinger)){
+				sprite_set_animation(s,crashing[s->owner->id_in_team]);
+			}else{
+				sprite_set_animation(s,crashing[MAXPLAYERINTEAMS]);
+			}
+
 			s->owner->lastEnnemi->points+=crash_point;
 			create_effect(&fire,s->x,s->y);
 			sprite_alarm(7000,s,SIGNAL_KILL,0);

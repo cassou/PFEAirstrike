@@ -27,11 +27,11 @@ alpha 2
 # Can now be changed in-game
 nr_players 2
 
-game.firstSpawn 10
-game.delaySpawn 5
-game.teamWinScore 15
-game.max_duration 60
-game.planeCollision 1
+game.firstSpawn 1
+game.delaySpawn 1
+game.teamWinScore 999999999
+game.max_duration 90
+game.planeCollision 0
 
 bullet.damage 5
 bullet.point 1
@@ -97,7 +97,7 @@ blueplane.air_normal 0.1
 
 # Standard bullet parameters
 #time-to-live in milliseconds
-bullet.ttl 1400
+bullet.ttl 700
 
 
 
