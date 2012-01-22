@@ -17,6 +17,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     displayText("Start");
 
+    // Load sounds
+    bullet = new QSound("/sounds/bullet.wav");
+
     networkThread = new QThread();
     networkManager = new NetworkManager();
 
@@ -61,7 +64,7 @@ void MainWindow::connect_clicked(){
 
 void MainWindow::keyPressEvent(QKeyEvent * event){
     if(!started){
-        event->ignore();
+        //event->ignore();
         return;
     }
     if(!event->isAutoRepeat()){
@@ -79,6 +82,7 @@ void MainWindow::keyReleaseEvent(QKeyEvent * event){
     if(event->key() == Qt::Key_Escape)
     {
         stopPlay();
+        //emit ui->disconnectButton->released();
         return;
     }
     if(!event->isAutoRepeat()){

@@ -18,7 +18,7 @@ do
    #cp $color.png tot.png
    #rm tot.png
    #cp $color.png save.png
-   for i in {0..64}
+   for i in {0..63}
    do
          j=$(echo "scale=2;180+360/64*$i" | bc)
          convert $color.png -distort SRT $j tmp.png 

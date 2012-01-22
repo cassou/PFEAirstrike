@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "networkmanager.h"
 #include <QTimer>
+#include <QSound>
 
 namespace Ui {
 class MainWindow;
@@ -31,6 +32,7 @@ private:
     bool isBot;
     QTimer* botTimer;
     bool started;
+    QSound* bullet;
 
 private slots:
     void connect_clicked();
