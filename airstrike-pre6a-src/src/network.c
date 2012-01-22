@@ -292,8 +292,10 @@ void process_packet(ENetEvent * event){
 			int client_id;
 			if (clientCount<playerCount){
 				int i;
+				int teamRequested = msg->data;
+				int success=0;
 				for (i=0;i<playerCount;i++){
-					if (!clientConnected[i]){
+					if (!clientConnected[i] && players[i].team->id==teamRequested){
 						client_id = i;
 						clientCount++;
 						clientConnected[client_id]=1;
@@ -306,8 +308,14 @@ void process_packet(ENetEvent * event){
 						sendMessage(peerID,MSG_TEAM_ID,client_id,players[client_id].team->id);
 						sendMessage(peerID,MSG_ID_IN_TEAM,client_id,players[client_id].id_in_team);
 						mylog(LOG_MESSAGE,"MSG_HELLO sent to",peerID);
+						success=1;
 						break;
 					}
+				}
+				if(!success){
+					sendMessage(peerID,MSG_NO_SPACE,0,0);
+					mylog(LOG_MESSAGE,"MSG_NO_SPACE sent to",peerID);
+					break;
 				}
 			}else{
 				sendMessage(peerID,MSG_NO_SPACE,0,0);

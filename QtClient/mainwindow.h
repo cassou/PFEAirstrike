@@ -45,6 +45,7 @@ private slots:
 signals:
     void sendKeyEvent(QKeyEvent * event, int key_status);
     void setIP(QString ip_addr, int port);
+    void setRequestedTeam(int team);
     void startNetworkManager();
 };
 

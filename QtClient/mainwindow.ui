@@ -65,15 +65,85 @@
            </item>
            <item row="3" column="1">
             <widget class="QLineEdit" name="nameEdit">
+             <property name="contextMenuPolicy">
+              <enum>Qt::CustomContextMenu</enum>
+             </property>
              <property name="maxLength">
               <number>8</number>
              </property>
             </widget>
            </item>
-           <item row="4" column="1">
+           <item row="5" column="1">
             <widget class="QCheckBox" name="checkBoxBot">
              <property name="text">
               <string>Bot</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QComboBox" name="comboBoxTeam">
+             <property name="contextMenuPolicy">
+              <enum>Qt::PreventContextMenu</enum>
+             </property>
+             <property name="sizeAdjustPolicy">
+              <enum>QComboBox::AdjustToContents</enum>
+             </property>
+             <item>
+              <property name="text">
+               <string>Vert Clair</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Rouge</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Bleu</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Jaunes</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Turquoise</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Violet</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Orange</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Gris</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Vert Foncé</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Bleu Foncé</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="label_10">
+             <property name="text">
+              <string>Équipe</string>
              </property>
             </widget>
            </item>
@@ -303,7 +373,7 @@
      <x>0</x>
      <y>0</y>
      <width>568</width>
-     <height>25</height>
+     <height>23</height>
     </rect>
    </property>
   </widget>

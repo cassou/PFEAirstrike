@@ -40,6 +40,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->nameEdit, SIGNAL(textChanged(QString)), networkManager, SLOT(setLogin(QString)));
     connect(ui->disconnectButton, SIGNAL(released()), networkManager, SLOT(disconnectClient()));
     connect(this, SIGNAL(setIP(QString,int)), networkManager, SLOT(setIP(QString,int)));
+    connect(this, SIGNAL(setRequestedTeam(int)), networkManager, SLOT(setRequestedTeam(int)));
     connect(networkManager, SIGNAL(disconnected()), this, SLOT(stopPlay()));
     connect(this, SIGNAL(startNetworkManager()), networkManager, SLOT(network_init()));
 
@@ -57,6 +58,7 @@ void MainWindow::displayText(QString string){
 }
 
 void MainWindow::connect_clicked(){
+    emit setRequestedTeam(ui->comboBoxTeam->currentIndex());
     emit setIP(ui->ipEdit->text(),ui->portEdit->text().toInt());
     emit startNetworkManager();
     startPlay();
@@ -155,6 +157,7 @@ void MainWindow::writeSettings()
     settings.setValue("port", ui->portEdit->text());
     settings.setValue("login", ui->nameEdit->text());
     settings.setValue("bot", ui->checkBoxBot->isChecked());
+    settings.setValue("team", ui->comboBoxTeam->currentIndex());
     settings.endGroup();
 }
 
@@ -172,6 +175,8 @@ void MainWindow::readSettings()
     ui->portEdit->setText(settings.value("port").toString());
     ui->nameEdit->setText(settings.value("login").toString());
     ui->checkBoxBot->setChecked(settings.value("bot").toBool());
+    ui->comboBoxTeam->setCurrentIndex(settings.value("team").toInt());
+
     settings.endGroup();
 }
 

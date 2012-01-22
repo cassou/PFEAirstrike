@@ -22,6 +22,7 @@ private:
     int myClientId;
     QString login;
     int startTime;
+    int requestedTeam;
 
 public:
     NetworkManager();
@@ -42,6 +43,7 @@ public slots:
     void setLogin(QString newLogin);
     void disconnectClient();
     void setIP(QString ip_addr = "127.0.0.1", int port=1234);
+    void setRequestedTeam(int team);
 
 signals:
     void writeText(QString text);

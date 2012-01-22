@@ -14,6 +14,7 @@ NetworkManager::NetworkManager()
     myClientId = -1;
     this->login;
     startTime = 0;
+    requestedTeam=0;
 }
 
 NetworkManager::~NetworkManager()
@@ -64,7 +65,8 @@ int NetworkManager::network_init(){
         if (enet_host_service(client, &event, 3000) > 0 && event.type == ENET_EVENT_TYPE_CONNECT) {
             writeText("Connection to " + ip_addr + ":" + QString::number(port) + "succeeded.");
             connect_succeeded=1;
-            sendMessage(MSG_HELLO,myClientId);
+           // sendMessage(MSG_HELLO,myClientId);
+            sendMessage(MSG_HELLO,myClientId,requestedTeam);
         } else {
             /* Either the 5 seconds are up or a disconnect event was */
             /* received. Reset the peer in the event the 5 seconds   */
@@ -231,6 +233,11 @@ void NetworkManager::setIP(QString ip_addr, int port)
 {
     this->ip_addr = ip_addr;
     this->port = port;
+}
+
+void NetworkManager::setRequestedTeam(int team)
+{
+    this->requestedTeam = team;
 }
 
 void NetworkManager::disconnectClient()
