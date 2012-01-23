@@ -172,10 +172,14 @@ void network_loop(){
 			prevTimeStat = sprite_global.game_clock;
 		}
 
+		int u;
 		if (sprite_global.game_clock-prevTimeLoad>=networkLoadinterval){
-			for(k=0;k<playerCount;k++){
-				if (clientConnected[k]){
-					sendMessageLoad(k,networkLoad);
+
+			for(u=0;u<playerCount;u++){
+				if (clientConnected[u]){
+					//printf("############### %d\n",u);
+					printf("");
+					sendMessageLoad(clientPeerId[u],networkLoad);
 				}
 			}
 			prevTimeLoad = sprite_global.game_clock;
@@ -190,7 +194,6 @@ void network_loop(){
 						sendMessage(clientPeerId[k],MSG_TIME2START,k,1+(players[k].spawnTimer-sprite_global.game_clock)/1000);
 						//printf("%d \n",1+(players[k].spawnTimer-sprite_global.game_clock)/1000);
 					}
-
 				}
 			}
 			prevTimePlay=sprite_global.game_clock;
@@ -266,9 +269,10 @@ void sendMessage(int peerId, int msgType,int clientId,int data){
 
 void sendMessageLoad(int peerId, int sizeInByte){
 	ENetPeer *p = &server->peers[peerId];
+
 	if (!(p==NULL)){
 		if(loadData){
-			ENetPacket *packet = enet_packet_create(loadData, sizeInByte, ENET_PACKET_FLAG_RELIABLE);
+			ENetPacket *packet = enet_packet_create(NULL, sizeInByte, ENET_PACKET_FLAG_RELIABLE);
 			enet_peer_send(p, 1, packet);
 			counterOut+=sizeInByte;
 		}
@@ -285,46 +289,55 @@ void process_packet(ENetEvent * event){
 	switch (msg->mess_type) {
 	case MSG_HELLO:
 		mylog(LOG_MESSAGE,"MSG_HELLO message received from",peerID);
-
-
-
-		if(!inGame){
-			int client_id;
-			if (clientCount<playerCount){
-				int i;
-				int teamRequested = msg->data;
-				int success=0;
-				for (i=0;i<playerCount;i++){
-					if (!clientConnected[i] && players[i].team->id==teamRequested){
-						client_id = i;
-						clientCount++;
-						clientConnected[client_id]=1;
-						players[client_id].isConnected=1;
-						clientPeerId[client_id]=peerID;
-						strncpy(players[client_id].name,msg->name,32);
-						printf("*******************************%s   %s\n",msg->name,players[client_id].name);
-						players[client_id].name[31]='\0';
-						sendMessage(peerID,MSG_HELLO,client_id,client_id);
-						sendMessage(peerID,MSG_TEAM_ID,client_id,players[client_id].team->id);
-						sendMessage(peerID,MSG_ID_IN_TEAM,client_id,players[client_id].id_in_team);
-						mylog(LOG_MESSAGE,"MSG_HELLO sent to",peerID);
-						success=1;
-						break;
-					}
-				}
-				if(!success){
-					sendMessage(peerID,MSG_NO_SPACE,0,0);
-					mylog(LOG_MESSAGE,"MSG_NO_SPACE sent to",peerID);
-					break;
-				}
-			}else{
-				sendMessage(peerID,MSG_NO_SPACE,0,0);
-				mylog(LOG_MESSAGE,"MSG_NO_SPACE sent to",peerID);
-				break;
-			}
-
+		//if(!inGame || 1){
+		int client_id;
+		int success=0;
+		int teamRequested = msg->data;
+		if (msg->client_id>=0 && msg->client_id<playerCount && !clientConnected[msg->client_id] && players[msg->client_id].team->id == teamRequested){
+			client_id = msg->client_id;
+			clientCount++;
+			clientConnected[client_id]=1;
+			players[client_id].isConnected=1;
+			clientPeerId[client_id]=peerID;
+			strncpy(players[client_id].name,msg->name,32);
+			printf("*******************************%s   %s\n",msg->name,players[client_id].name);
+			players[client_id].name[31]='\0';
+			sendMessage(peerID,MSG_HELLO,client_id,client_id);
+			sendMessage(peerID,MSG_TEAM_ID,client_id,players[client_id].team->id);
+			sendMessage(peerID,MSG_ID_IN_TEAM,client_id,players[client_id].id_in_team);
+			mylog(LOG_MESSAGE,"MSG_HELLO sent to",peerID);
+			success=1;
 		}else{
-			int client_id=msg->client_id;
+			int i;
+			for (i=0;i<playerCount;i++){
+				if (!clientConnected[i] && players[i].team->id==teamRequested){
+					client_id = i;
+					clientCount++;
+					clientConnected[client_id]=1;
+					players[client_id].isConnected=1;
+					clientPeerId[client_id]=peerID;
+					strncpy(players[client_id].name,msg->name,32);
+					printf("*******************************%s   %s\n",msg->name,players[client_id].name);
+					players[client_id].name[31]='\0';
+					sendMessage(peerID,MSG_HELLO,client_id,client_id);
+					sendMessage(peerID,MSG_TEAM_ID,client_id,players[client_id].team->id);
+					sendMessage(peerID,MSG_ID_IN_TEAM,client_id,players[client_id].id_in_team);
+					mylog(LOG_MESSAGE,"MSG_HELLO sent to",peerID);
+					success=1;
+					break;
+
+				}
+			}
+		}
+
+		if(!success){
+			sendMessage(peerID,MSG_NO_SPACE,0,0);
+			mylog(LOG_MESSAGE,"MSG_NO_SPACE sent to",peerID);
+			break;
+		}
+
+		//}else{
+		/*int client_id=msg->client_id;
 			if (client_id>=0 && client_id<playerCount && !clientConnected[client_id]){
 				clientCount++;
 				clientConnected[client_id]=1;
@@ -342,9 +355,9 @@ void process_packet(ENetEvent * event){
 				sendMessage(peerID,MSG_NO_SPACE,0,0);
 				mylog(LOG_MESSAGE,"MSG_NO_SPACE sent to",peerID);
 				break;
-			}
+			}*/
 
-		}
+		//}
 
 		break;
 	case MSG_KEY:
