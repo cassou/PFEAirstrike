@@ -21,11 +21,11 @@ build_enet () {
 }
 
 check_enet () {
-    if [ -e ./enet/enet-1.3.3/.libs/libenet.so ]; then
-	echo "eNet ok"
+    echo "Checking ENet library..."
+    if [ -e ./enet/enet-1.3.3/.libs/libenet.so ]||[ -e /usr/lib/i386-linux-gnu/libenet.so ]; then
+	echo "OK"
     else
-	echo "eNet not ok"
-	build_enet
+	echo "WARNING: ENet is not installed."
     fi
     
 }
