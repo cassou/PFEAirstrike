@@ -253,6 +253,7 @@ static int process_events(void)
 			case SDLK_RETURN:
 				if (!inGame){
 					inGame = 1-inGame;
+					init_spawn_delays();
 					timeToStop=sprite_global.game_clock+1000*cfgnum("game.max_duration",60);
 				}
 				break;
@@ -633,14 +634,62 @@ void scorekeeper()
 		endOfGame=1;
 
 	if(endOfGame){
-		sprintf(cbuf,"And the winner are :\n");
+		sprintf(cbuf,"Les gagnants sont :\n");
 		for (i = 0; i < nbTeams; i++){
 			if(teams[i].points==maxscore){
-				sprintf(cbuf2,"     Team %d\n",i);
+				/*<string-array name="colors">
+			        <item>vert Clair</item>
+			        <item>Rouge</item>
+			        <item>Bleu</item>
+			        <item>Jaune</item>
+			        <item>Turquoise</item>
+			        <item>Violet</item>
+			        <item>Orange</item>
+			        <item>Gris</item>
+			        <item>Vert Foncé</item>
+			        <item>Bleu Foncé</item>
+			    </string-array>*/
+
+				switch (i){
+				case 0:
+					sprintf(cbuf2,"     Les Verts Clairs \n");
+					break;
+				case 1:
+					sprintf(cbuf2,"     Les Rouges \n");
+					break;
+				case 2:
+					sprintf(cbuf2,"     Les Bleus \n");
+					break;
+				case 3:
+					sprintf(cbuf2,"     Les Jaunes \n");
+					break;
+				case 4:
+					sprintf(cbuf2,"     Les Turquoises \n");
+					break;
+				case 5:
+					sprintf(cbuf2,"     Les Violets \n");
+					break;
+				case 6:
+					sprintf(cbuf2,"     Les Oranges \n");
+					break;
+				case 7:
+					sprintf(cbuf2,"     Les Gris \n");
+					break;
+				case 8:
+					sprintf(cbuf2,"     Les Verts Foncés \n");
+					break;
+				case 9:
+					sprintf(cbuf2,"     Les Bleus Foncés \n");
+					break;
+				default:
+					break;
+				}
+
+				//sprintf(cbuf2,"     Team %d\n",i);
 				strcat(cbuf,cbuf2);
 			}
 		}
-		sprintf(cbuf2,"With %d points\n",maxscore);
+		sprintf(cbuf2,"\n\n %d points\n",maxscore);
 		strcat(cbuf,cbuf2);
 		message_time(cbuf,10);
 		message_time("Starting in 3",1);
@@ -880,7 +929,7 @@ int main(int argc, char *argv[])
 	objects_setup();
 	//addPlayers(nbTeams);
 	network_init();
-	init_spawn_delays();
+	//
 	planeCollision=cfgnum("game.planeCollision",1);
 	fprintf(stderr, "Entering main loop.\n");
 
