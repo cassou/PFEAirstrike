@@ -52,8 +52,8 @@ create_package_qt () {
     cp enet/enet-1.3.3/.libs/libenet.so Release/ClientLinux/lib/libenet.so.1
     cp Sprites/Solo/* Release/ClientLinux/Solo/
     cp QtClient/start.sh Release/ClientLinux/
-    cp QtClient/lib/libQtCore.so.4.7.4 Release/ClientLinux/lib/libQtCore.so
-    cp QtClient/lib/libQtGui.so.4.7.4 Release/ClientLinux/lib/libQtGui.so
+    cp QtClient/lib/libQtCore.so.4.7.4 Release/ClientLinux/lib/libQtCore.so.4
+    cp QtClient/lib/libQtGui.so.4.7.4 Release/ClientLinux/lib/libQtGui.so.4
     cp QtClient/README Release/ClientLinux/README
     tar -czvf Release/clientLinux.tar.gz Release/ClientLinux
     echo "Done"
