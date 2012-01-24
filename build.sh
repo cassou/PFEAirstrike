@@ -24,6 +24,7 @@ check_enet () {
     echo "Checking ENet library..."
     if [ -e ./enet/enet-1.3.3/.libs/libenet.so ]||[ -e /usr/lib/i386-linux-gnu/libenet.so ]; then
 	echo "OK"
+	export LIBRARY_PATH=$HOME/enet/enet-1.3.3/.libs
     else
 	echo "WARNING: ENet is not installed."
     fi
