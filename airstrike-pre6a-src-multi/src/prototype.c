@@ -36,17 +36,7 @@ void mylog(int type, char * message, int value){
 	h = time(NULL);
 
 	char s[512];
-	sprintf(&s,"%d	%s	%d	%d %s",type,message,value,sprite_global.game_clock, ctime(&h));
-	printf(&s);
-	fprintf(fpLog,&s);
+	sprintf(s,"%d	%s	%d	%d %s",type,message,value,sprite_global.game_clock, ctime(&h));
+	printf(s);
+	fprintf(fpLog,s);
 }
-
-
-/*void prototype_setup(){
-	playerCount = 600;
-}
-
-void testing123(){
-	printf("Testing123\n");
-}
- */

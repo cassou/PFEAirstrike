@@ -27,6 +27,8 @@ sprite_group_t *foreground_group;
 sprite_group_t *ui_group;
 sprite_group_t *ui_group_connect;
 
+void init_spawn_delays();
+
 static int paused = 0;
 static int max_points;
 static Uint32 displayflags = 0;
@@ -103,8 +105,6 @@ static int general_setup(void)
 void players_setup(void)
 {
 	sprite_t *sp;
-	//playerCount = cfgnum("nr_players", nbPlayers);
-	// Number of players is set up at launch as an argument
 	playerCount = nbPlayers;
 	player_init();
 	//assert((playerCount >= 0) && (playerCount <= MAXPLAYERS)); This is now tested at startup
@@ -116,7 +116,6 @@ void players_setup(void)
 	for (i = 0; i < playerCount; i++)
 	{
 		players[i].sprite_type = &blueplane;
-		//	players[i].sprite_type = &biplane;
 		players[i].points = 0;
 		player_sethuman(i);
 		players[i].team = &teams[team];
@@ -125,7 +124,6 @@ void players_setup(void)
 		players[i].startpos[1] = (players[i].team->id+1)*90;
 		nbMembers++;
 		//printf("Player %d is in team %d, %d\n", i, team, players[i].team);
-
 
 		if ((nbMembers == perTeam && team > (remains-1)) || nbMembers > perTeam)
 		{
@@ -417,76 +415,76 @@ int select_mode(char *header, char *choices[])
 	}
 }
 
-void player_keys_mode(int p)
-{
-	int i;
-	int key;
-	char cbuf[2] =
-	{ 0, 0 };
-	again: console_clear();
-	console_write("Setting up key bindings,\nhit the appropriate keys.\n");
-	i = 0;
-	while (control_key_names[i].signal)
-	{
-		console_write(control_key_names[i].name);
-		console_write(" [");
-		console_write(SDL_GetKeyName(players[p].keymap[i][0]));
-		console_write("] ");
-		console_frame();
-		key = wait_for_key();
-		console_write(SDL_GetKeyName(key));
-		console_write("\n");
-		players[p].keymap[i][0] = key;
-		players[p].keymap[i][1] = control_key_names[i].signal;
-		i++;
-	}
-	console_write("Done. Press any key to continue.\n");
-	console_frame();
-	key = wait_for_key();
-}
+//void player_keys_mode(int p)
+//{
+//	int i;
+//	int key;
+//	char cbuf[2] =
+//	{ 0, 0 };
+//	again: console_clear();
+//	console_write("Setting up key bindings,\nhit the appropriate keys.\n");
+//	i = 0;
+//	while (control_key_names[i].signal)
+//	{
+//		console_write(control_key_names[i].name);
+//		console_write(" [");
+//		console_write(SDL_GetKeyName(players[p].keymap[i][0]));
+//		console_write("] ");
+//		console_frame();
+//		key = wait_for_key();
+//		console_write(SDL_GetKeyName(key));
+//		console_write("\n");
+//		players[p].keymap[i][0] = key;
+//		players[p].keymap[i][1] = control_key_names[i].signal;
+//		i++;
+//	}
+//	console_write("Done. Press any key to continue.\n");
+//	console_frame();
+//	key = wait_for_key();
+//}
 
-void player_setup_mode(void)
-{
-	char *items[] =
-	{ 0, 0, "Left player keys", "Right player keys", "Go back", 0 };
-	while (1)
-	{
-		if (players[1].ishuman)
-			items[0] = "Left Player: Keyboard";
-		else
-			items[0] = "Left Player: AI";
-		if (players[0].ishuman)
-			items[1] = "Right Player: Keyboard";
-		else
-			items[1] = "Right Player: AI";
-
-		switch (select_mode("Player setup", items))
-		{
-		case 0:
-			players[1].ishuman = 1 - players[1].ishuman;
-			if (players[1].ishuman)
-				player_sethuman(1);
-			else
-				player_setai(1);
-			break;
-		case 1:
-			players[0].ishuman = 1 - players[0].ishuman;
-			if (players[0].ishuman)
-				player_sethuman(0);
-			else
-				player_setai(0);
-			break;
-		case 2:
-			player_keys_mode(1);
-			break;
-		case 3:
-			player_keys_mode(0);
-			break;
-		default:
-			return;
-		}
-	}
-}
+//void player_setup_mode(void)
+//{
+//	char *items[] =
+//	{ 0, 0, "Left player keys", "Right player keys", "Go back", 0 };
+//	while (1)
+//	{
+//		if (players[1].ishuman)
+//			items[0] = "Left Player: Keyboard";
+//		else
+//			items[0] = "Left Player: AI";
+//		if (players[0].ishuman)
+//			items[1] = "Right Player: Keyboard";
+//		else
+//			items[1] = "Right Player: AI";
+//
+//		switch (select_mode("Player setup", items))
+//		{
+//		case 0:
+//			players[1].ishuman = 1 - players[1].ishuman;
+//			if (players[1].ishuman)
+//				player_sethuman(1);
+//			else
+//				player_setai(1);
+//			break;
+//		case 1:
+//			players[0].ishuman = 1 - players[0].ishuman;
+//			if (players[0].ishuman)
+//				player_sethuman(0);
+//			else
+//				player_setai(0);
+//			break;
+//		case 2:
+//			player_keys_mode(1);
+//			break;
+//		case 3:
+//			player_keys_mode(0);
+//			break;
+//		default:
+//			return;
+//		}
+//	}
+//}
 
 /* Display the message and wait for a keypress */
 void message_mode(char *message)
@@ -542,7 +540,7 @@ void about_mode(char *filename)
 void console_mode()
 {
 	char *items[] =
-	{ "Resume game", "Players setup", "Toggle fullscreen", "About the game", "Release notes", "Toggle debug mode", "Quit game", 0 };
+	{ "Resume game", "Toggle fullscreen", "Toggle debug mode", "Quit game", 0 };
 	while (1)
 	{
 		switch (select_mode("Airstrike menu", items))
@@ -551,31 +549,20 @@ void console_mode()
 			return;
 			break;
 		case 1:
-			player_setup_mode();
-			break;
-		case 2:
 			displayflags ^= SDL_FULLSCREEN;
 			sprite_global.display = SDL_SetVideoMode(screen_w, screen_h, 0, displayflags);
 			assert(sprite_global.display);
 			sprite_dirty_all();
 			sprite_bg_dirty_all();
 			break;
-		case 3:
-			about_mode("about.txt");
-			break;
-		case 4:
-			about_mode("notes.txt");
-			break;
-		case 5:
+		case 2:
 			show_debug = 1 - show_debug;
 			break;
-		case 6:
+		case 3:
 			netStop=1;
+			//wait for the network thread to stop
 			while (netStopped!=1){
-				//sleep(10);
-				//printf("haha\n");
 			}
-
 			exit(EXIT_SUCCESS);
 			break;
 		default:
@@ -734,15 +721,6 @@ void scorekeeper()
 					sprite_group_insert(mech_group, s);
 					sprite_set_pos(s, players[i].startpos[0], players[i].startpos[1]);
 
-
-
-					/*if (!players[i].ishuman) //TODO : check if ai still works and reintegrate it ?
-						ai_controller_set_enemy(players[i].controller, players[(i + 1) % playerCount].sprite);*/
-					/*s = sprite_create(&energymeter);
-					sprite_set_pos(s, (sprite_global.display->w - 60) * (1 - i) + 30, sprite_global.display->h - 30);
-					sprite_signal(s, SIGNAL_SPRITETARGET, players[i].sprite);
-					sprite_group_insert(ui_group, s);*/
-
 					players[i].spawnTimer=NULL;
 				}
 			}
@@ -861,7 +839,7 @@ void saveanimframe()
 	SDL_SaveBMP(img,filename);
 }
 
-connect_frame(){
+void connect_frame(){
 	//usleep(100000);
 	int i;
 	/* collect frame time statistics */
@@ -880,8 +858,6 @@ connect_frame(){
 		//printf("lag");
 		//fflush(stdout);
 	}
-
-	//scorekeeper();
 }
 
 int main(int argc, char *argv[])

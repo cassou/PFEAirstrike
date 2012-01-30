@@ -20,8 +20,13 @@
 
 #define ERROR(s)  printf(s)
 
+#ifndef MAX
 #define MAX(x,y) ((x)>(y)?(x):(y))
+#endif
+
+#ifndef MIN
 #define MIN(x,y) ((x)<(y)?(x):(y))
+#endif
 
 extern int playerCount;
 extern int teamCount;
