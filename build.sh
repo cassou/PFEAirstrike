@@ -11,6 +11,7 @@ build_enet () {
     cd enet/enet-1.3.3
     autoreconf -vfi
     ./configure
+    make clean
     make
     if [ $? -ne 0 ]; then
 	echo "Error while compiling eNet. Exiting."
@@ -37,6 +38,7 @@ build_qt () {
     echo "Build Qt client"
     cd QtClient
     qmake
+    make clean
     make
     cd $HOME
     echo "Done"
@@ -63,7 +65,8 @@ build_airstrike () {
     check_enet
     echo
     echo "Build airstrike server"
-    cd airstrike-pre6a-src
+    cd airstrike-pre6a-src-multi
+    make clean
     make
     cd $HOME
     echo "Done"
