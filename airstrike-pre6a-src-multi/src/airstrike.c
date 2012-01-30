@@ -514,6 +514,7 @@ void message_time(char *message,int duration)
 	sprite_group_draw(foreground_group);
 	sprite_group_draw(ui_group);
 	text_render(sprite_global.display, 0, big_font, sprite_global.display->w / 2, sprite_global.display->h / 2, ALIGN_CENTER, ALIGN_CENTER, message);
+	draw_ui();
 	sprite_end_frame();
 	sprite_dirty_all();
 	sleep(duration);
