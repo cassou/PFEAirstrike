@@ -36,6 +36,7 @@ int fps=0;
 
 int networkLoad = 0;
 int networkLoadinterval = 0;
+int networkport = 1234;
 void * loadData;
 
 void network_init(){
@@ -57,7 +58,7 @@ void *thread_function( void *arg ){
 	char cb[250];
 	time_t h = 0;
 	h = time(NULL);
-	sprintf(cb,"airlog_%dB_%d_ms_%d.log",networkLoad,networkLoadinterval,h);
+	sprintf(cb,"log/airlog_%dB_%d_ms_%d.log",networkLoad,networkLoadinterval,h);
 	logOpen(cb);
 	mylog(LOG_INFO,"Starting the game",0);
 	sprintf(cb,"%d players; %d teams; load %d Bytes each %dms",playerCount,teamCount,networkLoad,networkLoadinterval);
@@ -68,8 +69,6 @@ void *thread_function( void *arg ){
 	netStopped=1;
 	//pthread_exit(NULL);
 }
-
-
 
 ENetAddress address;
 ENetHost *server;
@@ -86,8 +85,8 @@ void network_loop(){
 	/* enet_address_set_host (& address, "x.x.x.x"); */
 
 	address.host = ENET_HOST_ANY;
-	/* Bind the server to port 1234. */
-	address.port = 1234;
+	/* Bind the server to port. */
+	address.port = networkport;
 
 
 	mylog(LOG_NETWORK,"Listening on port",address.port);

@@ -15,23 +15,21 @@ screen.height 768
 
 # Set fullscreen to 1 for fullscreen mode
 # Can also be changed in-game
-fullscreen 1
+fullscreen 0
 
 # alpha 0 No transparent sprites (fastest)
 # alpha 1 Only some transparent sprites (per surface alpha)
 # alpha 2 Full alpha channel (slowest, but best looking)
 alpha 2
 
-# Set nr_players to 0, 1 or 2. There is always two planes;
-# this variable determines the default number of human players.
-# Can now be changed in-game
-nr_players 2
 
 game.firstSpawn 1
 game.delaySpawn 1
 game.teamWinScore 999999999
 game.max_duration 90
 game.planeCollision 0
+
+network.port 1234
 
 bullet.damage 5
 bullet.point 1

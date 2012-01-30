@@ -20,6 +20,7 @@ volatile int netStopped ;//place to 1 when network stopped
 
 int networkLoad;
 int networkLoadinterval;
+int networkport;
 int fps;
 
 #endif /* NETWORK_H_ */

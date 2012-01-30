@@ -915,23 +915,19 @@ int main(int argc, char *argv[])
 		exit(EXIT_SUCCESS);
 	}
 
-	//prototype_setup();
-
 	res = general_setup() == 0;
 	assert(res);
 	engine_setup();
-	//message_mode("      Airstrike 1.0 pre 6\n\nIn the game press ESC for a menu\n  Winner is first to 5 points\n     Press any key to start");
-
 	DEBUGPOINT(1);
 	teams_setup();
 	DEBUGPOINT(42);
 	players_setup();
 	objects_setup();
-	//addPlayers(nbTeams);
-	network_init();
-	//
+
 	planeCollision=cfgnum("game.planeCollision",1);
-	fprintf(stderr, "Entering main loop.\n");
+	networkport = cfgnum("network.port",1234);
+
+	network_init();
 
 
 	Mix_Music *play_sound = NULL;
@@ -939,6 +935,7 @@ int main(int argc, char *argv[])
 	Mix_PlayMusic(play_sound, -1);
 	//Mix_VolumeMusic(MIX_MAX_VOLUME/2);
 
+	fprintf(stderr, "Entering main loop.\n");
 	while (process_events())
 	{
 		if (!paused)
